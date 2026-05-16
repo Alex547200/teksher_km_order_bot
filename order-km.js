@@ -2,6 +2,7 @@ const fs = require("node:fs/promises");
 const os = require("node:os");
 const path = require("node:path");
 const { chromium } = require("playwright");
+const authHelper = require("./teksher-auth");
 
 const OPERATIONS_URL = "https://label.teksher.kg/operations";
 const OPERATIONS_IP_URL = "https://109.71.231.11/operations";
@@ -289,80 +290,8 @@ async function ensureAuthenticated(page) {
   return { ok: true, manual: true };
 }
 
-function looksLikeJwt(value) {
-  return typeof value === "string" && /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(value.trim());
-}
-
-function collectTokenCandidates(value, source, out = []) {
-  if (value == null) return out;
-  if (typeof value === "string") {
-    const trimmed = value.trim();
-    const bearer = trimmed.match(/Bearer\s+([A-Za-z0-9_.-]+)/i);
-    if (bearer) out.push({ token: bearer[1], source });
-    if (looksLikeJwt(trimmed)) out.push({ token: trimmed, source });
-    if (/(access|auth|authorization|jwt|token)/i.test(source) && !/refresh/i.test(source) && trimmed.length > 20 && !/\s/.test(trimmed)) {
-      out.push({ token: trimmed.replace(/^Bearer\s+/i, ""), source });
-    }
-    try {
-      const parsed = JSON.parse(trimmed);
-      collectTokenCandidates(parsed, source, out);
-    } catch {}
-    return out;
-  }
-  if (Array.isArray(value)) {
-    for (const item of value) collectTokenCandidates(item, source, out);
-    return out;
-  }
-  if (typeof value === "object") {
-    for (const [key, nested] of Object.entries(value)) {
-      collectTokenCandidates(nested, `${source}.${key}`, out);
-    }
-  }
-  return out;
-}
-
 async function extractBearerToken(page, context) {
-  const storage = await page.evaluate(() => {
-    const readStorage = (store) => {
-      const values = {};
-      for (let i = 0; i < store.length; i += 1) {
-        const key = store.key(i);
-        values[key] = store.getItem(key);
-      }
-      return values;
-    };
-    return {
-      localStorage: readStorage(window.localStorage),
-      sessionStorage: readStorage(window.sessionStorage),
-    };
-  }).catch(() => ({ localStorage: {}, sessionStorage: {} }));
-
-  const candidates = [];
-  collectTokenCandidates(storage.localStorage, "localStorage", candidates);
-  collectTokenCandidates(storage.sessionStorage, "sessionStorage", candidates);
-
-  const cookies = await context.cookies().catch(() => []);
-  for (const cookie of cookies) {
-    collectTokenCandidates(cookie.value, `cookie.${cookie.name}`, candidates);
-  }
-
-  const unique = candidates.filter((candidate, index, arr) => arr.findIndex((item) => item.token === candidate.token) === index);
-  unique.sort((a, b) => {
-    const rank = (candidate) => {
-      if (/authorization|access/i.test(candidate.source)) return 0;
-      if (/jwt|token/i.test(candidate.source)) return 1;
-      if (/refresh/i.test(candidate.source)) return 9;
-      return 5;
-    };
-    return rank(a) - rank(b);
-  });
-  console.log("auth token candidates:");
-  console.table(unique.map((candidate, index) => ({
-    index,
-    source: candidate.source,
-    preview: `${candidate.token.slice(0, 12)}...${candidate.token.slice(-8)}`,
-  })));
-  return unique[0] || null;
+  return authHelper.extractBearerToken(page, context);
 }
 
 function buildMultiOperationPayloadFor(itemsList) {

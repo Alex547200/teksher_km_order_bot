@@ -65,6 +65,36 @@ npm run start
 - `~/Desktop/заказ км/screenshots/*`
 - `~/Desktop/заказ км/diagnose_batch_successes.json`
 
+## `create-km-from-excel.js`
+
+Назначение: batch workflow для создания операций КМ из Excel-файла `коледино выгрузка.xlsx`.
+
+Команда запуска:
+
+```bash
+npm run create-km-excel
+```
+
+Что можно делать:
+
+- читать `Лист1` из Excel;
+- брать `GTIN` из столбца A и количество КМ из столбца B;
+- собирать payload для `POST /facade/order/api/v1/operations/multi`;
+- группировать строки по 10 штук в batch;
+- в режиме `--commit` создавать операции через существующий API workflow.
+
+Что нельзя делать:
+
+- запускать commit без проверки dry-run payload;
+- менять payload API на нерабочий формат;
+- выполнять POST случайно;
+- использовать этот скрипт как UI-замену, если нужен только dry-run.
+
+Какие файлы создаёт:
+
+- сам dry-run по умолчанию файлов не пишет;
+- в commit-режиме использует `auth_tokens.json` и может обновить его через refresh helper.
+
 ## `export-2026-05-15.js`
 
 Назначение: read-only экспорт CSV/PDF по операциям за 2026-05-15.
@@ -79,9 +109,10 @@ node export-2026-05-15.js
 
 - читать список операций через GET;
 - пробовать endpoint-ы списка и логировать результаты;
-- сохранять raw response и probe results;
-- скачивать доступные CSV/PDF;
-- сохранять файлы по GTIN.
+- сохранять `operations_raw.json` и `endpoint_probe_results.json`;
+- скачивать доступные CSV/PDF через GET/download;
+- сохранять файлы по GTIN;
+- использовать существующую Playwright session `./teksher-session-profile`.
 
 Что нельзя делать:
 
@@ -94,9 +125,42 @@ node export-2026-05-15.js
 
 - `~/Desktop/заказ км/электросталь печать кодов паркеровки/operations_raw.json`
 - `~/Desktop/заказ км/электросталь печать кодов паркеровки/endpoint_probe_results.json`
+- `~/Desktop/заказ км/электросталь печать кодов паркеровки/endpoint_health_check.json`
+- `~/Desktop/заказ км/электросталь печать кодов паркеровки/token_diagnostic.json`
 - `~/Desktop/заказ км/электросталь печать кодов паркеровки/index.json`
 - `~/Desktop/заказ км/электросталь печать кодов паркеровки/*.(csv|pdf)`
 - `api_pdf_download_log.json`
+
+## `download-all-2026-05-16.js`
+
+Назначение: read-only выгрузка CSV по операциям Текшер за `2026-05-16` в отдельную папку.
+
+Команда запуска:
+
+```bash
+node download-all-2026-05-16.js
+```
+
+Что можно делать:
+
+- читать операции только за `2026-05-16`;
+- использовать API list endpoints и GET/download CSV;
+- именовать CSV по имени товара/операции из исходной выгрузки;
+- добавлять суффикс `_2` для дублей;
+- проверять итоговый набор на `81` CSV и `9` файлов `_2`.
+
+Что нельзя делать:
+
+- включать операции за `2026-05-15`;
+- анализировать GTIN для имени файла;
+- запускать `POST/PUT/PATCH/DELETE`;
+- оставлять итоговую папку в состоянии, отличном от проверенного набора.
+
+Какие файлы создаёт:
+
+- `~/Desktop/123 электросталь 2026-05-16/*.(csv)`
+- `all_operations_2026-05-16.json`
+- `download_all_2026-05-16_log.json`
 
 ## `km-status-check.js`
 

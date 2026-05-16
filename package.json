@@ -17,7 +17,13 @@
     "audit-local": "node audit-local.js",
     "download-pdfs": "node download-pdfs.js",
     "download-pdfs-api": "node download-pdfs-api.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "download-all-15may": "node download-all-2026-05-15.js",
+    "create-km-excel": "node create-km-from-excel.js",
+    "discover-ops": "node discover-operations-endpoint.js",
+    "download-existing-ops": "node download-existing-operations.js",
+    "search-gtin": "node search-gtin.js 04707197100891",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "download-all-16may": "node download-all-2026-05-16.js"
   },
   "keywords": [],
   "author": "",

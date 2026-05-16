@@ -28,8 +28,9 @@
 
 - `teksher.js` - единая CLI-точка входа: `create`, `status`, `export`, `help`.
 - `order-km.js` - создание операций КМ и batch workflow.
-- `export-2026-05-15.js` - выгрузка CSV/PDF по операциям за 2026-05-15.
+- `export-2026-05-15.js` - read-only выгрузка CSV/PDF по операциям за 2026-05-15 через GET/download.
 - `km-status-check.js` - локальная проверка статусов КИЗ из файлов.
+- `create-km-from-excel.js` - dry-run/commit batch workflow создания КМ из Excel `коледино выгрузка.xlsx`.
 
 Подробности по каждому скрипту зафиксированы в [SCRIPTS.md](SCRIPTS.md).
 
@@ -56,3 +57,15 @@ node teksher.js export
 ```
 
 `create` перед запуском показывает GTIN из `batch.txt` и требует подтверждение `YES`.
+
+## Export details
+
+Экспорт 2026-05-15 использует GET list endpoint-ы операций, затем GET/download по `operationId`.
+
+Основные артефакты экспорта:
+
+```text
+~/Desktop/заказ км/электросталь печать кодов паркеровки
+```
+
+Файлы PDF/CSV именуются по GTIN, при дубле получают суффикс `_1`, `_2` и т.д.

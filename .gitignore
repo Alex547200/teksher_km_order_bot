@@ -8,4 +8,5 @@ teksher-session-profile/
 *.json
 !package.json
 !package-lock.json
+refresh_token.txt
 .DS_Store

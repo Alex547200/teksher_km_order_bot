@@ -2,6 +2,7 @@ const fs = require("node:fs/promises");
 const os = require("node:os");
 const path = require("node:path");
 const { chromium } = require("playwright");
+const authHelper = require("./teksher-auth");
 
 const BASE_URL = "https://label.teksher.kg";
 const OPERATIONS_URL = `${BASE_URL}/operations`;
@@ -11,12 +12,21 @@ const OUTPUT_DIR = path.join(os.homedir(), "Desktop", "заказ км", "эле
 const INDEX_PATH = path.join(OUTPUT_DIR, "index.json");
 const RAW_OPERATIONS_PATH = path.join(OUTPUT_DIR, "operations_raw.json");
 const PROBE_RESULTS_PATH = path.join(OUTPUT_DIR, "endpoint_probe_results.json");
+const HEALTH_CHECK_PATH = path.join(OUTPUT_DIR, "endpoint_health_check.json");
+const TOKEN_DIAGNOSTIC_PATH = path.join(OUTPUT_DIR, "token_diagnostic.json");
+const AUTH_TOKENS_PATH = path.join(__dirname, "auth_tokens.json");
+const ACCESS_TOKEN_PATH = path.join(__dirname, "access_token.json");
+const REFRESH_TOKEN_PATH = path.join(__dirname, "refresh_token.json");
+const STORAGE_STATE_PATH = path.join(__dirname, "storageState.json");
+const COOKIES_PATH = path.join(__dirname, "cookies.json");
 const TARGET_DATE = "2026-05-15";
 const TARGET_DATE_DOT = "15.05.2026";
 const LOGIN_TIMEOUT_MS = 10 * 60 * 1000;
 const LIST_PAGE_SIZE = 100;
 const DEFAULT_TIMEOUT_MS = 30000;
 const REQUEST_TIMEOUT_MS = 45000;
+const TOKEN_URL = "http://10.242.17.100:8800/realms/mzkm_prod_realm/protocol/openid-connect/token";
+const CLIENT_ID = "facade_client";
 
 const LIST_BASES = [
   "/facade/api/v1/operations",
@@ -65,6 +75,95 @@ function sleep(ms) {
 
 function uniq(values) {
   return Array.from(new Set(values.filter(Boolean)));
+}
+
+function looksLikeJwt(value) {
+  return typeof value === "string" && /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(value.trim());
+}
+
+function normalizeToken(value) {
+  return String(value || "").trim().replace(/^Bearer\s+/i, "").trim();
+}
+
+function decodeJwtPayload(token) {
+  if (!looksLikeJwt(token)) return null;
+  const parts = String(token).trim().split(".");
+  if (parts.length < 2) return null;
+  try {
+    const payload = Buffer.from(parts[1].replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8");
+    return JSON.parse(payload);
+  } catch {
+    return null;
+  }
+}
+
+function decodeJwtExpMs(token) {
+  const payload = decodeJwtPayload(token);
+  const exp = Number(payload?.exp || 0);
+  return Number.isFinite(exp) && exp > 0 ? exp * 1000 : 0;
+}
+
+function tokenPreview(token) {
+  const value = normalizeToken(token);
+  if (!value) return "";
+  return `${value.slice(0, 12)}...${value.slice(-8)}`;
+}
+
+function isTokenExpired(token, skewMs = 60 * 1000) {
+  const exp = decodeJwtExpMs(token);
+  return !exp || exp <= Date.now() + skewMs;
+}
+
+function getTokenExpiresAt(token) {
+  const exp = decodeJwtExpMs(token);
+  return exp ? new Date(exp).toISOString() : "";
+}
+
+function stringifyCause(cause) {
+  if (!cause) return "";
+  if (typeof cause === "string") return cause;
+  if (typeof cause === "object") {
+    return JSON.stringify({
+      name: cause.name || "",
+      message: cause.message || "",
+      code: cause.code || "",
+    });
+  }
+  return String(cause);
+}
+
+function classifyNetworkFailure(text) {
+  const value = String(text || "");
+  if (!value) return "";
+  if (/ERR_NAME_NOT_RESOLVED|ENOTFOUND|DNS/i.test(value)) return "dns";
+  if (/ERR_CONNECTION_REFUSED|ECONNREFUSED/i.test(value)) return "connect_refused";
+  if (/ERR_CONNECTION_TIMED_OUT|ETIMEDOUT/i.test(value)) return "connect_timeout";
+  if (/ERR_PROXY|ERR_TUNNEL/i.test(value)) return "proxy";
+  if (/ERR_CERT|CERT/i.test(value)) return "tls";
+  return "";
+}
+
+function logFetchDiagnostics(stepName, url, timeoutMs, error, requestFailures = []) {
+  const payload = {
+    step: stepName,
+    url,
+    timeoutMs,
+    error: {
+      name: error?.name || "",
+      message: error?.message || "",
+      stack: error?.stack || "",
+      cause: JSON.stringify(error?.cause ?? null, null, 2),
+    },
+    requestFailures: (requestFailures || []).map((failure) => ({
+      url: failure.url || "",
+      method: failure.method || "",
+      resourceType: failure.resourceType || "",
+      errorText: failure.errorText || "",
+      networkClass: classifyNetworkFailure(failure.errorText || failure.reason || failure.message || ""),
+    })),
+  };
+  console.error(JSON.stringify(payload, null, 2));
+  return payload;
 }
 
 function normalizeStatus(value) {
@@ -174,6 +273,237 @@ function findGtin(value) {
   return match ? match[0] : "";
 }
 
+function collectTokenCandidates(value, source, out = []) {
+  if (value == null) return out;
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    const bearer = trimmed.match(/Bearer\s+([A-Za-z0-9_.-]+)/i);
+    if (bearer) out.push({ token: bearer[1], source });
+    if (looksLikeJwt(trimmed)) out.push({ token: trimmed, source });
+    if (/(access|auth|authorization|jwt|token)/i.test(source) && !/refresh/i.test(source) && trimmed.length > 20 && !/\s/.test(trimmed)) {
+      out.push({ token: trimmed.replace(/^Bearer\s+/i, ""), source });
+    }
+    try {
+      const parsed = JSON.parse(trimmed);
+      collectTokenCandidates(parsed, source, out);
+    } catch {}
+    return out;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) collectTokenCandidates(item, source, out);
+    return out;
+  }
+  if (typeof value === "object") {
+    for (const [key, nested] of Object.entries(value)) {
+      collectTokenCandidates(nested, `${source}.${key}`, out);
+    }
+  }
+  return out;
+}
+
+async function readJsonIfExists(filePath, fallback = null) {
+  try {
+    const text = await fs.readFile(filePath, "utf8");
+    return JSON.parse(text);
+  } catch (err) {
+    if (err && err.code === "ENOENT") return fallback;
+    return fallback;
+  }
+}
+
+async function writeJson(filePath, value) {
+  await fs.writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+}
+
+function summarizeFetchDiagnostics(url, timeoutMs, error, requestFailures = []) {
+  const cause = error?.cause;
+  const failure = requestFailures.find((entry) => entry.url === url) || requestFailures[requestFailures.length - 1] || null;
+  const networkCause = failure?.errorText || failure?.failureText || failure?.reason || "";
+  return {
+    error: {
+      name: error?.name || "",
+      message: error?.message || "",
+      cause: stringifyCause(cause),
+      stack: error?.stack || "",
+    },
+    timeoutMs,
+    endpointUrl: url,
+    requestFailure: failure ? {
+      url: failure.url || "",
+      method: failure.method || "",
+      resourceType: failure.resourceType || "",
+      errorText: failure.errorText || "",
+      networkClass: classifyNetworkFailure(networkCause),
+    } : null,
+  };
+}
+
+async function readStorageTokenCandidates(page, context) {
+  const storage = await page.evaluate(() => {
+    const readStore = (store) => {
+      const result = {};
+      for (let i = 0; i < store.length; i += 1) {
+        const key = store.key(i);
+        result[key] = store.getItem(key);
+      }
+      return result;
+    };
+    return {
+      localStorage: readStore(window.localStorage),
+      sessionStorage: readStore(window.sessionStorage),
+    };
+  }).catch(() => ({ localStorage: {}, sessionStorage: {} }));
+
+  const candidates = [];
+  collectTokenCandidates(storage.localStorage, "localStorage", candidates);
+  collectTokenCandidates(storage.sessionStorage, "sessionStorage", candidates);
+
+  const cookies = await context.cookies().catch(() => []);
+  for (const cookie of cookies) {
+    collectTokenCandidates(cookie.value, `cookie.${cookie.name}`, candidates);
+  }
+
+  return candidates;
+}
+
+async function readFileTokenCandidates() {
+  const candidates = [];
+  const files = [
+    [AUTH_TOKENS_PATH, "auth_tokens"],
+    [ACCESS_TOKEN_PATH, "access_token"],
+    [REFRESH_TOKEN_PATH, "refresh_token"],
+    [STORAGE_STATE_PATH, "storageState"],
+    [COOKIES_PATH, "cookies"],
+  ];
+
+  for (const [filePath, source] of files) {
+    const data = await readJsonIfExists(filePath, null);
+    if (data != null) collectTokenCandidates(data, source, candidates);
+  }
+
+  return candidates;
+}
+
+function chooseAccessToken(candidates) {
+  const unique = candidates
+    .map((item) => ({ ...item, token: normalizeToken(item.token) }))
+    .filter((item) => item.token && !/refresh/i.test(item.source));
+  unique.sort((a, b) => (decodeJwtExpMs(b.token) || 0) - (decodeJwtExpMs(a.token) || 0));
+  return unique.find((item) => !isTokenExpired(item.token)) || unique[0] || null;
+}
+
+function chooseRefreshToken(candidates) {
+  const unique = candidates
+    .map((item) => ({ ...item, token: normalizeToken(item.token) }))
+    .filter((item) => item.token && /refresh/i.test(item.source));
+  return unique.find((item) => /refresh/i.test(item.source) && item.token) || unique[0] || null;
+}
+
+async function refreshAccessToken(refreshToken) {
+  const body = new URLSearchParams({
+    grant_type: "refresh_token",
+    client_id: CLIENT_ID,
+    refresh_token: normalizeToken(refreshToken),
+  });
+
+  const response = await fetch(TOKEN_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body,
+  });
+  const responseText = await response.text();
+  if (!response.ok) {
+    throw new Error(responseText || `refresh failed with HTTP ${response.status}`);
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(responseText);
+  } catch {
+    throw new Error("refresh response is not JSON");
+  }
+
+  const accessToken = normalizeToken(parsed.access_token || parsed.accessToken || "");
+  const nextRefreshToken = normalizeToken(parsed.refresh_token || parsed.refreshToken || refreshToken);
+  if (!accessToken) {
+    throw new Error("access_token missing in refresh response");
+  }
+
+  const savedAt = new Date().toISOString();
+  await writeJson(AUTH_TOKENS_PATH, {
+    access_token: accessToken,
+    refresh_token: nextRefreshToken,
+    savedAt,
+    source: "export-2026-05-15",
+  });
+
+  return {
+    accessToken,
+    refreshToken: nextRefreshToken,
+    tokenExpiresAt: getTokenExpiresAt(accessToken),
+    hasAccessToken: true,
+    isExpired: false,
+    savedAt,
+    source: "refresh",
+  };
+}
+
+async function resolveAuth(page, context) {
+  const fileCandidates = await readFileTokenCandidates();
+  const sessionCandidates = await readStorageTokenCandidates(page, context);
+  const candidates = [...fileCandidates, ...sessionCandidates];
+  const accessCandidate = chooseAccessToken(candidates);
+  const refreshCandidate = chooseRefreshToken(candidates);
+
+  let accessToken = accessCandidate?.token || "";
+  let source = accessCandidate?.source || "";
+  let tokenExpiresAt = getTokenExpiresAt(accessToken);
+  let isExpired = !accessToken || isTokenExpired(accessToken);
+  let hasAccessToken = Boolean(accessToken);
+
+  if ((!hasAccessToken || isExpired) && refreshCandidate?.token) {
+    const refreshed = await refreshAccessToken(refreshCandidate.token);
+    accessToken = refreshed.accessToken;
+    source = refreshed.source;
+    tokenExpiresAt = refreshed.tokenExpiresAt;
+    isExpired = refreshed.isExpired;
+    hasAccessToken = refreshed.hasAccessToken;
+  }
+
+  const diagnostic = {
+    generatedAt: new Date().toISOString(),
+    hasAccessToken,
+    tokenExpiresAt,
+    isExpired,
+    source,
+    accessTokenSource: accessCandidate?.source || "",
+    refreshTokenSource: refreshCandidate?.source || "",
+  };
+
+  await writeJson(TOKEN_DIAGNOSTIC_PATH, diagnostic);
+  console.log("token diagnostic:");
+  console.table([diagnostic]);
+
+  if (!hasAccessToken) {
+    throw new Error("No access token found");
+  }
+
+  if (isExpired) {
+    throw new Error("TOKEN_EXPIRED: access token is still expired after refresh attempt");
+  }
+
+  return {
+    accessToken,
+    authHeaders: {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: "application/json",
+    },
+    diagnostic,
+  };
+}
+
 function normalizeOperation(raw, sourceUrl = "") {
   const operationId =
     findOwnField(raw, [/^id$/i, /^operationId$/i, /^operationID$/i, /^operation_id$/i]) ||
@@ -273,41 +603,107 @@ async function uniquePath(filePath) {
   throw new Error(`Could not reserve unique file name for ${filePath}`);
 }
 
-async function readTextResponse(page, url) {
-  return page.evaluate(async ({ requestUrl, timeoutMs }) => {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(new Error("Request timeout")), timeoutMs);
-    try {
-      const response = await fetch(requestUrl, {
-        method: "GET",
-        credentials: "include",
-        redirect: "follow",
-        headers: {
-          Accept: "application/json, text/plain, */*",
-        },
-        signal: controller.signal,
-      });
-      const text = await response.text();
-      let body = text;
-      try {
-        body = JSON.parse(text);
-      } catch {}
-      return {
+async function readTextResponse(page, url, authHeaders) {
+  const requestFailures = [];
+  const onRequestFailed = (request) => {
+    const requestUrl = request.url();
+    if (requestUrl === url || requestUrl.startsWith(url) || url.startsWith(requestUrl)) {
+      const failure = request.failure() || {};
+      requestFailures.push({
         url: requestUrl,
-        httpStatus: response.status,
-        ok: response.ok,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries()),
-        body,
-      };
-    } finally {
-      clearTimeout(timeout);
+        method: request.method(),
+        resourceType: request.resourceType(),
+        errorText: failure.errorText || "",
+      });
     }
-  }, { requestUrl: url, timeoutMs: REQUEST_TIMEOUT_MS });
+  };
+
+  page.on("requestfailed", onRequestFailed);
+  try {
+    const result = await page.evaluate(async ({ requestUrl, timeoutMs, requestHeaders }) => {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(new Error("Request timeout")), timeoutMs);
+      try {
+        const response = await fetch(requestUrl, {
+          method: "GET",
+          credentials: "include",
+          redirect: "follow",
+          headers: requestHeaders,
+          signal: controller.signal,
+        });
+        const text = await response.text();
+        let body = text;
+        try {
+          body = JSON.parse(text);
+        } catch {}
+        return {
+          url: requestUrl,
+          httpStatus: response.status,
+          ok: response.ok,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          body,
+          error: null,
+        };
+      } catch (error) {
+        return {
+          url: requestUrl,
+          httpStatus: 0,
+          ok: false,
+          statusText: "FETCH_FAILED",
+          headers: {},
+          body: null,
+          error: {
+            name: error?.name || "Error",
+            message: error?.message || String(error),
+            cause: stringifyCause(error?.cause),
+            stack: error?.stack || "",
+          },
+        };
+      } finally {
+        clearTimeout(timeout);
+      }
+    }, { requestUrl: url, timeoutMs: REQUEST_TIMEOUT_MS, requestHeaders: authHeaders });
+
+    if (result.error) {
+      logFetchDiagnostics("readTextResponse", url, REQUEST_TIMEOUT_MS, {
+        name: result.error.name,
+        message: result.error.message,
+        stack: result.error.stack,
+        cause: result.error.cause,
+      }, requestFailures);
+    }
+
+    return {
+      ...result,
+      timeoutMs: REQUEST_TIMEOUT_MS,
+      requestFailures,
+    };
+  } catch (error) {
+    logFetchDiagnostics("readTextResponse.catch", url, REQUEST_TIMEOUT_MS, error, requestFailures);
+    return {
+      url,
+      httpStatus: 0,
+      ok: false,
+      statusText: "EVALUATE_FAILED",
+      headers: {},
+      body: null,
+      timeoutMs: REQUEST_TIMEOUT_MS,
+      error: {
+        name: error?.name || "Error",
+        message: error?.message || String(error),
+        cause: stringifyCause(error?.cause),
+        stack: error?.stack || "",
+      },
+      requestFailures,
+    };
+  } finally {
+    page.off("requestfailed", onRequestFailed);
+  }
 }
 
-async function probeEndpoint(page, url) {
-  const response = await readTextResponse(page, url);
+async function probeEndpoint(page, url, authHeaders) {
+  const response = await readTextResponse(page, url, authHeaders);
   const body = response.body;
   const size = typeof body === "string"
     ? Buffer.byteLength(body, "utf8")
@@ -326,37 +722,122 @@ async function probeEndpoint(page, url) {
     operationCount: operations.length,
     body,
     headers: response.headers,
+    error: response.error || null,
+    timeoutMs: response.timeoutMs || REQUEST_TIMEOUT_MS,
+    requestFailures: response.requestFailures || [],
   };
 }
 
-async function readBinaryResponse(page, url) {
-  return page.evaluate(async ({ requestUrl, timeoutMs }) => {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(new Error("Request timeout")), timeoutMs);
-    try {
-      const response = await fetch(requestUrl, {
-        method: "GET",
-        credentials: "include",
-        redirect: "follow",
-        headers: {
-          Accept: "*/*",
-        },
-        signal: controller.signal,
-      });
-      const headers = Object.fromEntries(response.headers.entries());
-      const bytes = Array.from(new Uint8Array(await response.arrayBuffer()));
-      return {
+async function readBinaryResponse(page, url, authHeaders) {
+  const requestFailures = [];
+  const onRequestFailed = (request) => {
+    const requestUrl = request.url();
+    if (requestUrl === url || requestUrl.startsWith(url) || url.startsWith(requestUrl)) {
+      const failure = request.failure() || {};
+      requestFailures.push({
         url: requestUrl,
-        httpStatus: response.status,
-        ok: response.ok,
-        statusText: response.statusText,
-        headers,
-        bytes,
-      };
-    } finally {
-      clearTimeout(timeout);
+        method: request.method(),
+        resourceType: request.resourceType(),
+        errorText: failure.errorText || "",
+      });
     }
-  }, { requestUrl: url, timeoutMs: REQUEST_TIMEOUT_MS });
+  };
+
+  page.on("requestfailed", onRequestFailed);
+  try {
+    const result = await page.evaluate(async ({ requestUrl, timeoutMs, requestHeaders }) => {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(new Error("Request timeout")), timeoutMs);
+      try {
+        const response = await fetch(requestUrl, {
+          method: "GET",
+          credentials: "include",
+          redirect: "follow",
+          headers: requestHeaders,
+          signal: controller.signal,
+        });
+        const headers = Object.fromEntries(response.headers.entries());
+        const bytes = Array.from(new Uint8Array(await response.arrayBuffer()));
+        return {
+          url: requestUrl,
+          httpStatus: response.status,
+          ok: response.ok,
+          statusText: response.statusText,
+          headers,
+          bytes,
+          error: null,
+        };
+      } catch (error) {
+        return {
+          url: requestUrl,
+          httpStatus: 0,
+          ok: false,
+          statusText: "FETCH_FAILED",
+          headers: {},
+          bytes: [],
+          error: {
+            name: error?.name || "Error",
+            message: error?.message || String(error),
+            cause: stringifyCause(error?.cause),
+            stack: error?.stack || "",
+          },
+        };
+      } finally {
+        clearTimeout(timeout);
+      }
+    }, { requestUrl: url, timeoutMs: REQUEST_TIMEOUT_MS, requestHeaders: authHeaders });
+
+    if (result.error) {
+      logFetchDiagnostics("readBinaryResponse", url, REQUEST_TIMEOUT_MS, {
+        name: result.error.name,
+        message: result.error.message,
+        stack: result.error.stack,
+        cause: result.error.cause,
+      }, requestFailures);
+    }
+
+    return {
+      ...result,
+      timeoutMs: REQUEST_TIMEOUT_MS,
+      requestFailures,
+    };
+  } catch (error) {
+    logFetchDiagnostics("readBinaryResponse.catch", url, REQUEST_TIMEOUT_MS, error, requestFailures);
+    return {
+      url,
+      httpStatus: 0,
+      ok: false,
+      statusText: "EVALUATE_FAILED",
+      headers: {},
+      bytes: [],
+      timeoutMs: REQUEST_TIMEOUT_MS,
+      error: {
+        name: error?.name || "Error",
+        message: error?.message || String(error),
+        cause: stringifyCause(error?.cause),
+        stack: error?.stack || "",
+      },
+      requestFailures,
+    };
+  } finally {
+    page.off("requestfailed", onRequestFailed);
+  }
+}
+
+async function runReadOnlyHealthCheck(page, authHeaders) {
+  const url = `${BASE_URL}/facade/api/v1/products?page=0&size=1&productGroup=1&createdByIssuer=true&status=PUBLISHED`;
+  const result = await readTextResponse(page, url, authHeaders);
+  await writeJson(HEALTH_CHECK_PATH, {
+    generatedAt: new Date().toISOString(),
+    url,
+    timeoutMs: result.timeoutMs || REQUEST_TIMEOUT_MS,
+    httpStatus: result.httpStatus,
+    ok: result.ok,
+    error: result.error || null,
+    requestFailures: result.requestFailures || [],
+    firstKeys: firstJsonKeys(result.body),
+  });
+  return result;
 }
 
 async function waitForManualLogin(page) {
@@ -384,16 +865,32 @@ function buildListUrls() {
   return uniq(urls);
 }
 
-async function collectOperations(page, preferredUrls = []) {
+async function collectOperations(page, preferredUrls = [], authHeaders) {
   const discovered = new Map();
   const responses = [];
 
   for (const url of uniq([...preferredUrls, ...buildListUrls()])) {
     try {
-      const response = await readTextResponse(page, url);
+      const response = await readTextResponse(page, url, authHeaders);
       responses.push(response);
     } catch (error) {
-      responses.push({ url, httpStatus: 0, ok: false, statusText: error.message || String(error), headers: {}, body: null });
+      logFetchDiagnostics("collectOperations.list", url, REQUEST_TIMEOUT_MS, error, []);
+      responses.push({
+        url,
+        httpStatus: 0,
+        ok: false,
+        statusText: "EVALUATE_FAILED",
+        headers: {},
+        body: null,
+        error: {
+          name: error?.name || "Error",
+          message: error?.message || String(error),
+          cause: stringifyCause(error?.cause),
+          stack: error?.stack || "",
+        },
+        timeoutMs: REQUEST_TIMEOUT_MS,
+        requestFailures: [],
+      });
     }
   }
 
@@ -405,7 +902,7 @@ async function collectOperations(page, preferredUrls = []) {
   for (const operationId of detailIds) {
     const detailUrl = `${BASE_URL}/facade/api/v1/operations/${encodeURIComponent(operationId)}`;
     try {
-      const response = await readTextResponse(page, detailUrl);
+      const response = await readTextResponse(page, detailUrl, authHeaders);
       responses.push(response);
       const operation = normalizeOperation(response.body, detailUrl);
       if (operation) {
@@ -415,7 +912,23 @@ async function collectOperations(page, preferredUrls = []) {
         }
       }
     } catch (error) {
-      responses.push({ url: detailUrl, httpStatus: 0, ok: false, statusText: error.message || String(error), headers: {}, body: null });
+      logFetchDiagnostics("collectOperations.detail", detailUrl, REQUEST_TIMEOUT_MS, error, []);
+      responses.push({
+        url: detailUrl,
+        httpStatus: 0,
+        ok: false,
+        statusText: "EVALUATE_FAILED",
+        headers: {},
+        body: null,
+        error: {
+          name: error?.name || "Error",
+          message: error?.message || String(error),
+          cause: stringifyCause(error?.cause),
+          stack: error?.stack || "",
+        },
+        timeoutMs: REQUEST_TIMEOUT_MS,
+        requestFailures: [],
+      });
     }
   }
 
@@ -441,13 +954,14 @@ async function collectOperations(page, preferredUrls = []) {
   };
 }
 
-async function probeOperationEndpoints(page) {
+async function probeOperationEndpoints(page, authHeaders) {
   const results = [];
   for (const url of PROBE_ENDPOINTS) {
     try {
-      const result = await probeEndpoint(page, url);
+      const result = await probeEndpoint(page, url, authHeaders);
       results.push(result);
     } catch (error) {
+      logFetchDiagnostics("probeOperationEndpoints", url, REQUEST_TIMEOUT_MS, error, []);
       results.push({
         url,
         httpStatus: 0,
@@ -455,7 +969,14 @@ async function probeOperationEndpoints(page) {
         size: 0,
         firstKeys: [],
         operationCount: 0,
-        error: error.message || String(error),
+        error: {
+          name: error?.name || "Error",
+          message: error?.message || String(error),
+          cause: stringifyCause(error?.cause),
+          stack: error?.stack || "",
+        },
+        timeoutMs: REQUEST_TIMEOUT_MS,
+        requestFailures: [],
       });
     }
   }
@@ -536,13 +1057,13 @@ function extractStringCandidate(value) {
   return "";
 }
 
-async function tryDownloadFile(page, operation, candidateUrl, records, seenUrls, depth = 0) {
+async function tryDownloadFile(page, operation, candidateUrl, records, seenUrls, authHeaders, depth = 0) {
   if (!candidateUrl || depth > 2) return null;
   const absolute = new URL(candidateUrl, BASE_URL).toString();
   if (seenUrls.has(absolute)) return null;
   seenUrls.add(absolute);
 
-  const response = await readBinaryResponse(page, absolute);
+  const response = await readBinaryResponse(page, absolute, authHeaders);
   const headers = response.headers || {};
   const bytes = response.bytes || [];
 
@@ -554,7 +1075,7 @@ async function tryDownloadFile(page, operation, candidateUrl, records, seenUrls,
     } catch {}
     const nextCandidate = extractStringCandidate(json ?? text);
     if (nextCandidate && nextCandidate !== absolute) {
-      return tryDownloadFile(page, operation, nextCandidate, records, seenUrls, depth + 1);
+      return tryDownloadFile(page, operation, nextCandidate, records, seenUrls, authHeaders, depth + 1);
     }
     return null;
   }
@@ -591,20 +1112,20 @@ async function tryDownloadFile(page, operation, candidateUrl, records, seenUrls,
 
   const nextCandidate = extractStringCandidate(json ?? text);
   if (nextCandidate && nextCandidate !== absolute) {
-    return tryDownloadFile(page, operation, nextCandidate, records, seenUrls, depth + 1);
+    return tryDownloadFile(page, operation, nextCandidate, records, seenUrls, authHeaders, depth + 1);
   }
 
   return null;
 }
 
-async function downloadOperationFiles(page, operation, records) {
+async function downloadOperationFiles(page, operation, records, authHeaders) {
   const seenUrls = new Set();
   for (const template of FILE_ENDPOINTS) {
     const url = `${BASE_URL}${template.replace("{operationId}", encodeURIComponent(operation.operationId))}`;
     try {
-      await tryDownloadFile(page, operation, url, records, seenUrls);
+      await tryDownloadFile(page, operation, url, records, seenUrls, authHeaders);
     } catch (error) {
-      console.log(`download failed for ${operation.operationId} at ${url}: ${error.message || String(error)}`);
+      logFetchDiagnostics("downloadOperationFiles", url, REQUEST_TIMEOUT_MS, error, []);
     }
   }
 }
@@ -672,7 +1193,66 @@ async function main() {
       }
     }
 
-    const probeResults = await probeOperationEndpoints(page);
+    let auth = await authHelper.resolveAuth(page, context, {
+      fileSpecs: [
+        { path: AUTH_TOKENS_PATH, source: "auth_tokens" },
+        { path: ACCESS_TOKEN_PATH, source: "access_token" },
+        { path: REFRESH_TOKEN_PATH, source: "refresh_token" },
+        { path: STORAGE_STATE_PATH, source: "storageState" },
+        { path: COOKIES_PATH, source: "cookies" },
+      ],
+      authTokensPath: AUTH_TOKENS_PATH,
+      tokenUrl: TOKEN_URL,
+      clientId: CLIENT_ID,
+      source: "export-2026-05-15",
+    });
+
+    let healthCheck = await runReadOnlyHealthCheck(page, auth.authHeaders);
+    if (healthCheck.httpStatus === 401 && auth.refreshToken) {
+      console.log("products returned 401, refreshing token and retrying health check");
+      auth = await authHelper.refreshAuthToken(auth.refreshToken, {
+        tokenUrl: TOKEN_URL,
+        clientId: CLIENT_ID,
+        authTokensPath: AUTH_TOKENS_PATH,
+        source: "export-2026-05-15",
+      });
+      auth = {
+        ...auth,
+        authHeaders: {
+          Authorization: `Bearer ${auth.accessToken}`,
+          Accept: "application/json",
+        },
+      };
+      healthCheck = await runReadOnlyHealthCheck(page, {
+        ...auth.authHeaders,
+      });
+    }
+    console.log("health check saved:", HEALTH_CHECK_PATH);
+    console.table([{
+      url: healthCheck.url,
+      status: healthCheck.httpStatus,
+      ok: healthCheck.ok,
+      errorName: healthCheck.error?.name || "",
+      errorMessage: healthCheck.error?.message || "",
+      requestFailure: healthCheck.requestFailures?.[0]?.errorText || "",
+    }]);
+
+    if (!healthCheck.ok) {
+      const failure = healthCheck.error || {};
+      console.log(`health check failed: ${JSON.stringify({
+        url: healthCheck.url,
+        timeoutMs: healthCheck.timeoutMs || REQUEST_TIMEOUT_MS,
+        error: {
+          name: failure.name || "",
+          message: failure.message || "",
+          cause: failure.cause || "",
+        },
+        requestFailures: healthCheck.requestFailures || [],
+      })}`);
+      return;
+    }
+
+    const probeResults = await probeOperationEndpoints(page, auth.authHeaders);
     await fs.writeFile(PROBE_RESULTS_PATH, `${JSON.stringify({
       generatedAt: new Date().toISOString(),
       targetDate: TARGET_DATE_DOT,
@@ -696,10 +1276,17 @@ async function main() {
       size: result.size,
       firstKeys: (result.firstKeys || []).join(", "),
       operations: result.operationCount || 0,
+      error: result.error?.message || result.error || "",
+      requestFailure: result.requestFailures?.[0]?.errorText || "",
     })));
 
     const bestProbe = probeResults.find((result) => (result.operationCount || 0) > 0);
     if (!bestProbe) {
+      if (healthCheck.ok) {
+        console.log("Health check passed, but operations list endpoints failed. Problem is likely the operations endpoint or its auth/response shape.");
+      } else {
+        console.log("Health check also failed. Problem is likely network/DNS/VPN/access.");
+      }
       console.log("No non-empty list endpoint found yet. Export is paused.");
       return;
     }
@@ -708,7 +1295,7 @@ async function main() {
     const preferredListUrls = probeResults
       .filter((result) => (result.operationCount || 0) > 0)
       .map((result) => result.url);
-    const { responses, operations: rawOperations } = await collectOperations(page, preferredListUrls);
+    const { responses, operations: rawOperations } = await collectOperations(page, preferredListUrls, auth.authHeaders);
     const rawPayload = {
       generatedAt: new Date().toISOString(),
       targetDate: TARGET_DATE_DOT,
@@ -745,7 +1332,7 @@ async function main() {
     }
 
     for (const operation of operations) {
-      await downloadOperationFiles(page, operation, indexRecords);
+      await downloadOperationFiles(page, operation, indexRecords, auth.authHeaders);
       await sleep(100);
     }
 
@@ -774,6 +1361,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(error.message || error);
+  logFetchDiagnostics("main.catch", "", REQUEST_TIMEOUT_MS, error, []);
   process.exitCode = 1;
 });
