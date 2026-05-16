@@ -1,0 +1,3759 @@
+{
+  "generatedAt": "2026-05-16T05:41:16.725Z",
+  "sourcePath": "/Users/admin/AI_PROJECTS/teksher_km_order_bot/audit_local_selected.json",
+  "outputDir": "/Users/admin/Desktop/электросталь печать кодов паркеровки",
+  "rows": [
+    {
+      "gtin": "04707197100112",
+      "operationId": "aa2d3de9-a760-470e-872f-dafdcc423c81",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100112.pdf",
+      "sourceFile": "batch_005_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/aa2d3de9-a760-470e-872f-dafdcc423c81",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/aa2d3de9-a760-470e-872f-dafdcc423c81",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/aa2d3de9-a760-470e-872f-dafdcc423c81/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/aa2d3de9-a760-470e-872f-dafdcc423c81/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/aa2d3de9-a760-470e-872f-dafdcc423c81/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/aa2d3de9-a760-470e-872f-dafdcc423c81/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/aa2d3de9-a760-470e-872f-dafdcc423c81/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/aa2d3de9-a760-470e-872f-dafdcc423c81/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100129",
+      "operationId": "1f48c0dd-6fa2-4269-bbe9-3c432fcd52b5",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100129.pdf",
+      "sourceFile": "batch_005_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/1f48c0dd-6fa2-4269-bbe9-3c432fcd52b5",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/1f48c0dd-6fa2-4269-bbe9-3c432fcd52b5",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/1f48c0dd-6fa2-4269-bbe9-3c432fcd52b5/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/1f48c0dd-6fa2-4269-bbe9-3c432fcd52b5/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/1f48c0dd-6fa2-4269-bbe9-3c432fcd52b5/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/1f48c0dd-6fa2-4269-bbe9-3c432fcd52b5/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/1f48c0dd-6fa2-4269-bbe9-3c432fcd52b5/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/1f48c0dd-6fa2-4269-bbe9-3c432fcd52b5/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100136",
+      "operationId": "02f26cfa-722f-43cc-9884-c3552a288ecd",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100136.pdf",
+      "sourceFile": "batch_005_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/02f26cfa-722f-43cc-9884-c3552a288ecd",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/02f26cfa-722f-43cc-9884-c3552a288ecd",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/02f26cfa-722f-43cc-9884-c3552a288ecd/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/02f26cfa-722f-43cc-9884-c3552a288ecd/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/02f26cfa-722f-43cc-9884-c3552a288ecd/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/02f26cfa-722f-43cc-9884-c3552a288ecd/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/02f26cfa-722f-43cc-9884-c3552a288ecd/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/02f26cfa-722f-43cc-9884-c3552a288ecd/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100143",
+      "operationId": "22429449-2a61-4316-9c59-d3d61043b5b8",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100143.pdf",
+      "sourceFile": "batch_005_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/22429449-2a61-4316-9c59-d3d61043b5b8",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/22429449-2a61-4316-9c59-d3d61043b5b8",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/22429449-2a61-4316-9c59-d3d61043b5b8/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/22429449-2a61-4316-9c59-d3d61043b5b8/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/22429449-2a61-4316-9c59-d3d61043b5b8/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/22429449-2a61-4316-9c59-d3d61043b5b8/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/22429449-2a61-4316-9c59-d3d61043b5b8/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/22429449-2a61-4316-9c59-d3d61043b5b8/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100150",
+      "operationId": "ba5733e8-8f2d-4def-a443-cebbe0152f3c",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100150.pdf",
+      "sourceFile": "batch_005_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/ba5733e8-8f2d-4def-a443-cebbe0152f3c",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/ba5733e8-8f2d-4def-a443-cebbe0152f3c",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/ba5733e8-8f2d-4def-a443-cebbe0152f3c/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/ba5733e8-8f2d-4def-a443-cebbe0152f3c/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/ba5733e8-8f2d-4def-a443-cebbe0152f3c/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/ba5733e8-8f2d-4def-a443-cebbe0152f3c/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/ba5733e8-8f2d-4def-a443-cebbe0152f3c/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/ba5733e8-8f2d-4def-a443-cebbe0152f3c/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100167",
+      "operationId": "d4f592fe-dd32-4db0-9ded-d455ef6043bd",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100167.pdf",
+      "sourceFile": "batch_005_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/d4f592fe-dd32-4db0-9ded-d455ef6043bd",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/d4f592fe-dd32-4db0-9ded-d455ef6043bd",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/d4f592fe-dd32-4db0-9ded-d455ef6043bd/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/d4f592fe-dd32-4db0-9ded-d455ef6043bd/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/d4f592fe-dd32-4db0-9ded-d455ef6043bd/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/d4f592fe-dd32-4db0-9ded-d455ef6043bd/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/d4f592fe-dd32-4db0-9ded-d455ef6043bd/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/d4f592fe-dd32-4db0-9ded-d455ef6043bd/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100174",
+      "operationId": "fb772c8c-bb1d-4e92-960c-4751887ca61c",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100174.pdf",
+      "sourceFile": "batch_005_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/fb772c8c-bb1d-4e92-960c-4751887ca61c",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/fb772c8c-bb1d-4e92-960c-4751887ca61c",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/fb772c8c-bb1d-4e92-960c-4751887ca61c/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/fb772c8c-bb1d-4e92-960c-4751887ca61c/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/fb772c8c-bb1d-4e92-960c-4751887ca61c/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/fb772c8c-bb1d-4e92-960c-4751887ca61c/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/fb772c8c-bb1d-4e92-960c-4751887ca61c/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/fb772c8c-bb1d-4e92-960c-4751887ca61c/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100181",
+      "operationId": "8ef511b4-55ad-431b-9d30-0aedcdadb780",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100181.pdf",
+      "sourceFile": "batch_005_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/8ef511b4-55ad-431b-9d30-0aedcdadb780",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/8ef511b4-55ad-431b-9d30-0aedcdadb780",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/8ef511b4-55ad-431b-9d30-0aedcdadb780/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/8ef511b4-55ad-431b-9d30-0aedcdadb780/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/8ef511b4-55ad-431b-9d30-0aedcdadb780/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/8ef511b4-55ad-431b-9d30-0aedcdadb780/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/8ef511b4-55ad-431b-9d30-0aedcdadb780/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/8ef511b4-55ad-431b-9d30-0aedcdadb780/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100198",
+      "operationId": "3837ecc1-dba9-4537-ae54-cedcc00ed621",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100198.pdf",
+      "sourceFile": "batch_005_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/3837ecc1-dba9-4537-ae54-cedcc00ed621",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/3837ecc1-dba9-4537-ae54-cedcc00ed621",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/3837ecc1-dba9-4537-ae54-cedcc00ed621/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/3837ecc1-dba9-4537-ae54-cedcc00ed621/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/3837ecc1-dba9-4537-ae54-cedcc00ed621/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/3837ecc1-dba9-4537-ae54-cedcc00ed621/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/3837ecc1-dba9-4537-ae54-cedcc00ed621/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/3837ecc1-dba9-4537-ae54-cedcc00ed621/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100204",
+      "operationId": "53b17532-7edc-45a4-8142-5ee3740bdacc",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100204.pdf",
+      "sourceFile": "batch_005_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/53b17532-7edc-45a4-8142-5ee3740bdacc",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/53b17532-7edc-45a4-8142-5ee3740bdacc",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/53b17532-7edc-45a4-8142-5ee3740bdacc/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/53b17532-7edc-45a4-8142-5ee3740bdacc/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/53b17532-7edc-45a4-8142-5ee3740bdacc/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/53b17532-7edc-45a4-8142-5ee3740bdacc/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/53b17532-7edc-45a4-8142-5ee3740bdacc/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/53b17532-7edc-45a4-8142-5ee3740bdacc/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100211",
+      "operationId": "44651a85-bf45-4154-a996-53b67f034c4a",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100211.pdf",
+      "sourceFile": "batch_004_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/44651a85-bf45-4154-a996-53b67f034c4a",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/44651a85-bf45-4154-a996-53b67f034c4a",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/44651a85-bf45-4154-a996-53b67f034c4a/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/44651a85-bf45-4154-a996-53b67f034c4a/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/44651a85-bf45-4154-a996-53b67f034c4a/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/44651a85-bf45-4154-a996-53b67f034c4a/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/44651a85-bf45-4154-a996-53b67f034c4a/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/44651a85-bf45-4154-a996-53b67f034c4a/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100228",
+      "operationId": "245c1e05-e9c1-4285-a382-92a2047ac189",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100228.pdf",
+      "sourceFile": "batch_004_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/245c1e05-e9c1-4285-a382-92a2047ac189",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/245c1e05-e9c1-4285-a382-92a2047ac189",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/245c1e05-e9c1-4285-a382-92a2047ac189/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/245c1e05-e9c1-4285-a382-92a2047ac189/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/245c1e05-e9c1-4285-a382-92a2047ac189/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/245c1e05-e9c1-4285-a382-92a2047ac189/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/245c1e05-e9c1-4285-a382-92a2047ac189/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/245c1e05-e9c1-4285-a382-92a2047ac189/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100235",
+      "operationId": "3dbd0bf0-2ff1-489e-b7cb-6b7a9727313c",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100235.pdf",
+      "sourceFile": "batch_004_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/3dbd0bf0-2ff1-489e-b7cb-6b7a9727313c",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/3dbd0bf0-2ff1-489e-b7cb-6b7a9727313c",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/3dbd0bf0-2ff1-489e-b7cb-6b7a9727313c/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/3dbd0bf0-2ff1-489e-b7cb-6b7a9727313c/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/3dbd0bf0-2ff1-489e-b7cb-6b7a9727313c/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/3dbd0bf0-2ff1-489e-b7cb-6b7a9727313c/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/3dbd0bf0-2ff1-489e-b7cb-6b7a9727313c/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/3dbd0bf0-2ff1-489e-b7cb-6b7a9727313c/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100242",
+      "operationId": "98ceb45b-984a-4f7a-abbe-5ffc70cffcd9",
+      "status": "502",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100242.pdf",
+      "sourceFile": "batch_004_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/98ceb45b-984a-4f7a-abbe-5ffc70cffcd9",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/98ceb45b-984a-4f7a-abbe-5ffc70cffcd9",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/98ceb45b-984a-4f7a-abbe-5ffc70cffcd9/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/98ceb45b-984a-4f7a-abbe-5ffc70cffcd9/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/98ceb45b-984a-4f7a-abbe-5ffc70cffcd9/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/98ceb45b-984a-4f7a-abbe-5ffc70cffcd9/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/98ceb45b-984a-4f7a-abbe-5ffc70cffcd9/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/98ceb45b-984a-4f7a-abbe-5ffc70cffcd9/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100259",
+      "operationId": "cbf359c4-1c66-4907-9282-4a810c782709",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100259.pdf",
+      "sourceFile": "batch_004_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/cbf359c4-1c66-4907-9282-4a810c782709",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/cbf359c4-1c66-4907-9282-4a810c782709",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/cbf359c4-1c66-4907-9282-4a810c782709/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/cbf359c4-1c66-4907-9282-4a810c782709/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/cbf359c4-1c66-4907-9282-4a810c782709/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/cbf359c4-1c66-4907-9282-4a810c782709/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/cbf359c4-1c66-4907-9282-4a810c782709/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/cbf359c4-1c66-4907-9282-4a810c782709/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100266",
+      "operationId": "f06d14de-c70e-421f-9d4c-b2090da4fade",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100266.pdf",
+      "sourceFile": "batch_004_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/f06d14de-c70e-421f-9d4c-b2090da4fade",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/f06d14de-c70e-421f-9d4c-b2090da4fade",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/f06d14de-c70e-421f-9d4c-b2090da4fade/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/f06d14de-c70e-421f-9d4c-b2090da4fade/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/f06d14de-c70e-421f-9d4c-b2090da4fade/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/f06d14de-c70e-421f-9d4c-b2090da4fade/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/f06d14de-c70e-421f-9d4c-b2090da4fade/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/f06d14de-c70e-421f-9d4c-b2090da4fade/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100273",
+      "operationId": "e694e391-88c8-4c3e-9366-83bd6d152f0d",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100273.pdf",
+      "sourceFile": "batch_004_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/e694e391-88c8-4c3e-9366-83bd6d152f0d",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/e694e391-88c8-4c3e-9366-83bd6d152f0d",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/e694e391-88c8-4c3e-9366-83bd6d152f0d/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/e694e391-88c8-4c3e-9366-83bd6d152f0d/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/e694e391-88c8-4c3e-9366-83bd6d152f0d/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/e694e391-88c8-4c3e-9366-83bd6d152f0d/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/e694e391-88c8-4c3e-9366-83bd6d152f0d/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/e694e391-88c8-4c3e-9366-83bd6d152f0d/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100280",
+      "operationId": "abdaed0d-6e7e-424c-a6cb-5aa5ff4c3130",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100280.pdf",
+      "sourceFile": "batch_004_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/abdaed0d-6e7e-424c-a6cb-5aa5ff4c3130",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/abdaed0d-6e7e-424c-a6cb-5aa5ff4c3130",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/abdaed0d-6e7e-424c-a6cb-5aa5ff4c3130/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/abdaed0d-6e7e-424c-a6cb-5aa5ff4c3130/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/abdaed0d-6e7e-424c-a6cb-5aa5ff4c3130/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/abdaed0d-6e7e-424c-a6cb-5aa5ff4c3130/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/abdaed0d-6e7e-424c-a6cb-5aa5ff4c3130/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/abdaed0d-6e7e-424c-a6cb-5aa5ff4c3130/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100297",
+      "operationId": "0a082576-c578-4f9f-99ef-2310fb74d81a",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100297.pdf",
+      "sourceFile": "batch_004_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/0a082576-c578-4f9f-99ef-2310fb74d81a",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/0a082576-c578-4f9f-99ef-2310fb74d81a",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/0a082576-c578-4f9f-99ef-2310fb74d81a/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/0a082576-c578-4f9f-99ef-2310fb74d81a/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/0a082576-c578-4f9f-99ef-2310fb74d81a/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/0a082576-c578-4f9f-99ef-2310fb74d81a/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/0a082576-c578-4f9f-99ef-2310fb74d81a/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/0a082576-c578-4f9f-99ef-2310fb74d81a/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100303",
+      "operationId": "3d40a93b-f26f-4573-9c50-714fa938bf8e",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100303.pdf",
+      "sourceFile": "batch_004_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/3d40a93b-f26f-4573-9c50-714fa938bf8e",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/3d40a93b-f26f-4573-9c50-714fa938bf8e",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/3d40a93b-f26f-4573-9c50-714fa938bf8e/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/3d40a93b-f26f-4573-9c50-714fa938bf8e/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/3d40a93b-f26f-4573-9c50-714fa938bf8e/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/3d40a93b-f26f-4573-9c50-714fa938bf8e/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/3d40a93b-f26f-4573-9c50-714fa938bf8e/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/3d40a93b-f26f-4573-9c50-714fa938bf8e/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100310",
+      "operationId": "578702c4-c67e-4b59-9efa-7bc5f6c7d9f0",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100310.pdf",
+      "sourceFile": "batch_003_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/578702c4-c67e-4b59-9efa-7bc5f6c7d9f0",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/578702c4-c67e-4b59-9efa-7bc5f6c7d9f0",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/578702c4-c67e-4b59-9efa-7bc5f6c7d9f0/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/578702c4-c67e-4b59-9efa-7bc5f6c7d9f0/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/578702c4-c67e-4b59-9efa-7bc5f6c7d9f0/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/578702c4-c67e-4b59-9efa-7bc5f6c7d9f0/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/578702c4-c67e-4b59-9efa-7bc5f6c7d9f0/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/578702c4-c67e-4b59-9efa-7bc5f6c7d9f0/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100327",
+      "operationId": "7a2d43ca-8191-4092-bb6e-c457f2ebaeb4",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100327.pdf",
+      "sourceFile": "batch_003_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/7a2d43ca-8191-4092-bb6e-c457f2ebaeb4",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/7a2d43ca-8191-4092-bb6e-c457f2ebaeb4",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/7a2d43ca-8191-4092-bb6e-c457f2ebaeb4/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/7a2d43ca-8191-4092-bb6e-c457f2ebaeb4/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/7a2d43ca-8191-4092-bb6e-c457f2ebaeb4/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/7a2d43ca-8191-4092-bb6e-c457f2ebaeb4/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/7a2d43ca-8191-4092-bb6e-c457f2ebaeb4/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/7a2d43ca-8191-4092-bb6e-c457f2ebaeb4/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100334",
+      "operationId": "783e81e3-f0d0-4bab-adf6-648de9fdbfb4",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100334.pdf",
+      "sourceFile": "batch_003_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/783e81e3-f0d0-4bab-adf6-648de9fdbfb4",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/783e81e3-f0d0-4bab-adf6-648de9fdbfb4",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/783e81e3-f0d0-4bab-adf6-648de9fdbfb4/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/783e81e3-f0d0-4bab-adf6-648de9fdbfb4/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/783e81e3-f0d0-4bab-adf6-648de9fdbfb4/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/783e81e3-f0d0-4bab-adf6-648de9fdbfb4/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/783e81e3-f0d0-4bab-adf6-648de9fdbfb4/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/783e81e3-f0d0-4bab-adf6-648de9fdbfb4/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100341",
+      "operationId": "163589c5-dc67-46f7-8f01-0b157621263b",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100341.pdf",
+      "sourceFile": "batch_003_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/163589c5-dc67-46f7-8f01-0b157621263b",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/163589c5-dc67-46f7-8f01-0b157621263b",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/163589c5-dc67-46f7-8f01-0b157621263b/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/163589c5-dc67-46f7-8f01-0b157621263b/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/163589c5-dc67-46f7-8f01-0b157621263b/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/163589c5-dc67-46f7-8f01-0b157621263b/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/163589c5-dc67-46f7-8f01-0b157621263b/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/163589c5-dc67-46f7-8f01-0b157621263b/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100358",
+      "operationId": "af8c3b5b-c3c6-4dda-af81-8fb1936c8551",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100358.pdf",
+      "sourceFile": "batch_003_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/af8c3b5b-c3c6-4dda-af81-8fb1936c8551",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/af8c3b5b-c3c6-4dda-af81-8fb1936c8551",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/af8c3b5b-c3c6-4dda-af81-8fb1936c8551/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/af8c3b5b-c3c6-4dda-af81-8fb1936c8551/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/af8c3b5b-c3c6-4dda-af81-8fb1936c8551/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/af8c3b5b-c3c6-4dda-af81-8fb1936c8551/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/af8c3b5b-c3c6-4dda-af81-8fb1936c8551/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/af8c3b5b-c3c6-4dda-af81-8fb1936c8551/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100365",
+      "operationId": "d2c61b76-f157-4779-ab16-055ba1a3b935",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100365.pdf",
+      "sourceFile": "batch_003_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/d2c61b76-f157-4779-ab16-055ba1a3b935",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/d2c61b76-f157-4779-ab16-055ba1a3b935",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/d2c61b76-f157-4779-ab16-055ba1a3b935/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/d2c61b76-f157-4779-ab16-055ba1a3b935/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/d2c61b76-f157-4779-ab16-055ba1a3b935/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/d2c61b76-f157-4779-ab16-055ba1a3b935/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/d2c61b76-f157-4779-ab16-055ba1a3b935/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/d2c61b76-f157-4779-ab16-055ba1a3b935/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100372",
+      "operationId": "e8e98602-7067-40b6-9569-df2f3d69edeb",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100372.pdf",
+      "sourceFile": "batch_003_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/e8e98602-7067-40b6-9569-df2f3d69edeb",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/e8e98602-7067-40b6-9569-df2f3d69edeb",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/e8e98602-7067-40b6-9569-df2f3d69edeb/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/e8e98602-7067-40b6-9569-df2f3d69edeb/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/e8e98602-7067-40b6-9569-df2f3d69edeb/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/e8e98602-7067-40b6-9569-df2f3d69edeb/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/e8e98602-7067-40b6-9569-df2f3d69edeb/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/e8e98602-7067-40b6-9569-df2f3d69edeb/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100389",
+      "operationId": "17ba534b-606b-4d0c-8daa-e475aeb16915",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100389.pdf",
+      "sourceFile": "batch_003_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/17ba534b-606b-4d0c-8daa-e475aeb16915",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/17ba534b-606b-4d0c-8daa-e475aeb16915",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/17ba534b-606b-4d0c-8daa-e475aeb16915/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/17ba534b-606b-4d0c-8daa-e475aeb16915/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/17ba534b-606b-4d0c-8daa-e475aeb16915/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/17ba534b-606b-4d0c-8daa-e475aeb16915/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/17ba534b-606b-4d0c-8daa-e475aeb16915/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/17ba534b-606b-4d0c-8daa-e475aeb16915/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100396",
+      "operationId": "6023b056-ade4-4e26-89b4-72031cbcc8b6",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100396.pdf",
+      "sourceFile": "batch_003_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/6023b056-ade4-4e26-89b4-72031cbcc8b6",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/6023b056-ade4-4e26-89b4-72031cbcc8b6",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/6023b056-ade4-4e26-89b4-72031cbcc8b6/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/6023b056-ade4-4e26-89b4-72031cbcc8b6/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/6023b056-ade4-4e26-89b4-72031cbcc8b6/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/6023b056-ade4-4e26-89b4-72031cbcc8b6/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/6023b056-ade4-4e26-89b4-72031cbcc8b6/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/6023b056-ade4-4e26-89b4-72031cbcc8b6/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100402",
+      "operationId": "f3300462-4158-4f9a-8468-27e8ec35e2a1",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100402.pdf",
+      "sourceFile": "batch_003_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/f3300462-4158-4f9a-8468-27e8ec35e2a1",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/f3300462-4158-4f9a-8468-27e8ec35e2a1",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/f3300462-4158-4f9a-8468-27e8ec35e2a1/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/f3300462-4158-4f9a-8468-27e8ec35e2a1/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/f3300462-4158-4f9a-8468-27e8ec35e2a1/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/f3300462-4158-4f9a-8468-27e8ec35e2a1/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/f3300462-4158-4f9a-8468-27e8ec35e2a1/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/f3300462-4158-4f9a-8468-27e8ec35e2a1/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100600",
+      "operationId": "99fc66c2-da64-46f5-af43-b6a5146f3147",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100600.pdf",
+      "sourceFile": "batch_001_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/99fc66c2-da64-46f5-af43-b6a5146f3147",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/99fc66c2-da64-46f5-af43-b6a5146f3147",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/99fc66c2-da64-46f5-af43-b6a5146f3147/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/99fc66c2-da64-46f5-af43-b6a5146f3147/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/99fc66c2-da64-46f5-af43-b6a5146f3147/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/99fc66c2-da64-46f5-af43-b6a5146f3147/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/99fc66c2-da64-46f5-af43-b6a5146f3147/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/99fc66c2-da64-46f5-af43-b6a5146f3147/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100617",
+      "operationId": "60365861-ce09-4875-a901-bbaab110f07c",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100617.pdf",
+      "sourceFile": "batch_001_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/60365861-ce09-4875-a901-bbaab110f07c",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/60365861-ce09-4875-a901-bbaab110f07c",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/60365861-ce09-4875-a901-bbaab110f07c/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/60365861-ce09-4875-a901-bbaab110f07c/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/60365861-ce09-4875-a901-bbaab110f07c/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/60365861-ce09-4875-a901-bbaab110f07c/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/60365861-ce09-4875-a901-bbaab110f07c/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/60365861-ce09-4875-a901-bbaab110f07c/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100624",
+      "operationId": "acbd917c-e5fe-4063-80f2-1c89227f020c",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100624.pdf",
+      "sourceFile": "batch_001_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/acbd917c-e5fe-4063-80f2-1c89227f020c",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/acbd917c-e5fe-4063-80f2-1c89227f020c",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/acbd917c-e5fe-4063-80f2-1c89227f020c/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/acbd917c-e5fe-4063-80f2-1c89227f020c/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/acbd917c-e5fe-4063-80f2-1c89227f020c/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/acbd917c-e5fe-4063-80f2-1c89227f020c/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/acbd917c-e5fe-4063-80f2-1c89227f020c/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/acbd917c-e5fe-4063-80f2-1c89227f020c/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100631",
+      "operationId": "6ec7c367-7e49-48b4-9a14-51c79103f673",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100631.pdf",
+      "sourceFile": "batch_001_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/6ec7c367-7e49-48b4-9a14-51c79103f673",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/6ec7c367-7e49-48b4-9a14-51c79103f673",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/6ec7c367-7e49-48b4-9a14-51c79103f673/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/6ec7c367-7e49-48b4-9a14-51c79103f673/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/6ec7c367-7e49-48b4-9a14-51c79103f673/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/6ec7c367-7e49-48b4-9a14-51c79103f673/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/6ec7c367-7e49-48b4-9a14-51c79103f673/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/6ec7c367-7e49-48b4-9a14-51c79103f673/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100648",
+      "operationId": "0fb7e856-55a5-446c-af98-97aec3f47247",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100648.pdf",
+      "sourceFile": "batch_001_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/0fb7e856-55a5-446c-af98-97aec3f47247",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/0fb7e856-55a5-446c-af98-97aec3f47247",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/0fb7e856-55a5-446c-af98-97aec3f47247/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/0fb7e856-55a5-446c-af98-97aec3f47247/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/0fb7e856-55a5-446c-af98-97aec3f47247/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/0fb7e856-55a5-446c-af98-97aec3f47247/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/0fb7e856-55a5-446c-af98-97aec3f47247/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/0fb7e856-55a5-446c-af98-97aec3f47247/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100655",
+      "operationId": "71d9d454-624f-4672-b997-5c1de9501fa9",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100655.pdf",
+      "sourceFile": "batch_001_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/71d9d454-624f-4672-b997-5c1de9501fa9",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/71d9d454-624f-4672-b997-5c1de9501fa9",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/71d9d454-624f-4672-b997-5c1de9501fa9/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/71d9d454-624f-4672-b997-5c1de9501fa9/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/71d9d454-624f-4672-b997-5c1de9501fa9/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/71d9d454-624f-4672-b997-5c1de9501fa9/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/71d9d454-624f-4672-b997-5c1de9501fa9/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/71d9d454-624f-4672-b997-5c1de9501fa9/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100662",
+      "operationId": "5a5583f1-570d-4a84-9b79-931fb0166346",
+      "status": "PROGRESS",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100662.pdf",
+      "sourceFile": "batch_001_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/5a5583f1-570d-4a84-9b79-931fb0166346",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/5a5583f1-570d-4a84-9b79-931fb0166346",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/5a5583f1-570d-4a84-9b79-931fb0166346/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/5a5583f1-570d-4a84-9b79-931fb0166346/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/5a5583f1-570d-4a84-9b79-931fb0166346/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/5a5583f1-570d-4a84-9b79-931fb0166346/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/5a5583f1-570d-4a84-9b79-931fb0166346/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/5a5583f1-570d-4a84-9b79-931fb0166346/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100679",
+      "operationId": "62498d1c-95f3-4064-adb3-447aefb1a052",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100679.pdf",
+      "sourceFile": "batch_001_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/62498d1c-95f3-4064-adb3-447aefb1a052",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/62498d1c-95f3-4064-adb3-447aefb1a052",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/62498d1c-95f3-4064-adb3-447aefb1a052/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/62498d1c-95f3-4064-adb3-447aefb1a052/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/62498d1c-95f3-4064-adb3-447aefb1a052/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/62498d1c-95f3-4064-adb3-447aefb1a052/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/62498d1c-95f3-4064-adb3-447aefb1a052/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/62498d1c-95f3-4064-adb3-447aefb1a052/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100686",
+      "operationId": "1242a97b-4876-46e4-9814-8fc8d0c2fa54",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100686.pdf",
+      "sourceFile": "batch_001_status_2026-05-15T15-10-57-020Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/1242a97b-4876-46e4-9814-8fc8d0c2fa54",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/1242a97b-4876-46e4-9814-8fc8d0c2fa54",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/1242a97b-4876-46e4-9814-8fc8d0c2fa54/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/1242a97b-4876-46e4-9814-8fc8d0c2fa54/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/1242a97b-4876-46e4-9814-8fc8d0c2fa54/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/1242a97b-4876-46e4-9814-8fc8d0c2fa54/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/1242a97b-4876-46e4-9814-8fc8d0c2fa54/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/1242a97b-4876-46e4-9814-8fc8d0c2fa54/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100693",
+      "operationId": "de07a69f-9e64-48ca-8a47-09083a17da8f",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100693.pdf",
+      "sourceFile": "batch_status_2026-05-15T14-56-18-677Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/de07a69f-9e64-48ca-8a47-09083a17da8f",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/de07a69f-9e64-48ca-8a47-09083a17da8f",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/de07a69f-9e64-48ca-8a47-09083a17da8f/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/de07a69f-9e64-48ca-8a47-09083a17da8f/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/de07a69f-9e64-48ca-8a47-09083a17da8f/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/de07a69f-9e64-48ca-8a47-09083a17da8f/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/de07a69f-9e64-48ca-8a47-09083a17da8f/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/de07a69f-9e64-48ca-8a47-09083a17da8f/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100709",
+      "operationId": "12c16d11-f31e-4d9c-bdc3-34515977cd8f",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100709.pdf",
+      "sourceFile": "batch_status_2026-05-15T14-56-18-677Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/12c16d11-f31e-4d9c-bdc3-34515977cd8f",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/12c16d11-f31e-4d9c-bdc3-34515977cd8f",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/12c16d11-f31e-4d9c-bdc3-34515977cd8f/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/12c16d11-f31e-4d9c-bdc3-34515977cd8f/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/12c16d11-f31e-4d9c-bdc3-34515977cd8f/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/12c16d11-f31e-4d9c-bdc3-34515977cd8f/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/12c16d11-f31e-4d9c-bdc3-34515977cd8f/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/12c16d11-f31e-4d9c-bdc3-34515977cd8f/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100716",
+      "operationId": "34d2ca21-d4ae-45b7-b548-0843fabec3b1",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100716.pdf",
+      "sourceFile": "batch_status_2026-05-15T14-56-18-677Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/34d2ca21-d4ae-45b7-b548-0843fabec3b1",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/34d2ca21-d4ae-45b7-b548-0843fabec3b1",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/34d2ca21-d4ae-45b7-b548-0843fabec3b1/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/34d2ca21-d4ae-45b7-b548-0843fabec3b1/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/34d2ca21-d4ae-45b7-b548-0843fabec3b1/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/34d2ca21-d4ae-45b7-b548-0843fabec3b1/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/34d2ca21-d4ae-45b7-b548-0843fabec3b1/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/34d2ca21-d4ae-45b7-b548-0843fabec3b1/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100723",
+      "operationId": "5323f6e9-2a90-4818-9f01-f1a8b39fdde9",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100723.pdf",
+      "sourceFile": "batch_status_2026-05-15T14-56-18-677Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/5323f6e9-2a90-4818-9f01-f1a8b39fdde9",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/5323f6e9-2a90-4818-9f01-f1a8b39fdde9",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/5323f6e9-2a90-4818-9f01-f1a8b39fdde9/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/5323f6e9-2a90-4818-9f01-f1a8b39fdde9/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/5323f6e9-2a90-4818-9f01-f1a8b39fdde9/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/5323f6e9-2a90-4818-9f01-f1a8b39fdde9/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/5323f6e9-2a90-4818-9f01-f1a8b39fdde9/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/5323f6e9-2a90-4818-9f01-f1a8b39fdde9/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100730",
+      "operationId": "d7ab19b3-ba64-48b0-8c96-426ef8b3cd9f",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100730.pdf",
+      "sourceFile": "batch_status_2026-05-15T14-56-18-677Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/d7ab19b3-ba64-48b0-8c96-426ef8b3cd9f",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/d7ab19b3-ba64-48b0-8c96-426ef8b3cd9f",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/d7ab19b3-ba64-48b0-8c96-426ef8b3cd9f/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/d7ab19b3-ba64-48b0-8c96-426ef8b3cd9f/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/d7ab19b3-ba64-48b0-8c96-426ef8b3cd9f/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/d7ab19b3-ba64-48b0-8c96-426ef8b3cd9f/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/d7ab19b3-ba64-48b0-8c96-426ef8b3cd9f/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/d7ab19b3-ba64-48b0-8c96-426ef8b3cd9f/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100747",
+      "operationId": "1fc3177c-659e-46b8-baa7-337a4c0ba8d0",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100747.pdf",
+      "sourceFile": "batch_status_2026-05-15T14-56-18-677Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/1fc3177c-659e-46b8-baa7-337a4c0ba8d0",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/1fc3177c-659e-46b8-baa7-337a4c0ba8d0",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/1fc3177c-659e-46b8-baa7-337a4c0ba8d0/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/1fc3177c-659e-46b8-baa7-337a4c0ba8d0/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/1fc3177c-659e-46b8-baa7-337a4c0ba8d0/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/1fc3177c-659e-46b8-baa7-337a4c0ba8d0/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/1fc3177c-659e-46b8-baa7-337a4c0ba8d0/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/1fc3177c-659e-46b8-baa7-337a4c0ba8d0/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100754",
+      "operationId": "e93387e1-ac84-46f1-b4b4-b778f28dfcb2",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100754.pdf",
+      "sourceFile": "batch_status_2026-05-15T14-56-18-677Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/e93387e1-ac84-46f1-b4b4-b778f28dfcb2",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/e93387e1-ac84-46f1-b4b4-b778f28dfcb2",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/e93387e1-ac84-46f1-b4b4-b778f28dfcb2/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/e93387e1-ac84-46f1-b4b4-b778f28dfcb2/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/e93387e1-ac84-46f1-b4b4-b778f28dfcb2/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/e93387e1-ac84-46f1-b4b4-b778f28dfcb2/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/e93387e1-ac84-46f1-b4b4-b778f28dfcb2/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/e93387e1-ac84-46f1-b4b4-b778f28dfcb2/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100761",
+      "operationId": "af5d48ac-14d4-4eef-8dd5-85a69260a419",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100761.pdf",
+      "sourceFile": "batch_status_2026-05-15T15-01-46-319Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/af5d48ac-14d4-4eef-8dd5-85a69260a419",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/af5d48ac-14d4-4eef-8dd5-85a69260a419",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/af5d48ac-14d4-4eef-8dd5-85a69260a419/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/af5d48ac-14d4-4eef-8dd5-85a69260a419/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/af5d48ac-14d4-4eef-8dd5-85a69260a419/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/af5d48ac-14d4-4eef-8dd5-85a69260a419/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/af5d48ac-14d4-4eef-8dd5-85a69260a419/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/af5d48ac-14d4-4eef-8dd5-85a69260a419/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100778",
+      "operationId": "8a0d453c-185e-46a7-aa88-9625735a50de",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100778.pdf",
+      "sourceFile": "batch_status_2026-05-15T15-01-46-319Z.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/8a0d453c-185e-46a7-aa88-9625735a50de",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/8a0d453c-185e-46a7-aa88-9625735a50de",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/8a0d453c-185e-46a7-aa88-9625735a50de/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/8a0d453c-185e-46a7-aa88-9625735a50de/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/8a0d453c-185e-46a7-aa88-9625735a50de/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/8a0d453c-185e-46a7-aa88-9625735a50de/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/8a0d453c-185e-46a7-aa88-9625735a50de/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/8a0d453c-185e-46a7-aa88-9625735a50de/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100785",
+      "operationId": "e8471c33-9000-4dd5-bc2c-e146741edb3a",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100785.pdf",
+      "sourceFile": "new_api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/e8471c33-9000-4dd5-bc2c-e146741edb3a",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/e8471c33-9000-4dd5-bc2c-e146741edb3a",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/e8471c33-9000-4dd5-bc2c-e146741edb3a/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/e8471c33-9000-4dd5-bc2c-e146741edb3a/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/e8471c33-9000-4dd5-bc2c-e146741edb3a/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/e8471c33-9000-4dd5-bc2c-e146741edb3a/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/e8471c33-9000-4dd5-bc2c-e146741edb3a/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/e8471c33-9000-4dd5-bc2c-e146741edb3a/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100792",
+      "operationId": "28973c65-bc71-4236-a119-49c369289c8b",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100792.pdf",
+      "sourceFile": "new_api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/28973c65-bc71-4236-a119-49c369289c8b",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/28973c65-bc71-4236-a119-49c369289c8b",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/28973c65-bc71-4236-a119-49c369289c8b/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/28973c65-bc71-4236-a119-49c369289c8b/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/28973c65-bc71-4236-a119-49c369289c8b/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/28973c65-bc71-4236-a119-49c369289c8b/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/28973c65-bc71-4236-a119-49c369289c8b/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/28973c65-bc71-4236-a119-49c369289c8b/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100808",
+      "operationId": "7de0d143-9ab2-4af1-8075-e5586d94ec9a",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100808.pdf",
+      "sourceFile": "new_api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/7de0d143-9ab2-4af1-8075-e5586d94ec9a",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/7de0d143-9ab2-4af1-8075-e5586d94ec9a",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/7de0d143-9ab2-4af1-8075-e5586d94ec9a/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/7de0d143-9ab2-4af1-8075-e5586d94ec9a/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/7de0d143-9ab2-4af1-8075-e5586d94ec9a/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/7de0d143-9ab2-4af1-8075-e5586d94ec9a/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/7de0d143-9ab2-4af1-8075-e5586d94ec9a/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/7de0d143-9ab2-4af1-8075-e5586d94ec9a/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100815",
+      "operationId": "632c6188-74ac-4e35-b050-b273f844e7f1",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100815.pdf",
+      "sourceFile": "new_api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/632c6188-74ac-4e35-b050-b273f844e7f1",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/632c6188-74ac-4e35-b050-b273f844e7f1",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/632c6188-74ac-4e35-b050-b273f844e7f1/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/632c6188-74ac-4e35-b050-b273f844e7f1/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/632c6188-74ac-4e35-b050-b273f844e7f1/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/632c6188-74ac-4e35-b050-b273f844e7f1/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/632c6188-74ac-4e35-b050-b273f844e7f1/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/632c6188-74ac-4e35-b050-b273f844e7f1/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100822",
+      "operationId": "b0513d2f-8bc1-4960-a058-1c745715c0c0",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100822.pdf",
+      "sourceFile": "new_api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/b0513d2f-8bc1-4960-a058-1c745715c0c0",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/b0513d2f-8bc1-4960-a058-1c745715c0c0",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/b0513d2f-8bc1-4960-a058-1c745715c0c0/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/b0513d2f-8bc1-4960-a058-1c745715c0c0/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/b0513d2f-8bc1-4960-a058-1c745715c0c0/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/b0513d2f-8bc1-4960-a058-1c745715c0c0/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/b0513d2f-8bc1-4960-a058-1c745715c0c0/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/b0513d2f-8bc1-4960-a058-1c745715c0c0/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100839",
+      "operationId": "d4191119-2e93-4aed-a4a6-6fa5b4db0100",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100839.pdf",
+      "sourceFile": "new_api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/d4191119-2e93-4aed-a4a6-6fa5b4db0100",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/d4191119-2e93-4aed-a4a6-6fa5b4db0100",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/d4191119-2e93-4aed-a4a6-6fa5b4db0100/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/d4191119-2e93-4aed-a4a6-6fa5b4db0100/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/d4191119-2e93-4aed-a4a6-6fa5b4db0100/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/d4191119-2e93-4aed-a4a6-6fa5b4db0100/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/d4191119-2e93-4aed-a4a6-6fa5b4db0100/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/d4191119-2e93-4aed-a4a6-6fa5b4db0100/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100846",
+      "operationId": "5b249ed4-8da6-4a58-8417-6a97fd809d4e",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100846.pdf",
+      "sourceFile": "new_api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/5b249ed4-8da6-4a58-8417-6a97fd809d4e",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/5b249ed4-8da6-4a58-8417-6a97fd809d4e",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/5b249ed4-8da6-4a58-8417-6a97fd809d4e/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/5b249ed4-8da6-4a58-8417-6a97fd809d4e/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/5b249ed4-8da6-4a58-8417-6a97fd809d4e/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/5b249ed4-8da6-4a58-8417-6a97fd809d4e/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/5b249ed4-8da6-4a58-8417-6a97fd809d4e/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/5b249ed4-8da6-4a58-8417-6a97fd809d4e/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100853",
+      "operationId": "836fad5b-fcc4-45eb-8f88-580a6c10ab6a",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100853.pdf",
+      "sourceFile": "new_api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/836fad5b-fcc4-45eb-8f88-580a6c10ab6a",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/836fad5b-fcc4-45eb-8f88-580a6c10ab6a",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/836fad5b-fcc4-45eb-8f88-580a6c10ab6a/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/836fad5b-fcc4-45eb-8f88-580a6c10ab6a/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/836fad5b-fcc4-45eb-8f88-580a6c10ab6a/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/836fad5b-fcc4-45eb-8f88-580a6c10ab6a/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/836fad5b-fcc4-45eb-8f88-580a6c10ab6a/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/836fad5b-fcc4-45eb-8f88-580a6c10ab6a/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100860",
+      "operationId": "f265ad69-9afb-4e09-be50-bfeb6883d818",
+      "status": "ACCEPTED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100860.pdf",
+      "sourceFile": "api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/f265ad69-9afb-4e09-be50-bfeb6883d818",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/f265ad69-9afb-4e09-be50-bfeb6883d818",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/f265ad69-9afb-4e09-be50-bfeb6883d818/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/f265ad69-9afb-4e09-be50-bfeb6883d818/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/f265ad69-9afb-4e09-be50-bfeb6883d818/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/f265ad69-9afb-4e09-be50-bfeb6883d818/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/f265ad69-9afb-4e09-be50-bfeb6883d818/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/f265ad69-9afb-4e09-be50-bfeb6883d818/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100877",
+      "operationId": "0d680341-31d7-490c-a419-9fabeefb35c8",
+      "status": "ACCEPTED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100877.pdf",
+      "sourceFile": "api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/0d680341-31d7-490c-a419-9fabeefb35c8",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/0d680341-31d7-490c-a419-9fabeefb35c8",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/0d680341-31d7-490c-a419-9fabeefb35c8/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/0d680341-31d7-490c-a419-9fabeefb35c8/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/0d680341-31d7-490c-a419-9fabeefb35c8/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/0d680341-31d7-490c-a419-9fabeefb35c8/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/0d680341-31d7-490c-a419-9fabeefb35c8/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/0d680341-31d7-490c-a419-9fabeefb35c8/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100884",
+      "operationId": "6c072d66-43bd-48fd-bb67-9f5836eaad13",
+      "status": "ACCEPTED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100884.pdf",
+      "sourceFile": "api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/6c072d66-43bd-48fd-bb67-9f5836eaad13",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/6c072d66-43bd-48fd-bb67-9f5836eaad13",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/6c072d66-43bd-48fd-bb67-9f5836eaad13/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/6c072d66-43bd-48fd-bb67-9f5836eaad13/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/6c072d66-43bd-48fd-bb67-9f5836eaad13/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/6c072d66-43bd-48fd-bb67-9f5836eaad13/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/6c072d66-43bd-48fd-bb67-9f5836eaad13/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/6c072d66-43bd-48fd-bb67-9f5836eaad13/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100945",
+      "operationId": "ca7ad1ba-c4b1-415e-b1a6-daad744b6507",
+      "status": "ACCEPTED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100945.pdf",
+      "sourceFile": "api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/ca7ad1ba-c4b1-415e-b1a6-daad744b6507",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/ca7ad1ba-c4b1-415e-b1a6-daad744b6507",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/ca7ad1ba-c4b1-415e-b1a6-daad744b6507/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/ca7ad1ba-c4b1-415e-b1a6-daad744b6507/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/ca7ad1ba-c4b1-415e-b1a6-daad744b6507/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/ca7ad1ba-c4b1-415e-b1a6-daad744b6507/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/ca7ad1ba-c4b1-415e-b1a6-daad744b6507/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/ca7ad1ba-c4b1-415e-b1a6-daad744b6507/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100952",
+      "operationId": "2bffda2e-d923-415a-a978-0a9d60a62260",
+      "status": "ACCEPTED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100952.pdf",
+      "sourceFile": "api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/2bffda2e-d923-415a-a978-0a9d60a62260",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/2bffda2e-d923-415a-a978-0a9d60a62260",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/2bffda2e-d923-415a-a978-0a9d60a62260/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/2bffda2e-d923-415a-a978-0a9d60a62260/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/2bffda2e-d923-415a-a978-0a9d60a62260/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/2bffda2e-d923-415a-a978-0a9d60a62260/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/2bffda2e-d923-415a-a978-0a9d60a62260/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/2bffda2e-d923-415a-a978-0a9d60a62260/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197100969",
+      "operationId": "b5b39613-3e08-4832-9ca5-94cd0aa12db7",
+      "status": "ACCEPTED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197100969.pdf",
+      "sourceFile": "api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/b5b39613-3e08-4832-9ca5-94cd0aa12db7",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/b5b39613-3e08-4832-9ca5-94cd0aa12db7",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/b5b39613-3e08-4832-9ca5-94cd0aa12db7/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/b5b39613-3e08-4832-9ca5-94cd0aa12db7/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/b5b39613-3e08-4832-9ca5-94cd0aa12db7/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/b5b39613-3e08-4832-9ca5-94cd0aa12db7/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/b5b39613-3e08-4832-9ca5-94cd0aa12db7/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/b5b39613-3e08-4832-9ca5-94cd0aa12db7/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197101027",
+      "operationId": "6ba8668f-2b49-4b41-b3db-7ad46bbbaedd",
+      "status": "ACCEPTED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197101027.pdf",
+      "sourceFile": "api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/6ba8668f-2b49-4b41-b3db-7ad46bbbaedd",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/6ba8668f-2b49-4b41-b3db-7ad46bbbaedd",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/6ba8668f-2b49-4b41-b3db-7ad46bbbaedd/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/6ba8668f-2b49-4b41-b3db-7ad46bbbaedd/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/6ba8668f-2b49-4b41-b3db-7ad46bbbaedd/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/6ba8668f-2b49-4b41-b3db-7ad46bbbaedd/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/6ba8668f-2b49-4b41-b3db-7ad46bbbaedd/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/6ba8668f-2b49-4b41-b3db-7ad46bbbaedd/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197101034",
+      "operationId": "747b6fec-9dc5-4d05-a1f0-8138068b2e22",
+      "status": "ACCEPTED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197101034.pdf",
+      "sourceFile": "api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/747b6fec-9dc5-4d05-a1f0-8138068b2e22",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/747b6fec-9dc5-4d05-a1f0-8138068b2e22",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/747b6fec-9dc5-4d05-a1f0-8138068b2e22/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/747b6fec-9dc5-4d05-a1f0-8138068b2e22/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/747b6fec-9dc5-4d05-a1f0-8138068b2e22/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/747b6fec-9dc5-4d05-a1f0-8138068b2e22/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/747b6fec-9dc5-4d05-a1f0-8138068b2e22/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/747b6fec-9dc5-4d05-a1f0-8138068b2e22/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197101041",
+      "operationId": "4d2f582d-252c-439a-a3eb-35451094407e",
+      "status": "ACCEPTED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197101041.pdf",
+      "sourceFile": "api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/4d2f582d-252c-439a-a3eb-35451094407e",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/4d2f582d-252c-439a-a3eb-35451094407e",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/4d2f582d-252c-439a-a3eb-35451094407e/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/4d2f582d-252c-439a-a3eb-35451094407e/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/4d2f582d-252c-439a-a3eb-35451094407e/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/4d2f582d-252c-439a-a3eb-35451094407e/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/4d2f582d-252c-439a-a3eb-35451094407e/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/4d2f582d-252c-439a-a3eb-35451094407e/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197101058",
+      "operationId": "9beb3257-8dc0-42e4-8dc3-c1e458a3a315",
+      "status": "ACCEPTED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197101058.pdf",
+      "sourceFile": "api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/9beb3257-8dc0-42e4-8dc3-c1e458a3a315",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/9beb3257-8dc0-42e4-8dc3-c1e458a3a315",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/9beb3257-8dc0-42e4-8dc3-c1e458a3a315/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/9beb3257-8dc0-42e4-8dc3-c1e458a3a315/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/9beb3257-8dc0-42e4-8dc3-c1e458a3a315/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/9beb3257-8dc0-42e4-8dc3-c1e458a3a315/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/9beb3257-8dc0-42e4-8dc3-c1e458a3a315/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/9beb3257-8dc0-42e4-8dc3-c1e458a3a315/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    },
+    {
+      "gtin": "04707197101065",
+      "operationId": "3b6ddec1-e7ce-4ef6-8530-a38bf9a8bf73",
+      "status": "CREATED",
+      "filePath": "/Users/admin/Desktop/электросталь печать кодов паркеровки/04707197101065.pdf",
+      "sourceFile": "new_api_status_check.json",
+      "endpoint": null,
+      "outcome": "error",
+      "error": "No downloadable PDF endpoint found",
+      "endpointResults": [
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/3b6ddec1-e7ce-4ef6-8530-a38bf9a8bf73",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/3b6ddec1-e7ce-4ef6-8530-a38bf9a8bf73",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/3b6ddec1-e7ce-4ef6-8530-a38bf9a8bf73/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/3b6ddec1-e7ce-4ef6-8530-a38bf9a8bf73/print",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/3b6ddec1-e7ce-4ef6-8530-a38bf9a8bf73/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/3b6ddec1-e7ce-4ef6-8530-a38bf9a8bf73/download",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/api/v1/operations/3b6ddec1-e7ce-4ef6-8530-a38bf9a8bf73/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://label.teksher.kg/facade/order/api/v1/operations/3b6ddec1-e7ce-4ef6-8530-a38bf9a8bf73/pdf",
+          "kind": "error",
+          "error": "fetch failed"
+        }
+      ],
+      "requestHeaders": {
+        "Authorization": "Bearer eyJhbGciOiJS...",
+        "Cookie": "present"
+      }
+    }
+  ]
+}

@@ -1,0 +1,753 @@
+{
+  "targetDate": "15.05.2026",
+  "targetOperationType": "Заказ на эмиссию КМ",
+  "checkedAt": "2026-05-15T17:06:59.535Z",
+  "onlyGetRequests": true,
+  "blockedNonGetRequests": [],
+  "operations": [
+    {
+      "operationId": "ca7ad1ba-c4b1-415e-b1a6-daad744b6507",
+      "gtin": "04707197100945",
+      "status": "ACCEPTED",
+      "createdAt": "2026-05-15T16:11:50.753873",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/api_status_check.json"
+    },
+    {
+      "operationId": "2bffda2e-d923-415a-a978-0a9d60a62260",
+      "gtin": "04707197100952",
+      "status": "ACCEPTED",
+      "createdAt": "2026-05-15T16:11:50.75517",
+      "quantity": 6,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/api_status_check.json"
+    },
+    {
+      "operationId": "b5b39613-3e08-4832-9ca5-94cd0aa12db7",
+      "gtin": "04707197100969",
+      "status": "ACCEPTED",
+      "createdAt": "2026-05-15T16:11:50.756552",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/api_status_check.json"
+    },
+    {
+      "operationId": "6ba8668f-2b49-4b41-b3db-7ad46bbbaedd",
+      "gtin": "04707197101027",
+      "status": "ACCEPTED",
+      "createdAt": "2026-05-15T16:11:50.757791",
+      "quantity": 6,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/api_status_check.json"
+    },
+    {
+      "operationId": "747b6fec-9dc5-4d05-a1f0-8138068b2e22",
+      "gtin": "04707197101034",
+      "status": "ACCEPTED",
+      "createdAt": "2026-05-15T16:11:50.758873",
+      "quantity": 6,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/api_status_check.json"
+    },
+    {
+      "operationId": "4d2f582d-252c-439a-a3eb-35451094407e",
+      "gtin": "04707197101041",
+      "status": "ACCEPTED",
+      "createdAt": "2026-05-15T16:11:50.759941",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/api_status_check.json"
+    },
+    {
+      "operationId": "9beb3257-8dc0-42e4-8dc3-c1e458a3a315",
+      "gtin": "04707197101058",
+      "status": "ACCEPTED",
+      "createdAt": "2026-05-15T16:11:50.761153",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/api_status_check.json"
+    },
+    {
+      "operationId": "f265ad69-9afb-4e09-be50-bfeb6883d818",
+      "gtin": "04707197100860",
+      "status": "ACCEPTED",
+      "createdAt": "2026-05-15T16:11:50.762343",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/api_status_check.json"
+    },
+    {
+      "operationId": "0d680341-31d7-490c-a419-9fabeefb35c8",
+      "gtin": "04707197100877",
+      "status": "ACCEPTED",
+      "createdAt": "2026-05-15T16:11:50.763332",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/api_status_check.json"
+    },
+    {
+      "operationId": "6c072d66-43bd-48fd-bb67-9f5836eaad13",
+      "gtin": "04707197100884",
+      "status": "ACCEPTED",
+      "createdAt": "2026-05-15T16:11:50.764382",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/api_status_check.json"
+    },
+    {
+      "operationId": "e8471c33-9000-4dd5-bc2c-e146741edb3a",
+      "gtin": "04707197100785",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:31:02.17837",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/new_api_status_check.json"
+    },
+    {
+      "operationId": "28973c65-bc71-4236-a119-49c369289c8b",
+      "gtin": "04707197100792",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:31:02.179753",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/new_api_status_check.json"
+    },
+    {
+      "operationId": "7de0d143-9ab2-4af1-8075-e5586d94ec9a",
+      "gtin": "04707197100808",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:31:02.18095",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/new_api_status_check.json"
+    },
+    {
+      "operationId": "632c6188-74ac-4e35-b050-b273f844e7f1",
+      "gtin": "04707197100815",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:31:02.181973",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/new_api_status_check.json"
+    },
+    {
+      "operationId": "b0513d2f-8bc1-4960-a058-1c745715c0c0",
+      "gtin": "04707197100822",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:31:02.182981",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/new_api_status_check.json"
+    },
+    {
+      "operationId": "d4191119-2e93-4aed-a4a6-6fa5b4db0100",
+      "gtin": "04707197100839",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:31:02.184154",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/new_api_status_check.json"
+    },
+    {
+      "operationId": "5b249ed4-8da6-4a58-8417-6a97fd809d4e",
+      "gtin": "04707197100846",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:31:02.185338",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/new_api_status_check.json"
+    },
+    {
+      "operationId": "836fad5b-fcc4-45eb-8f88-580a6c10ab6a",
+      "gtin": "04707197100853",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:31:02.186321",
+      "quantity": 3,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/new_api_status_check.json"
+    },
+    {
+      "operationId": "3b6ddec1-e7ce-4ef6-8530-a38bf9a8bf73",
+      "gtin": "04707197101065",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:31:02.187341",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/new_api_status_check.json"
+    },
+    {
+      "operationId": "e67a4d1e-91d5-49f3-8dd2-84a56c06ca38",
+      "gtin": "04707197100419",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:37:08.126211",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/next_api_status_check.json"
+    },
+    {
+      "operationId": "bf927fd1-9ee7-43f5-9253-dc5ef5b29022",
+      "gtin": "04707197100426",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:37:08.12769",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/next_api_status_check.json"
+    },
+    {
+      "operationId": "03ad2603-b498-4f60-beba-c14016edce0e",
+      "gtin": "04707197100433",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:37:08.128907",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/next_api_status_check.json"
+    },
+    {
+      "operationId": "d7390f9d-42fc-46e6-b6b2-575d276b4b1e",
+      "gtin": "04707197100440",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:37:08.129965",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/next_api_status_check.json"
+    },
+    {
+      "operationId": "f06a7117-3686-43ca-a846-c20a7b2bdf8f",
+      "gtin": "04707197100457",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:37:08.13121",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/next_api_status_check.json"
+    },
+    {
+      "operationId": "62d29504-a12b-4c16-a5bf-6ba7b54f101e",
+      "gtin": "04707197100464",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:37:08.132466",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/next_api_status_check.json"
+    },
+    {
+      "operationId": "6cdd720f-e79c-4dc1-9167-4edfa82c4e4c",
+      "gtin": "04707197100471",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:37:08.133516",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/next_api_status_check.json"
+    },
+    {
+      "operationId": "f602a9b3-2a84-48db-be66-9beab79dbc69",
+      "gtin": "04707197100488",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:37:08.134566",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/next_api_status_check.json"
+    },
+    {
+      "operationId": "ee0f43b4-4ce1-4b79-9060-06f60f1d4f81",
+      "gtin": "04707197100495",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:37:08.135831",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/next_api_status_check.json"
+    },
+    {
+      "operationId": "de07a69f-9e64-48ca-8a47-09083a17da8f",
+      "gtin": "04707197100693",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:43:41.763722",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T14-56-18-677Z.json"
+    },
+    {
+      "operationId": "12c16d11-f31e-4d9c-bdc3-34515977cd8f",
+      "gtin": "04707197100709",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:43:41.764898",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T14-56-18-677Z.json"
+    },
+    {
+      "operationId": "34d2ca21-d4ae-45b7-b548-0843fabec3b1",
+      "gtin": "04707197100716",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:43:41.766078",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T14-56-18-677Z.json"
+    },
+    {
+      "operationId": "5323f6e9-2a90-4818-9f01-f1a8b39fdde9",
+      "gtin": "04707197100723",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:43:41.767249",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T14-56-18-677Z.json"
+    },
+    {
+      "operationId": "d7ab19b3-ba64-48b0-8c96-426ef8b3cd9f",
+      "gtin": "04707197100730",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:43:41.768286",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T14-56-18-677Z.json"
+    },
+    {
+      "operationId": "1fc3177c-659e-46b8-baa7-337a4c0ba8d0",
+      "gtin": "04707197100747",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:43:41.769326",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T14-56-18-677Z.json"
+    },
+    {
+      "operationId": "e93387e1-ac84-46f1-b4b4-b778f28dfcb2",
+      "gtin": "04707197100754",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:43:41.770674",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T14-56-18-677Z.json"
+    },
+    {
+      "operationId": "f4549dc0-cbe3-4c77-bb4b-f5fccf58f2d6",
+      "gtin": "04707197100761",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:43:41.771876",
+      "quantity": 3,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T14-56-18-677Z.json"
+    },
+    {
+      "operationId": "04f83c1d-761d-4074-83df-858df39ffbb2",
+      "gtin": "04707197100778",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:43:41.773099",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T14-56-18-677Z.json"
+    },
+    {
+      "operationId": "edde3585-980d-45df-9c66-e2f98e7eac1f",
+      "gtin": "04707197100693",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:49:10.646914",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T15-01-46-319Z.json"
+    },
+    {
+      "operationId": "1046a986-2cc1-4e52-9f1b-593230ed2bb5",
+      "gtin": "04707197100709",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:49:10.648181",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T15-01-46-319Z.json"
+    },
+    {
+      "operationId": "7bf0d208-49b9-41c2-884f-d8cd548820c9",
+      "gtin": "04707197100716",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:49:10.64931",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T15-01-46-319Z.json"
+    },
+    {
+      "operationId": "1a3a621e-48dd-4f8e-9e09-a30edaeac4e4",
+      "gtin": "04707197100723",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:49:10.650889",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T15-01-46-319Z.json"
+    },
+    {
+      "operationId": "28ca059c-b33c-456e-95f0-06b51c10ebc5",
+      "gtin": "04707197100730",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:49:10.651552",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T15-01-46-319Z.json"
+    },
+    {
+      "operationId": "acc9e056-6bc8-44df-a8c1-eea7ca8c0c79",
+      "gtin": "04707197100747",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:49:10.6529",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T15-01-46-319Z.json"
+    },
+    {
+      "operationId": "7559ce41-2120-4b4e-8212-cb61eeafcdc2",
+      "gtin": "04707197100754",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:49:10.654468",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T15-01-46-319Z.json"
+    },
+    {
+      "operationId": "af5d48ac-14d4-4eef-8dd5-85a69260a419",
+      "gtin": "04707197100761",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:49:10.655678",
+      "quantity": 3,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T15-01-46-319Z.json"
+    },
+    {
+      "operationId": "8a0d453c-185e-46a7-aa88-9625735a50de",
+      "gtin": "04707197100778",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:49:10.656758",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_status_2026-05-15T15-01-46-319Z.json"
+    },
+    {
+      "operationId": "99fc66c2-da64-46f5-af43-b6a5146f3147",
+      "gtin": "04707197100600",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:58:08.729614",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_001_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "60365861-ce09-4875-a901-bbaab110f07c",
+      "gtin": "04707197100617",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:08.730821",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_001_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "acbd917c-e5fe-4063-80f2-1c89227f020c",
+      "gtin": "04707197100624",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:08.731869",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_001_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "6ec7c367-7e49-48b4-9a14-51c79103f673",
+      "gtin": "04707197100631",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:08.732941",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_001_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "0fb7e856-55a5-446c-af98-97aec3f47247",
+      "gtin": "04707197100648",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:08.733991",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_001_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "71d9d454-624f-4672-b997-5c1de9501fa9",
+      "gtin": "04707197100655",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:58:08.734985",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_001_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "5a5583f1-570d-4a84-9b79-931fb0166346",
+      "gtin": "04707197100662",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:08.735939",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_001_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "62498d1c-95f3-4064-adb3-447aefb1a052",
+      "gtin": "04707197100679",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:58:08.736889",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_001_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "1242a97b-4876-46e4-9814-8fc8d0c2fa54",
+      "gtin": "04707197100686",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:58:08.737921",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_001_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "578702c4-c67e-4b59-9efa-7bc5f6c7d9f0",
+      "gtin": "04707197100310",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:21.309729",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_003_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "7a2d43ca-8191-4092-bb6e-c457f2ebaeb4",
+      "gtin": "04707197100327",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:58:21.311132",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_003_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "783e81e3-f0d0-4bab-adf6-648de9fdbfb4",
+      "gtin": "04707197100334",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:58:21.312284",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_003_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "163589c5-dc67-46f7-8f01-0b157621263b",
+      "gtin": "04707197100341",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:58:21.313463",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_003_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "af8c3b5b-c3c6-4dda-af81-8fb1936c8551",
+      "gtin": "04707197100358",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:58:21.314512",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_003_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "d2c61b76-f157-4779-ab16-055ba1a3b935",
+      "gtin": "04707197100365",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:58:21.315505",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_003_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "e8e98602-7067-40b6-9569-df2f3d69edeb",
+      "gtin": "04707197100372",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:58:21.316528",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_003_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "17ba534b-606b-4d0c-8daa-e475aeb16915",
+      "gtin": "04707197100389",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:58:21.317593",
+      "quantity": 3,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_003_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "6023b056-ade4-4e26-89b4-72031cbcc8b6",
+      "gtin": "04707197100396",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:58:21.318593",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_003_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "f3300462-4158-4f9a-8468-27e8ec35e2a1",
+      "gtin": "04707197100402",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:58:21.319654",
+      "quantity": 3,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_003_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "44651a85-bf45-4154-a996-53b67f034c4a",
+      "gtin": "04707197100211",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:27.751351",
+      "quantity": 3,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_004_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "245c1e05-e9c1-4285-a382-92a2047ac189",
+      "gtin": "04707197100228",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:27.752656",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_004_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "3dbd0bf0-2ff1-489e-b7cb-6b7a9727313c",
+      "gtin": "04707197100235",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:27.753809",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_004_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "cbf359c4-1c66-4907-9282-4a810c782709",
+      "gtin": "04707197100259",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:58:27.75562",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_004_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "f06d14de-c70e-421f-9d4c-b2090da4fade",
+      "gtin": "04707197100266",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:27.756634",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_004_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "e694e391-88c8-4c3e-9366-83bd6d152f0d",
+      "gtin": "04707197100273",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:58:27.75763",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_004_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "abdaed0d-6e7e-424c-a6cb-5aa5ff4c3130",
+      "gtin": "04707197100280",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:27.758243",
+      "quantity": 3,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_004_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "0a082576-c578-4f9f-99ef-2310fb74d81a",
+      "gtin": "04707197100297",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:27.759269",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_004_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "3d40a93b-f26f-4573-9c50-714fa938bf8e",
+      "gtin": "04707197100303",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:27.760375",
+      "quantity": 3,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_004_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "aa2d3de9-a760-470e-872f-dafdcc423c81",
+      "gtin": "04707197100112",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:39.397046",
+      "quantity": 3,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_005_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "1f48c0dd-6fa2-4269-bbe9-3c432fcd52b5",
+      "gtin": "04707197100129",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:39.398797",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_005_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "02f26cfa-722f-43cc-9884-c3552a288ecd",
+      "gtin": "04707197100136",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:39.400282",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_005_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "22429449-2a61-4316-9c59-d3d61043b5b8",
+      "gtin": "04707197100143",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:39.401686",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_005_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "ba5733e8-8f2d-4def-a443-cebbe0152f3c",
+      "gtin": "04707197100150",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:39.403167",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_005_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "d4f592fe-dd32-4db0-9ded-d455ef6043bd",
+      "gtin": "04707197100167",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:39.40461",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_005_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "fb772c8c-bb1d-4e92-960c-4751887ca61c",
+      "gtin": "04707197100174",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:39.406069",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_005_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "8ef511b4-55ad-431b-9d30-0aedcdadb780",
+      "gtin": "04707197100181",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T16:58:39.407297",
+      "quantity": 3,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_005_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "3837ecc1-dba9-4537-ae54-cedcc00ed621",
+      "gtin": "04707197100198",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:39.408617",
+      "quantity": 3,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_005_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "53b17532-7edc-45a4-8142-5ee3740bdacc",
+      "gtin": "04707197100204",
+      "status": "PROGRESS",
+      "createdAt": "2026-05-15T16:58:39.409865",
+      "quantity": 2,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/batch_005_status_2026-05-15T15-10-57-020Z.json"
+    },
+    {
+      "operationId": "94744f13-d5fe-4123-8388-e7750eb029cc",
+      "gtin": "04707197100013",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T17:12:30.273206",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/single_04707197100013_status.json"
+    },
+    {
+      "operationId": "5037d95b-3d19-4b89-a14e-9348726ef11e",
+      "gtin": "04707197100037",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T17:12:31.828874",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/single_04707197100037_status.json"
+    },
+    {
+      "operationId": "468fe86e-41b3-4c88-8437-fdc62d70bd98",
+      "gtin": "04707197100044",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T17:12:32.22517",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/single_04707197100044_status.json"
+    },
+    {
+      "operationId": "dea496a3-42ca-4b44-9139-977a68982c67",
+      "gtin": "04707197100051",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T17:12:32.600873",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/single_04707197100051_status.json"
+    },
+    {
+      "operationId": "482c696d-5e3b-441d-8de7-1d5abce342d3",
+      "gtin": "04707197100068",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T17:12:32.972462",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/single_04707197100068_status.json"
+    },
+    {
+      "operationId": "5f742df3-1ef6-4bfb-a3cf-86e61ff8c09c",
+      "gtin": "04707197100075",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T17:12:33.41232",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/single_04707197100075_status.json"
+    },
+    {
+      "operationId": "f4531653-190b-44b5-8741-2f1d9ca3b103",
+      "gtin": "04707197100082",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T17:12:34.788848",
+      "quantity": 3,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/single_04707197100082_status.json"
+    },
+    {
+      "operationId": "6595ae7f-ba0c-4ea8-bde4-56ac83eb6cf9",
+      "gtin": "04707197100099",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T17:12:35.299237",
+      "quantity": 5,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/single_04707197100099_status.json"
+    },
+    {
+      "operationId": "9586221e-cacf-4292-a4a6-4f9a85304985",
+      "gtin": "04707197100105",
+      "status": "CREATED",
+      "createdAt": "2026-05-15T17:12:36.678923",
+      "quantity": 3,
+      "sourceUrl": "local:/Users/admin/Desktop/заказ км/single_04707197100105_status.json"
+    }
+  ]
+}

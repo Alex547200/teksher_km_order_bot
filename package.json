@@ -1,0 +1,29 @@
+{
+  "name": "teksher_km_order_bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node order-km.js",
+    "batch": "ORDER_KM_MODE=single node order-km.js",
+    "batches": "ORDER_KM_MODE=multi-batch node order-km.js",
+    "diagnose-batch": "ORDER_KM_MODE=diagnose-batch node order-km.js",
+    "audit-today": "node audit-today.js",
+    "audit-today-api": "node audit-today.js",
+    "login-refresh": "node login-refresh.js",
+    "login-profile": "node login-profile.js",
+    "manual-token": "node manual-token.js",
+    "refresh-token": "node refresh-access-token.js",
+    "audit-local": "node audit-local.js",
+    "download-pdfs": "node download-pdfs.js",
+    "download-pdfs-api": "node download-pdfs-api.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "playwright": "^1.60.0"
+  }
+}

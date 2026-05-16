@@ -1,0 +1,167 @@
+{
+  "generatedAt": "2026-05-16T05:04:19.901Z",
+  "duplicates": {
+    "04707197100693": [
+      {
+        "gtin": "04707197100693",
+        "quantity": 5,
+        "operationId": "de07a69f-9e64-48ca-8a47-09083a17da8f",
+        "status": "CREATED",
+        "sourceFile": "batch_status_2026-05-15T14-56-18-677Z.json",
+        "timestampMs": 1778856978677
+      },
+      {
+        "gtin": "04707197100693",
+        "quantity": 5,
+        "operationId": "edde3585-980d-45df-9c66-e2f98e7eac1f",
+        "status": "PROGRESS",
+        "sourceFile": "batch_status_2026-05-15T15-01-46-319Z.json",
+        "timestampMs": 1778857306319
+      }
+    ],
+    "04707197100778": [
+      {
+        "gtin": "04707197100778",
+        "quantity": 5,
+        "operationId": "8a0d453c-185e-46a7-aa88-9625735a50de",
+        "status": "CREATED",
+        "sourceFile": "batch_status_2026-05-15T15-01-46-319Z.json",
+        "timestampMs": 1778857306319
+      },
+      {
+        "gtin": "04707197100778",
+        "quantity": 5,
+        "operationId": "04f83c1d-761d-4074-83df-858df39ffbb2",
+        "status": "CREATED",
+        "sourceFile": "batch_status_2026-05-15T14-56-18-677Z.json",
+        "timestampMs": 1778856978677
+      }
+    ],
+    "04707197100754": [
+      {
+        "gtin": "04707197100754",
+        "quantity": 5,
+        "operationId": "e93387e1-ac84-46f1-b4b4-b778f28dfcb2",
+        "status": "CREATED",
+        "sourceFile": "batch_status_2026-05-15T14-56-18-677Z.json",
+        "timestampMs": 1778856978677
+      },
+      {
+        "gtin": "04707197100754",
+        "quantity": 5,
+        "operationId": "7559ce41-2120-4b4e-8212-cb61eeafcdc2",
+        "status": "PROGRESS",
+        "sourceFile": "batch_status_2026-05-15T15-01-46-319Z.json",
+        "timestampMs": 1778857306319
+      }
+    ],
+    "04707197100709": [
+      {
+        "gtin": "04707197100709",
+        "quantity": 5,
+        "operationId": "12c16d11-f31e-4d9c-bdc3-34515977cd8f",
+        "status": "CREATED",
+        "sourceFile": "batch_status_2026-05-15T14-56-18-677Z.json",
+        "timestampMs": 1778856978677
+      },
+      {
+        "gtin": "04707197100709",
+        "quantity": 5,
+        "operationId": "1046a986-2cc1-4e52-9f1b-593230ed2bb5",
+        "status": "PROGRESS",
+        "sourceFile": "batch_status_2026-05-15T15-01-46-319Z.json",
+        "timestampMs": 1778857306319
+      }
+    ],
+    "04707197100730": [
+      {
+        "gtin": "04707197100730",
+        "quantity": 5,
+        "operationId": "d7ab19b3-ba64-48b0-8c96-426ef8b3cd9f",
+        "status": "CREATED",
+        "sourceFile": "batch_status_2026-05-15T14-56-18-677Z.json",
+        "timestampMs": 1778856978677
+      },
+      {
+        "gtin": "04707197100730",
+        "quantity": 5,
+        "operationId": "28ca059c-b33c-456e-95f0-06b51c10ebc5",
+        "status": "PROGRESS",
+        "sourceFile": "batch_status_2026-05-15T15-01-46-319Z.json",
+        "timestampMs": 1778857306319
+      }
+    ],
+    "04707197100761": [
+      {
+        "gtin": "04707197100761",
+        "quantity": 3,
+        "operationId": "af5d48ac-14d4-4eef-8dd5-85a69260a419",
+        "status": "CREATED",
+        "sourceFile": "batch_status_2026-05-15T15-01-46-319Z.json",
+        "timestampMs": 1778857306319
+      },
+      {
+        "gtin": "04707197100761",
+        "quantity": 3,
+        "operationId": "f4549dc0-cbe3-4c77-bb4b-f5fccf58f2d6",
+        "status": "CREATED",
+        "sourceFile": "batch_status_2026-05-15T14-56-18-677Z.json",
+        "timestampMs": 1778856978677
+      }
+    ],
+    "04707197100723": [
+      {
+        "gtin": "04707197100723",
+        "quantity": 5,
+        "operationId": "5323f6e9-2a90-4818-9f01-f1a8b39fdde9",
+        "status": "CREATED",
+        "sourceFile": "batch_status_2026-05-15T14-56-18-677Z.json",
+        "timestampMs": 1778856978677
+      },
+      {
+        "gtin": "04707197100723",
+        "quantity": 5,
+        "operationId": "1a3a621e-48dd-4f8e-9e09-a30edaeac4e4",
+        "status": "PROGRESS",
+        "sourceFile": "batch_status_2026-05-15T15-01-46-319Z.json",
+        "timestampMs": 1778857306319
+      }
+    ],
+    "04707197100716": [
+      {
+        "gtin": "04707197100716",
+        "quantity": 5,
+        "operationId": "34d2ca21-d4ae-45b7-b548-0843fabec3b1",
+        "status": "CREATED",
+        "sourceFile": "batch_status_2026-05-15T14-56-18-677Z.json",
+        "timestampMs": 1778856978677
+      },
+      {
+        "gtin": "04707197100716",
+        "quantity": 5,
+        "operationId": "7bf0d208-49b9-41c2-884f-d8cd548820c9",
+        "status": "PROGRESS",
+        "sourceFile": "batch_status_2026-05-15T15-01-46-319Z.json",
+        "timestampMs": 1778857306319
+      }
+    ],
+    "04707197100747": [
+      {
+        "gtin": "04707197100747",
+        "quantity": 5,
+        "operationId": "1fc3177c-659e-46b8-baa7-337a4c0ba8d0",
+        "status": "CREATED",
+        "sourceFile": "batch_status_2026-05-15T14-56-18-677Z.json",
+        "timestampMs": 1778856978677
+      },
+      {
+        "gtin": "04707197100747",
+        "quantity": 5,
+        "operationId": "acc9e056-6bc8-44df-a8c1-eea7ca8c0c79",
+        "status": "PROGRESS",
+        "sourceFile": "batch_status_2026-05-15T15-01-46-319Z.json",
+        "timestampMs": 1778857306319
+      }
+    ]
+  }
+}
