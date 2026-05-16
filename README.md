@@ -69,3 +69,12 @@ node teksher.js export
 ```
 
 Файлы PDF/CSV именуются по GTIN, при дубле получают суффикс `_1`, `_2` и т.д.
+
+## WORKFLOWS
+
+Готовые рабочие сценарии зафиксированы отдельно в `WORKFLOWS/`.
+
+- [WORKFLOWS/download_csv_from_teksher.md](WORKFLOWS/download_csv_from_teksher.md) - выгрузка CSV из Текшер.
+  Команда: `npm run download-16may-km-csv-api`
+- [WORKFLOWS/merge_km_csv_correct.md](WORKFLOWS/merge_km_csv_correct.md) - объединение CSV КМ в корректный итоговый CSV.
+- [WORKFLOWS/pdf_labels_generation.md](WORKFLOWS/pdf_labels_generation.md) - генерация PDF-этикеток.
