@@ -1,0 +1,78 @@
+PANEL_HTML:
+<div class="_content_un73z_14"><div class="_top_un73z_23"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="_icon_1bzmj_1"><g clip-path="url(#clip0_3191_435)"><path d="M9.57007 18.0698L3.50007 11.9998L9.57007 5.92982" stroke="currentColor" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path><path d="M20.5 12L3.67 12" stroke="currentColor" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path></g><defs><clipPath id="clip0_3191_435"><rect width="24" height="24" fill="white"></rect></clipPath></defs></svg><h4>Фильтрация</h4></div><form class="_form_1eeg1_1"><div class="_form_element_template_1s02k_1"><span class="_label_1s02k_4">Номер документа (ID операции)</span><label><input name="operationId" value="" style=""></label></div><div class="template_select _form_element_template_1s02k_1"><span class="_label_1s02k_4">Тип операции</span><label><div class="app_select css-b62m3t-container"><span id="react-select-operationFilter-operationType-live-region" class="css-7pg0cj-a11yText"></span><span aria-live="polite" aria-atomic="false" aria-relevant="additions text" role="log" class="css-7pg0cj-a11yText"></span><div class="react-select__control css-cp01gg-control"><div class="react-select__value-container react-select__value-container--has-value css-14oxtc6"><div class="react-select__single-value css-w54w9q-singleValue"></div><input id="react-select-operationFilter-operationType-input" tabindex="0" inputmode="none" aria-autocomplete="list" aria-expanded="false" aria-haspopup="true" role="combobox" aria-readonly="true" class="css-1hac4vs-dummyInput" value="" style=""></div><div class="react-select__indicators css-1wy0on6"><span class="react-select__indicator-separator css-j4w2j1-indicatorSeparator"></span><div class="react-select__indicator react-select__dropdown-indicator css-g56vrd-indicatorContainer" aria-hidden="true"><svg height="20" width="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false" class="css-8mmkcg"><path d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"></path></svg></div></div></div></div></label></div><div class="template_select _form_element_template_1s02k_1"><span class="_label_1s02k_4">Товарная группа</span><label><div class="app_select css-b62m3t-container"><span id="react-select-operationFilter-productGroupMarkingId-live-region" class="css-7pg0cj-a11yText"></span><span aria-live="polite" aria-atomic="false" aria-relevant="additions text" role="log" class="css-7pg0cj-a11yText"></span><div class="react-select__control css-cp01gg-control"><div class="react-select__value-container css-14oxtc6"><div class="react-select__placeholder css-1vlsb4t-placeholder" id="react-select-operationFilter-productGroupMarkingId-placeholder"></div><input id="react-select-operationFilter-productGroupMarkingId-input" tabindex="0" inputmode="none" aria-autocomplete="list" aria-expanded="false" aria-haspopup="true" role="combobox" aria-readonly="true" aria-describedby="react-select-operationFilter-productGroupMarkingId-placeholder" class="css-1hac4vs-dummyInput" value="" style=""></div><div class="react-select__indicators css-1wy0on6"><span class="react-select__indicator-separator css-j4w2j1-indicatorSeparator"></span><div class="react-select__indicator react-select__dropdown-indicator css-g56vrd-indicatorContainer" aria-hidden="true"><svg height="20" width="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false" class="css-8mmkcg"><path d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"></path></svg></div></div></div></div></label></div><div class="label _form_element_template_1s02k_1"><span class="_label_1s02k_4">Дата от</span><label><div class="datepicker datepicker rs-picker rs-picker-date rs-picker-default rs-picker-toggle-wrapper rs-picker-placement-auto rs-picker-has-value rs-picker-cleanable"><div class="rs-picker-input-group rs-input-group rs-input-group-inside"><input inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false" aria-haspopup="dialog" aria-invalid="false" class="rs-input" type="text" id="rs-:r0:" placeholder="dd.MM.yyyy" value="16.04.2026" style=""><span class="rs-input-group-addon"><button type="button" class="rs-picker-clean rs-btn-close" aria-label="Прозрачный" tabindex="-1"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false" class="rs-icon" aria-label="close" data-category="application"><path d="m2.784 2.089.069.058 5.146 5.147 5.146-5.147a.5.5 0 0 1 .765.638l-.058.069L8.705 8l5.147 5.146a.5.5 0 0 1-.638.765l-.069-.058-5.146-5.147-5.146 5.147a.5.5 0 0 1-.765-.638l.058-.069L7.293 8 2.146 2.854a.5.5 0 0 1 .638-.765"></path></svg></button></span></div></div></label></div><div class="label _form_element_template_1s02k_1"><span class="_label_1s02k_4">Дата до</span><label><div class="datepicker datepicker rs-picker rs-picker-date rs-picker-default rs-picker-toggle-wrapper rs-picker-placement-auto rs-picker-has-value rs-picker-cleanable rs-picker-error"><div class="rs-picker-input-group rs-input-group rs-input-group-inside"><input inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false" aria-haspopup="dialog" aria-invalid="true" class="rs-input" type="text" id="rs-:r3:" placeholder="dd.MM.yyyy" value="16.05.2026" style=""><span class="rs-input-group-addon"><button type="button" class="rs-picker-clean rs-btn-close" aria-label="Прозрачный" tabindex="-1"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false" class="rs-icon" aria-label="close" data-category="application"><path d="m2.784 2.089.069.058 5.146 5.147 5.146-5.147a.5.5 0 0 1 .765.638l-.058.069L8.705 8l5.147 5.146a.5.5 0 0 1-.638.765l-.069-.058-5.146-5.147-5.146 5.147a.5.5 0 0 1-.765-.638l.058-.069L7.293 8 2.146 2.854a.5.5 0 0 1 .638-.765"></path></svg></button></span></div></div></label></div><div class="template_select _form_element_template_1s02k_1"><span class="_label_1s02k_4">Статус</span><label><div class="app_select css-b62m3t-container"><span id="react-select-operationFilter-status-live-region" class="css-7pg0cj-a11yText"></span><span aria-live="polite" aria-atomic="false" aria-relevant="additions text" role="log" class="css-7pg0cj-a11yText"></span><div class="react-select__control css-cp01gg-control"><div class="react-select__value-container react-select__value-container--has-value css-14oxtc6"><div class="react-select__single-value css-w54w9q-singleValue"></div><input id="react-select-operationFilter-status-input" tabindex="0" inputmode="none" aria-autocomplete="list" aria-expanded="false" aria-haspopup="true" role="combobox" aria-readonly="true" class="css-1hac4vs-dummyInput" value="" style=""></div><div class="react-select__indicators css-1wy0on6"><span class="react-select__indicator-separator css-j4w2j1-indicatorSeparator"></span><div class="react-select__indicator react-select__dropdown-indicator css-g56vrd-indicatorContainer" aria-hidden="true"><svg height="20" width="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false" class="css-8mmkcg"><path d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"></path></svg></div></div></div></div></label></div><div class="_actions_1eeg1_4"><button class="_button_hkao1_1 _button__outline-blue_hkao1_41 _button__center_hkao1_6" type="button" style="--button-width: 100%;">Очистить</button><button class="_button_hkao1_1 _button__blue_hkao1_17 _button__center_hkao1_6" style="--button-width: 100%;">Подтвердить</button></div></form></div>
+
+INPUTS:
+[
+  {
+    "index": 0,
+    "outerHTML": "<input name=\"operationId\" value=\"\" style=\"\">",
+    "value": "",
+    "placeholder": "",
+    "name": "operationId",
+    "role": "",
+    "ariaLabel": "",
+    "ariaAutocomplete": "",
+    "ariaExpanded": "",
+    "ariaHaspopup": ""
+  },
+  {
+    "index": 1,
+    "outerHTML": "<input id=\"react-select-operationFilter-operationType-input\" tabindex=\"0\" inputmode=\"none\" aria-autocomplete=\"list\" aria-expanded=\"false\" aria-haspopup=\"true\" role=\"combobox\" aria-readonly=\"true\" class=\"css-1hac4vs-dummyInput\" value=\"\" style=\"\">",
+    "value": "",
+    "placeholder": "",
+    "name": "",
+    "role": "combobox",
+    "ariaLabel": "",
+    "ariaAutocomplete": "list",
+    "ariaExpanded": "false",
+    "ariaHaspopup": "true"
+  },
+  {
+    "index": 2,
+    "outerHTML": "<input id=\"react-select-operationFilter-productGroupMarkingId-input\" tabindex=\"0\" inputmode=\"none\" aria-autocomplete=\"list\" aria-expanded=\"false\" aria-haspopup=\"true\" role=\"combobox\" aria-readonly=\"true\" aria-describedby=\"react-select-operationFilter-productGroupMarkingId-placeholder\" class=\"css-1hac4vs-dummyInput\" value=\"\" style=\"\">",
+    "value": "",
+    "placeholder": "",
+    "name": "",
+    "role": "combobox",
+    "ariaLabel": "",
+    "ariaAutocomplete": "list",
+    "ariaExpanded": "false",
+    "ariaHaspopup": "true"
+  },
+  {
+    "index": 3,
+    "outerHTML": "<input inputmode=\"text\" autocomplete=\"off\" autocorrect=\"off\" spellcheck=\"false\" aria-haspopup=\"dialog\" aria-invalid=\"false\" class=\"rs-input\" type=\"text\" id=\"rs-:r0:\" placeholder=\"dd.MM.yyyy\" value=\"16.04.2026\" style=\"\">",
+    "value": "16.04.2026",
+    "placeholder": "dd.MM.yyyy",
+    "name": "",
+    "role": "",
+    "ariaLabel": "",
+    "ariaAutocomplete": "",
+    "ariaExpanded": "",
+    "ariaHaspopup": "dialog"
+  },
+  {
+    "index": 4,
+    "outerHTML": "<input inputmode=\"text\" autocomplete=\"off\" autocorrect=\"off\" spellcheck=\"false\" aria-haspopup=\"dialog\" aria-invalid=\"true\" class=\"rs-input\" type=\"text\" id=\"rs-:r3:\" placeholder=\"dd.MM.yyyy\" value=\"16.05.2026\" style=\"\">",
+    "value": "16.05.2026",
+    "placeholder": "dd.MM.yyyy",
+    "name": "",
+    "role": "",
+    "ariaLabel": "",
+    "ariaAutocomplete": "",
+    "ariaExpanded": "",
+    "ariaHaspopup": "dialog"
+  },
+  {
+    "index": 5,
+    "outerHTML": "<input id=\"react-select-operationFilter-status-input\" tabindex=\"0\" inputmode=\"none\" aria-autocomplete=\"list\" aria-expanded=\"false\" aria-haspopup=\"true\" role=\"combobox\" aria-readonly=\"true\" class=\"css-1hac4vs-dummyInput\" value=\"\" style=\"\">",
+    "value": "",
+    "placeholder": "",
+    "name": "",
+    "role": "combobox",
+    "ariaLabel": "",
+    "ariaAutocomplete": "list",
+    "ariaExpanded": "false",
+    "ariaHaspopup": "true"
+  }
+]

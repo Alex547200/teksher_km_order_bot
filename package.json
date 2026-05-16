@@ -21,13 +21,15 @@
     "debug-date-filter": "node debug-date-filter-16may.js",
     "download-all-15may": "node download-all-2026-05-15.js",
     "download-16may-km-csv-api": "node download-16may-km-csv-api.js",
+    "download-16may-km-pdf": "node download-16may-km-pdf-api-or-ui.js",
     "create-km-excel": "node create-km-from-excel.js",
     "discover-ops": "node discover-operations-endpoint.js",
     "download-existing-ops": "node download-existing-operations.js",
     "search-gtin": "node search-gtin.js 04707197100891",
     "download-stable": "node stable/download-accepted-batch.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "download-all-16may": "node download-all-2026-05-16.js"
+    "download-all-16may": "node download-all-2026-05-16.js",
+    "merge-km-correct": "python3 merge-km-csv-correct.py"
   },
   "keywords": [],
   "author": "",
