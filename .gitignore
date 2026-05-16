@@ -1,0 +1,11 @@
+node_modules/
+teksher-session-profile/
+.tmp-profile*/
+*.log
+*.zip
+*.pdf
+*.csv
+*.json
+!package.json
+!package-lock.json
+.DS_Store
