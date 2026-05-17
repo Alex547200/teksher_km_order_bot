@@ -57,6 +57,11 @@ function normalizeToken(value) {
   return String(value || "").trim().replace(/^Bearer\s+/i, "").trim();
 }
 
+function isExpiredToken(token, skewMs = 60_000) {
+  const expMs = authHelper.decodeJwtExpMs(normalizeToken(token));
+  return !expMs || expMs <= Date.now() + skewMs;
+}
+
 function splitBatchLine(rawLine) {
   if (rawLine.includes(",")) return rawLine.split(",").map((part) => part.trim());
   if (rawLine.includes("\t")) return rawLine.split("\t").map((part) => part.trim());
@@ -452,7 +457,7 @@ async function resolveAuthFromFiles() {
   if (!accessToken) {
     throw new Error("TOKEN_MISSING: auth_tokens.json access_token not found");
   }
-  if (authHelper.isExpiredToken(accessToken)) {
+  if (isExpiredToken(accessToken)) {
     throw new Error("TOKEN_EXPIRED: auth_tokens.json access_token is expired");
   }
 
