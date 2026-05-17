@@ -27,6 +27,7 @@
     "download-existing-ops": "node download-existing-operations.js",
     "search-gtin": "node search-gtin.js 04707197100891",
     "download-stable": "node stable/download-accepted-batch.js",
+    "create-km-orders": "node create-km-orders.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "download-all-16may": "node download-all-2026-05-16.js",
     "merge-km-correct": "python3 merge-km-csv-correct.py",
