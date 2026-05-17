@@ -700,6 +700,8 @@ async function main() {
   console.log(`token expired: ${auth.isExpired}`);
 
   const createdOrders = [];
+  const createdOperationIds = [];
+  const createdOperations = [];
 
   for (let batchIndex = 0; batchIndex < batches.length; batchIndex += 1) {
     const items = batches[batchIndex];
@@ -744,6 +746,11 @@ async function main() {
 
     const pairs = pairCreatedOperations(finalResponse.body, [...items]);
     const operationIds = pairs.map((row) => row.operationId).filter(Boolean);
+    for (const operationId of operationIds) {
+      if (!createdOperationIds.includes(operationId)) {
+        createdOperationIds.push(operationId);
+      }
+    }
     console.log(`created operationId(s): ${operationIds.join(", ") || "(none found in response)"}`);
 
     const batchRecords = [];
@@ -778,6 +785,17 @@ async function main() {
       createdOrders.push(record);
     }
 
+    const batchKmSum = items.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+    createdOperations.push({
+      batchNumber,
+      operationId: operationIds[0] || "",
+      operationIds,
+      itemsCount: items.length,
+      kmSum: batchKmSum,
+      gtins: items.map((item) => item.gtin),
+      responseBody: finalResponse.body,
+    });
+
     console.table(batchRecords.map((row) => ({
       batchNumber: row.batchNumber,
       operationId: row.operationId,
@@ -798,6 +816,8 @@ async function main() {
     validItems: batchItems.length,
     totalKm,
     batchCount: batches.length,
+    createdOperationIds,
+    createdOperations,
     createdOrders,
   };
   await writeJson(reportJsonPath, report);
@@ -810,10 +830,11 @@ async function main() {
     `total_km: ${totalKm}`,
     `batch_count: ${batches.length}`,
     `created_orders: ${createdOrders.length}`,
+    `created_operation_ids: ${createdOperationIds.join(", ") || "(none)"}`,
     `output_dir: ${outputDir}`,
     "",
-    ...createdOrders.map((row) =>
-      `${row.batchNumber}\t${row.operationId}\t${row.status}\t${row.gtin}\t${row.quantity}\t${row.article}\t${row.name}`
+    ...createdOperations.map((row) =>
+      `${row.batchNumber}\t${row.operationId}\titems=${row.itemsCount}\tkm=${row.kmSum}\t${row.gtins.join(", ")}`
     ),
   ]);
 
@@ -822,6 +843,15 @@ async function main() {
   console.log(`output dir: ${outputDir}`);
   console.log(`batches: ${batches.length}`);
   console.log(`created orders: ${createdOrders.length}`);
+  console.log(`created operation ids: ${createdOperationIds.join(", ") || "(none)"}`);
+  console.log("created operation summary:");
+  console.table(createdOperations.map((row) => ({
+    batchNumber: row.batchNumber,
+    operationId: row.operationId,
+    itemsCount: row.itemsCount,
+    kmSum: row.kmSum,
+    gtins: row.gtins.join(", "),
+  })));
   console.table(createdOrders.map((row) => ({
     batchNumber: row.batchNumber,
     operationId: row.operationId,
