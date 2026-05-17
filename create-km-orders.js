@@ -364,6 +364,7 @@ function renderBatchSummary(batches) {
   return batches.map((batch, index) => ({
     batchNumber: index + 1,
     items: batch.length,
+    km: batch.reduce((sum, item) => sum + Number(item.quantity || 0), 0),
     gtins: batch.map((item) => item.gtin).join(", "),
   }));
 }
@@ -649,6 +650,7 @@ async function main() {
     const dryRunBatches = batches.map((items, index) => ({
       batchNumber: index + 1,
       count: items.length,
+      km: items.reduce((sum, item) => sum + Number(item.quantity || 0), 0),
       payload: buildMultiOperationPayloadFor(items),
       items: items.map((item) => ({
         gtin: item.gtin,
@@ -688,6 +690,7 @@ async function main() {
     console.table(dryRunBatches.map((batch) => ({
       batchNumber: batch.batchNumber,
       count: batch.count,
+      km: batch.km,
     })));
     return 0;
   }
@@ -830,6 +833,7 @@ async function main() {
   })));
   console.log(`report json: ${reportJsonPath}`);
   console.log(`report txt: ${reportTxtPath}`);
+  console.log(`output dir: ${outputDir}`);
   return 0;
 }
 
