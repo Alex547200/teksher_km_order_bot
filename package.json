@@ -31,7 +31,8 @@
     "download-all-16may": "node download-all-2026-05-16.js",
     "merge-km-correct": "python3 merge-km-csv-correct.py",
     "generate-koledino-labels": "python3 rebuild_sonya_correct.py --source-csv \"/Users/admin/Desktop/коледино 205 шт.csv\" --output-dir \"/Users/admin/Desktop/коледино_205_pdf_58x40\" --zip-path \"/Users/admin/Desktop/коледино_205_pdf_58x40.zip\"",
-    "rename-pdfs": "python3 rename_pdfs_by_product.py"
+    "rename-pdfs": "python3 rename_pdfs_by_product.py",
+    "merge-pdfs-by-product": "python3 merge_pdfs_by_product_name.py"
   },
   "keywords": [],
   "author": "",
