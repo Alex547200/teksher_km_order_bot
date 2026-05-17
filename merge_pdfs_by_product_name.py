@@ -17,7 +17,6 @@ The result folder contains the merged PDFs, a ZIP archive, and a text report.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import os
 import re
 import shutil
@@ -53,6 +52,7 @@ except Exception:  # pragma: no cover
 DEFAULT_OUTPUT_DIR = Path("./merged_pdfs_by_product")
 DEFAULT_ZIP_PATH = Path("./MERGED_PDFS_BY_PRODUCT_NAME_WITH_KM_COUNT.zip")
 DEFAULT_REPORT_PATH = Path("./merge_by_product_report.txt")
+FAILED_FILES_NAME = "failed_files.txt"
 
 
 @dataclass(slots=True)
@@ -92,6 +92,10 @@ def safe_filename(name: str) -> str:
     return text or "unnamed"
 
 
+def safe_path_component(name: str) -> str:
+    return safe_filename(name)
+
+
 def is_pdf_file(path: Path) -> bool:
     return path.is_file() and path.suffix.lower() == ".pdf"
 
@@ -100,7 +104,20 @@ def extract_archive_to_temp(source: Path) -> Path:
     temp_dir = Path(tempfile.mkdtemp(prefix="merge_pdfs_extract_"))
     if is_zip_path(source):
         with zipfile.ZipFile(source, "r") as archive:
-            archive.extractall(temp_dir)
+            for info in archive.infolist():
+                if info.is_dir():
+                    continue
+                sanitized_parts = [
+                    safe_path_component(part)
+                    for part in Path(info.filename).parts
+                    if part not in ("", ".", "..")
+                ]
+                if not sanitized_parts:
+                    continue
+                dest = temp_dir.joinpath(*sanitized_parts)
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                with archive.open(info) as src, dest.open("wb") as dst:
+                    shutil.copyfileobj(src, dst)
         return temp_dir
 
     if is_rar_path(source):
@@ -162,7 +179,7 @@ def read_pdf_pages(pdf_path: Path) -> int:
 def collect_sources(source: Path) -> list[SourcePdf]:
     items: list[SourcePdf] = []
     for pdf_path in iter_pdf_paths(source):
-        group_name = strip_group_suffix(pdf_path.stem)
+        group_name = safe_filename(strip_group_suffix(pdf_path.stem))
         items.append(
             SourcePdf(
                 group_name=group_name,
@@ -183,15 +200,23 @@ def group_sources(items: list[SourcePdf]) -> dict[str, list[SourcePdf]]:
     return dict(sorted(grouped.items(), key=lambda kv: kv[0].lower()))
 
 
-def merge_group(output_dir: Path, group_name: str, items: list[SourcePdf]) -> tuple[Path, int]:
+def merge_group(
+    output_dir: Path, group_name: str, items: list[SourcePdf], failed_files: list[str]
+) -> tuple[Path | None, int]:
     writer = PdfWriter()
     total_pages = 0
     for item in items:
-        reader = PdfReader(str(item.path))
-        item.pages = len(reader.pages)
-        total_pages += item.pages
-        for page in reader.pages:
-            writer.add_page(page)
+        try:
+            reader = PdfReader(str(item.path))
+            item.pages = len(reader.pages)
+            total_pages += item.pages
+            for page in reader.pages:
+                writer.add_page(page)
+        except Exception as exc:
+            failed_files.append(f"{item.path}\t{exc.__class__.__name__}: {exc}")
+            continue
+    if total_pages == 0:
+        return None, 0
     merged_path = output_dir / f"{safe_filename(group_name)} -{total_pages}.pdf"
     with merged_path.open("wb") as handle:
         writer.write(handle)
@@ -213,6 +238,7 @@ def write_report(
     zip_path: Path,
     items: list[SourcePdf],
     merged: list[dict[str, object]],
+    failed_files: list[str],
 ) -> None:
     total_source_pdfs = len(items)
     total_groups = len(merged)
@@ -237,6 +263,12 @@ def write_report(
     lines.append("sources:")
     for item in items:
         lines.append(f"{item.group_name}\t{item.source_name}\t{item.path}")
+    lines.append("")
+    lines.append("failed_files:")
+    if failed_files:
+        lines.extend(failed_files)
+    else:
+        lines.append("(none)")
     report_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -257,33 +289,49 @@ def process(source: Path, output_dir: Path, zip_path: Path, report_path: Path) -
     if zip_path.exists():
         zip_path.unlink()
 
-    items = collect_sources(source)
-    grouped = group_sources(items)
+    temp_dirs: list[Path] = []
+    source_scan = source
+    if is_zip_path(source):
+        source_scan = extract_archive_to_temp(source)
+        temp_dirs.append(source_scan)
 
-    merged_rows: list[dict[str, object]] = []
-    for group_name, group_items in grouped.items():
-        merged_path, pages = merge_group(output_dir, group_name, group_items)
-        merged_rows.append(
-            {
-                "group": group_name,
-                "output": merged_path.name,
-                "pages": pages,
-                "source_count": len(group_items),
-                "first_source": group_items[0].source_name if group_items else "",
-            }
-        )
+    try:
+        items = collect_sources(source_scan)
+        grouped = group_sources(items)
 
-    build_zip(output_dir, zip_path)
-    write_report(report_path, source, output_dir, zip_path, items, merged_rows)
+        merged_rows: list[dict[str, object]] = []
+        failed_files: list[str] = []
+        for group_name, group_items in grouped.items():
+            merged_path, pages = merge_group(output_dir, group_name, group_items, failed_files)
+            if merged_path is None:
+                continue
+            merged_rows.append(
+                {
+                    "group": group_name,
+                    "output": merged_path.name,
+                    "pages": pages,
+                    "source_count": len(group_items),
+                    "first_source": group_items[0].source_name if group_items else "",
+                }
+            )
 
-    print(f"source: {source}")
-    print(f"output_dir: {output_dir}")
-    print(f"zip_path: {zip_path}")
-    print(f"total source pdfs: {len(items)}")
-    print(f"merged groups: {len(merged_rows)}")
-    print(f"output pdfs: {len(list(output_dir.glob('*.pdf')))}")
-    print(f"report: {report_path}")
-    return 0
+        build_zip(output_dir, zip_path)
+        failed_path = output_dir / FAILED_FILES_NAME
+        failed_path.write_text("\n".join(failed_files) + ("\n" if failed_files else ""), encoding="utf-8")
+        write_report(report_path, source, output_dir, zip_path, items, merged_rows, failed_files)
+
+        print(f"source: {source}")
+        print(f"output_dir: {output_dir}")
+        print(f"zip_path: {zip_path}")
+        print(f"total source pdfs: {len(items)}")
+        print(f"merged groups: {len(merged_rows)}")
+        print(f"output pdfs: {len(list(output_dir.glob('*.pdf')))}")
+        print(f"failed files: {len(failed_files)}")
+        print(f"report: {report_path}")
+        return 0
+    finally:
+        for temp_dir in temp_dirs:
+            shutil.rmtree(temp_dir, ignore_errors=True)
 
 
 def main() -> int:
