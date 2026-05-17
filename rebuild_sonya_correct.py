@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Rebuild Teksher label PDFs from 321.csv with GTIN->product mapping.
+"""Rebuild Teksher label PDFs from KM CSV files with GTIN->product mapping.
 
 Sources:
 - /Users/admin/Desktop/321.csv
+- /Users/admin/Desktop/КОЛЕДИНО 205 ШТ.csv
 - /Users/admin/Desktop/Соня 1.xlsx
 - /Users/admin/Desktop/ДЛЯ ЭТИКЕТКИ КИРГИЗИЯ.xlsx
 
@@ -49,6 +50,9 @@ reexec_if_needed()
 from reportlab.lib import colors  # noqa: E402
 from reportlab.lib.units import mm as MM  # noqa: E402
 from reportlab.lib.utils import ImageReader  # noqa: E402
+from reportlab.graphics import renderPM  # noqa: E402
+from reportlab.graphics.barcode import createBarcodeDrawing  # noqa: E402
+from reportlab.graphics.shapes import Drawing, Rect  # noqa: E402
 from reportlab.pdfbase import pdfmetrics  # noqa: E402
 from reportlab.pdfbase.ttfonts import TTFont  # noqa: E402
 from reportlab.pdfgen import canvas  # noqa: E402
@@ -56,12 +60,11 @@ from reportlab.pdfgen import canvas  # noqa: E402
 
 NS = {"a": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
 
-SOURCE_KM_CSV = Path("/Users/admin/Desktop/321.csv")
+DEFAULT_SOURCE_KM_CSV = Path("/Users/admin/Desktop/321.csv")
 SOURCE_NAMES_XLSX = Path("/Users/admin/Desktop/Соня 1.xlsx")
 SOURCE_META_XLSX = Path("/Users/admin/Desktop/ДЛЯ ЭТИКЕТКИ КИРГИЗИЯ.xlsx")
-OUTPUT_DIR = Path("/Users/admin/Desktop/Соня_correct_text")
-ZIP_PATH = Path("/Users/admin/Desktop/Соня_correct_text.zip")
-MAPPING_CSV = OUTPUT_DIR / "gtin_mapping.csv"
+DEFAULT_OUTPUT_DIR = Path("/Users/admin/Desktop/Соня_correct_text")
+DEFAULT_ZIP_PATH = Path("/Users/admin/Desktop/Соня_correct_text.zip")
 
 FONT_REGULAR_PATH = Path("/System/Library/Fonts/Supplemental/Arial Unicode.ttf")
 FONT_BOLD_PATH = Path("/System/Library/Fonts/Supplemental/Arial Bold.ttf")
@@ -73,10 +76,17 @@ LEFT_TOP = 34.0 * MM
 LEFT_TEXT_WIDTH = 28.0 * MM
 RIGHT_X = 33.0 * MM
 RIGHT_Y = 6.0 * MM
-BARCODE_SIZE = 22.0 * MM
 GTIN_Y = 5.0 * MM
 TAIL_Y = 2.8 * MM
 MARGIN = 1.5 * MM
+BARCODE_DPI = 300
+BARCODE_MODULE_PX = 5
+BARCODE_QUIET_PX = 24
+BARCODE_MODULE_PT = BARCODE_MODULE_PX * 72.0 / BARCODE_DPI
+BARCODE_QUIET_PT = BARCODE_QUIET_PX * 72.0 / BARCODE_DPI
+BARCODE_BODY_PT = 44.0 * BARCODE_MODULE_PT
+BARCODE_BLOCK_PT = BARCODE_BODY_PT + 2.0 * BARCODE_QUIET_PT
+BARCODE_BACKEND = "reportlab-ecc200-300dpi"
 
 
 def register_fonts() -> tuple[str, str]:
@@ -295,12 +305,72 @@ def extract_tail(marking_code: str, gtin: str) -> str:
     return cleaned[-8:]
 
 
+def _text_width(text: str, font_name: str, font_size: float) -> float:
+    return pdfmetrics.stringWidth(text, font_name, font_size)
+
+
+def fit_text_to_width(text: str, font_name: str, max_width: float, max_size: float, min_size: float) -> tuple[str, float]:
+    clean = " ".join(str(text or "").split())
+    if not clean:
+      return "", min_size
+    size = max_size
+    while size >= min_size:
+        if _text_width(clean, font_name, size) <= max_width:
+            return clean, size
+        size = round(size - 0.1, 2)
+    return clean, min_size
+
+
+def fit_title_lines(title: str, font_name: str, max_width: float, max_lines: int = 2, max_size: float = 6.2, min_size: float = 3.8) -> tuple[list[str], float]:
+    words = [w for w in " ".join(str(title or "").split()).split(" ") if w]
+    if not words:
+        return [""], min_size
+
+    def best_split(size: float) -> list[str] | None:
+        one = " ".join(words)
+        if _text_width(one, font_name, size) <= max_width:
+            return [one]
+        if max_lines < 2:
+            return None
+        for split in range(1, len(words)):
+            first = " ".join(words[:split])
+            second = " ".join(words[split:])
+            if _text_width(first, font_name, size) <= max_width and _text_width(second, font_name, size) <= max_width:
+                return [first, second]
+        return None
+
+    size = max_size
+    while size >= min_size:
+        lines = best_split(size)
+        if lines:
+            return lines[:max_lines], size
+        size = round(size - 0.1, 2)
+
+    # Absolute fallback: keep two lines without clipping by forcing the smallest size.
+    lines = best_split(min_size)
+    if lines:
+        return lines[:max_lines], min_size
+    midpoint = max(1, len(words) // 2)
+    return [" ".join(words[:midpoint]), " ".join(words[midpoint:])], min_size
+
+
 def render_datamatrix_png(marking_code: str, tmp_dir: Path, name: str) -> Path:
     out_path = tmp_dir / f"{name}.png"
-    subprocess.run(
-        ["zint", "-b", "71", "-o", str(out_path), "-d", marking_code],
-        check=True,
-    )
+    try:
+        barcode = createBarcodeDrawing("ECC200DataMatrix", value=marking_code, barWidth=BARCODE_MODULE_PT)
+        wrapper = Drawing(BARCODE_BLOCK_PT, BARCODE_BLOCK_PT)
+        wrapper.add(Rect(0, 0, BARCODE_BLOCK_PT, BARCODE_BLOCK_PT, fillColor=colors.white, strokeColor=None))
+        barcode.translate(BARCODE_QUIET_PT, BARCODE_QUIET_PT)
+        wrapper.add(barcode)
+        renderPM.drawToFile(wrapper, str(out_path), fmt="PNG", dpi=BARCODE_DPI, bg=0xFFFFFF)
+    except Exception as exc:
+        if shutil.which("zint"):
+            subprocess.run(
+                ["zint", "-b", "71", "-o", str(out_path), "-d", marking_code],
+                check=True,
+            )
+        else:
+            raise RuntimeError(f"Failed to render ECC200 DataMatrix: {exc}") from exc
     return out_path
 
 
@@ -328,37 +398,43 @@ def draw_label_page(
     c.rect(MARGIN, MARGIN, PAGE_W - 2 * MARGIN, PAGE_H - 2 * MARGIN)
 
     c.setFillColor(colors.black)
-    text_size = 6.0
-    leading = 4.3 * MM
+    title_lines, title_size = fit_title_lines(title, FONT_BOLD, LEFT_TEXT_WIDTH, max_lines=2, max_size=7.0, min_size=4.6)
     y = LEFT_TOP
-    for line in wrap_title(title, FONT_REGULAR, text_size, LEFT_TEXT_WIDTH):
-        c.setFont(FONT_REGULAR, text_size)
+    title_leading = max(3.1 * MM, title_size * 1.1)
+    c.setFont(FONT_BOLD, title_size)
+    for line in title_lines:
         c.drawString(LEFT_X, y, line)
-        y -= leading
+        y -= title_leading
 
-    for line in [
-        f"Модель/Артикул: {article}",
-        f"Цвет: {color}",
-        f"Размер: {size}",
-    ]:
-        c.setFont(FONT_REGULAR, 5.8)
-        c.drawString(LEFT_X, y, line)
-        y -= 4.1 * MM
+    meta_specs = [
+        ("Модель/Артикул:", article),
+        ("Цвет:", color),
+        ("Размер:", size),
+    ]
+    for label, value in meta_specs:
+        label_fitted, label_size = fit_text_to_width(label, FONT_REGULAR, LEFT_TEXT_WIDTH, max_size=4.8, min_size=4.2)
+        value_fitted, value_size = fit_text_to_width(value, FONT_BOLD, LEFT_TEXT_WIDTH, max_size=5.9, min_size=4.6)
+        c.setFont(FONT_REGULAR, label_size)
+        c.drawString(LEFT_X, y, label_fitted)
+        y -= max(2.1 * MM, label_size * 0.85)
+        c.setFont(FONT_BOLD, value_size)
+        c.drawString(LEFT_X, y, value_fitted)
+        y -= max(3.1 * MM, value_size * 1.1)
 
     c.drawImage(
         barcode,
         RIGHT_X,
         RIGHT_Y,
-        width=BARCODE_SIZE,
-        height=BARCODE_SIZE,
+        width=BARCODE_BLOCK_PT,
+        height=BARCODE_BLOCK_PT,
         mask="auto",
         preserveAspectRatio=True,
         anchor="sw",
     )
     c.setFont(FONT_BOLD, 5.7)
-    c.drawCentredString(RIGHT_X + BARCODE_SIZE / 2, GTIN_Y, gtin)
+    c.drawCentredString(RIGHT_X + BARCODE_BLOCK_PT / 2, GTIN_Y, gtin)
     c.setFont(FONT_REGULAR, 5.0)
-    c.drawCentredString(RIGHT_X + BARCODE_SIZE / 2, TAIL_Y, tail)
+    c.drawCentredString(RIGHT_X + BARCODE_BLOCK_PT / 2, TAIL_Y, tail)
     c.setFont(FONT_REGULAR, 4.0)
     c.drawRightString(PAGE_W - MARGIN, 1.8, f"{index}/{total}")
     c.showPage()
@@ -426,6 +502,8 @@ def build_pdf(
         "inputRows": len(codes),
         "pdfCount": len(list(output_dir.glob("*.pdf"))),
         "zipExists": zip_path.exists(),
+        "barcodeBackend": BARCODE_BACKEND,
+        "barcodeDpi": BARCODE_DPI,
     }
     (output_dir / "generation_report.json").write_text(
         json.dumps({"summary": summary, "results": results}, ensure_ascii=False, indent=2),
@@ -436,6 +514,21 @@ def build_pdf(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Rebuild corrected Teksher PDFs for Sonya.")
+    parser.add_argument(
+        "--source-csv",
+        default=str(DEFAULT_SOURCE_KM_CSV),
+        help="Input CSV with KM rows. Defaults to /Users/admin/Desktop/321.csv.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        default="",
+        help="Output directory for PDFs and reports. Defaults to the historical Sonya_correct_text path for 321.csv, or a folder derived from the source CSV name.",
+    )
+    parser.add_argument(
+        "--zip-path",
+        default="",
+        help="Output ZIP path. Defaults to output-dir with .zip suffix.",
+    )
     parser.add_argument("--limit", type=int, default=0, help="Optional max number of KM rows to render.")
     parser.add_argument("--test-only", action="store_true", help="Only build mapping and stop.")
     return parser.parse_args()
@@ -444,8 +537,20 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
 
-    if not SOURCE_KM_CSV.exists():
-        print(f"Missing source CSV: {SOURCE_KM_CSV}", file=sys.stderr)
+    source_csv = Path(args.source_csv).expanduser()
+    if args.output_dir:
+        output_dir = Path(args.output_dir).expanduser()
+    else:
+        if source_csv.resolve() == DEFAULT_SOURCE_KM_CSV:
+            output_dir = DEFAULT_OUTPUT_DIR
+        else:
+            output_dir = source_csv.with_suffix("")
+            output_dir = output_dir.parent / f"{output_dir.name}_correct_text"
+    zip_path = Path(args.zip_path).expanduser() if args.zip_path else output_dir.with_suffix(".zip")
+    mapping_csv = output_dir / "gtin_mapping.csv"
+
+    if not source_csv.exists():
+        print(f"Missing source CSV: {source_csv}", file=sys.stderr)
         return 2
     if not SOURCE_NAMES_XLSX.exists():
         print(f"Missing source workbook: {SOURCE_NAMES_XLSX}", file=sys.stderr)
@@ -454,20 +559,20 @@ def main() -> int:
         print(f"Missing source workbook: {SOURCE_META_XLSX}", file=sys.stderr)
         return 2
 
-    km_gtins = set(load_km_gtins(SOURCE_KM_CSV))
+    km_gtins = set(load_km_gtins(source_csv))
     gtin_to_name = load_gtin_names(SOURCE_NAMES_XLSX)
     meta = load_product_meta(SOURCE_META_XLSX)
     mapping, missing = load_mapping(gtin_to_name, meta, km_gtins)
 
-    if OUTPUT_DIR.exists():
-        shutil.rmtree(OUTPUT_DIR)
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    if ZIP_PATH.exists():
-        ZIP_PATH.unlink()
-    if MAPPING_CSV.exists():
-        MAPPING_CSV.unlink()
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    if zip_path.exists():
+        zip_path.unlink()
+    if mapping_csv.exists():
+        mapping_csv.unlink()
     write_csv(
-        MAPPING_CSV,
+        mapping_csv,
         sorted(mapping, key=lambda r: r["gtin"]),
         ["gtin", "title", "article", "color", "size"],
     )
@@ -477,10 +582,10 @@ def main() -> int:
         counts[row["title"]] += 1
 
     print("mapping summary:")
-    with SOURCE_KM_CSV.open("r", encoding="utf-8-sig") as handle:
+    with source_csv.open("r", encoding="utf-8-sig") as handle:
         total_rows = sum(1 for _ in handle)
     print(f"  total km rows: {total_rows}")
-    print(f"  unique GTINs in 321.csv: {len(km_gtins)}")
+    print(f"  unique GTINs in {source_csv.name}: {len(km_gtins)}")
     print(f"  mapped GTINs: {len(mapping)}")
     print(f"  missing GTINs: {len(missing)}")
     if missing:
@@ -496,9 +601,9 @@ def main() -> int:
     if args.test_only:
         return 0
 
-    summary = build_pdf(SOURCE_KM_CSV, {row["gtin"]: row for row in mapping}, OUTPUT_DIR, ZIP_PATH, limit=args.limit)
+    summary = build_pdf(source_csv, {row["gtin"]: row for row in mapping}, output_dir, zip_path, limit=args.limit)
     print(json.dumps(summary, ensure_ascii=False, indent=2))
-    print(f"ZIP: {ZIP_PATH}")
+    print(f"ZIP: {zip_path}")
     return 0
 
 
