@@ -6,13 +6,33 @@ const authHelper = require("./teksher-auth");
 const PROJECT_DIR = __dirname;
 const BASE_URL = "https://label.teksher.kg";
 const AUTH_TOKENS_PATH = path.join(PROJECT_DIR, "auth_tokens.json");
-const OUTPUT_DIR = path.join(os.homedir(), "Desktop", "Текшер CSV", "16.05.2026");
-const LOG_PATH = path.join(PROJECT_DIR, "download_16may_km_csv_api_log.json");
-const LIST_ENDPOINT = "/facade/api/v1/operations/filter?size=15&page={page}&startDate=2026-05-16&endDate=2026-05-17";
 const CSV_ENDPOINT = "/facade/api/v1/marking_codes/csv?operationId={operationId}";
 const REQUEST_TIMEOUT = 45000;
-const TARGET_DATE = "2026-05-16";
 const TARGET_OPERATION_TYPE = "MARK_CODE_ORDER";
+const RETRY_ATTEMPTS = 3;
+const RETRY_DELAY_MS = 3000;
+const DEFAULT_DATE_FROM = "2026-05-17";
+const DEFAULT_DATE_TO = "2026-05-18";
+const DEBUG_OPERATIONS = String(process.env.DEBUG_OPERATIONS || "").trim() === "1";
+
+function getEnvDate(name, fallback) {
+  const value = String(process.env[name] || "").trim();
+  return value || fallback;
+}
+
+function formatDateDot(dateIso) {
+  const text = String(dateIso || "").trim();
+  const match = text.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return text.replace(/-/g, ".");
+  return `${match[3]}.${match[2]}.${match[1]}`;
+}
+
+const DATE_FROM = getEnvDate("DATE_FROM", DEFAULT_DATE_FROM);
+const DATE_TO = getEnvDate("DATE_TO", DEFAULT_DATE_TO);
+const TARGET_DATE = DATE_FROM;
+const OUTPUT_DIR = path.join(os.homedir(), "Desktop", "Текшер CSV", formatDateDot(DATE_FROM));
+const LOG_PATH = path.join(PROJECT_DIR, `download_${DATE_FROM.replace(/-/g, "")}_km_csv_api_log.json`);
+const LIST_ENDPOINT = `/facade/api/v1/operations/filter?size=15&page={page}&startDate=${DATE_FROM}&endDate=${DATE_TO}`;
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -42,7 +62,16 @@ function normalizeStatus(value) {
 }
 
 async function ensureDir(dir) {
-  await fs.mkdir(dir, { recursive: true });
+  try {
+    await fs.mkdir(dir, { recursive: true });
+  } catch (error) {
+    if (error?.code === "EPERM") {
+      const { execFileSync } = require("node:child_process");
+      execFileSync("mkdir", ["-p", dir]);
+      return;
+    }
+    throw error;
+  }
 }
 
 async function fileExists(filePath) {
@@ -160,6 +189,48 @@ function extractOperationId(record) {
   return pickText(record, ["operationId", "id"]);
 }
 
+function listAvailableFields(record) {
+  if (!record || typeof record !== "object" || Array.isArray(record)) return [];
+  return Object.keys(record).sort();
+}
+
+function describeOperation(record) {
+  return {
+    operationId: extractOperationId(record),
+    createdAt: extractCreatedAt(record),
+    status: extractStatus(record),
+    operationType: extractOperationType(record),
+    name: pickText(record, ["operationTypeName", "name", "title", "description"]),
+    productGroup: pickText(record, ["productGroup", "productGroupMarkingDto.name", "productGroupName"]),
+    fields: listAvailableFields(record),
+  };
+}
+
+function filterReasons(record) {
+  const reasons = [];
+  const createdAt = extractCreatedAt(record);
+  const status = extractStatus(record);
+  const operationType = extractOperationType(record);
+  const dateOnly = parseDateOnly(createdAt);
+
+  if (!createdAt) reasons.push("missing createdAt");
+  else if (!dateOnly) reasons.push(`date parse failed (${createdAt})`);
+  else if (dateOnly < DATE_FROM) reasons.push(`date before range (${dateOnly} < ${DATE_FROM})`);
+  else if (dateOnly >= DATE_TO) reasons.push(`date after range (${dateOnly} >= ${DATE_TO})`);
+
+  if (operationType !== TARGET_OPERATION_TYPE) {
+    reasons.push(`operationType mismatch (${operationType || "EMPTY"} != ${TARGET_OPERATION_TYPE})`);
+  }
+
+  if (status && status !== "ACCEPTED") {
+    reasons.push(`status mismatch (${status} != ACCEPTED)`);
+  }
+
+  if (!status) reasons.push("missing status");
+  if (!extractOperationId(record)) reasons.push("missing operationId");
+  return reasons;
+}
+
 function extractStatus(record) {
   return normalizeStatus(pickText(record, ["status", "state", "operationStatus", "currentStatus", "documentStatus"]));
 }
@@ -180,9 +251,16 @@ function extractCreatedAt(record) {
   ]);
 }
 
+function parseDateOnly(value) {
+  const normalized = normalizeDateOnly(value);
+  return normalized && /^\d{4}-\d{2}-\d{2}$/.test(normalized) ? normalized : "";
+}
+
 function isTargetDate(record) {
   const value = String(extractCreatedAt(record) || "").trim();
-  return value.startsWith(TARGET_DATE) || normalizeDateOnly(value) === TARGET_DATE;
+  const dateOnly = parseDateOnly(value);
+  if (!dateOnly) return false;
+  return dateOnly >= DATE_FROM && dateOnly < DATE_TO;
 }
 
 function extractGtinLike(value) {
@@ -243,6 +321,38 @@ async function fetchWithTimeout(url, options = {}) {
   }
 }
 
+function isRetryableFetchError(error) {
+  const code = error?.cause?.code || error?.code || "";
+  const message = String(error?.message || error || "");
+  return (
+    message.includes("fetch failed")
+    || code === "UND_ERR_CONNECT_TIMEOUT"
+    || code === "ECONNRESET"
+    || code === "ETIMEDOUT"
+    || code === "ENOTFOUND"
+    || code === "EAI_AGAIN"
+  );
+}
+
+async function fetchWithRetry(url, options = {}) {
+  let lastError = null;
+  for (let attempt = 1; attempt <= RETRY_ATTEMPTS; attempt += 1) {
+    try {
+      return await fetchWithTimeout(url, options);
+    } catch (error) {
+      lastError = error;
+      if (attempt < RETRY_ATTEMPTS && isRetryableFetchError(error)) {
+        console.warn(`FETCH_RETRY attempt=${attempt} url=${url}`);
+        console.warn(`FETCH_RETRY reason=${error?.cause?.code || error?.message || error}`);
+        await sleep(RETRY_DELAY_MS);
+        continue;
+      }
+      throw error;
+    }
+  }
+  throw lastError;
+}
+
 async function readAuthHeaders() {
   const candidates = await authHelper.readAuthCandidatesFromFiles([
     { path: AUTH_TOKENS_PATH, source: "auth_tokens.json" },
@@ -285,7 +395,7 @@ async function readAuthHeaders() {
 async function fetchOperationDetail(operationId, headers) {
   const url = buildUrl(`/facade/api/v1/operations/${encodeURIComponent(operationId)}`);
   try {
-    const response = await fetchWithTimeout(url, {
+    const response = await fetchWithRetry(url, {
       method: "GET",
       headers,
     });
@@ -312,7 +422,7 @@ async function fetchOperationDetail(operationId, headers) {
 async function fetchOperationListPage(pageNumber, headers) {
   const url = buildUrl(LIST_ENDPOINT.replace("{page}", String(pageNumber)));
   console.log(`LIST URL: ${url}`);
-  const response = await fetchWithTimeout(url, { method: "GET", headers });
+  const response = await fetchWithRetry(url, { method: "GET", headers });
   const text = await response.text();
   let json = null;
   try {
@@ -329,6 +439,7 @@ async function loadOperations(headers) {
   let totalPages = null;
   const seenIds = new Set();
   const rows = [];
+  const debugRows = [];
   while (true) {
     const page = await fetchOperationListPage(pageNumber, headers);
     if (!page.ok) {
@@ -344,6 +455,12 @@ async function loadOperations(headers) {
       const createdAt = extractCreatedAt(item);
       const status = extractStatus(item);
       const operationType = extractOperationType(item);
+      const debugRow = describeOperation(item);
+      const reasons = filterReasons(item);
+      debugRows.push({
+        ...debugRow,
+        reasons,
+      });
       if (!isTargetDate(item)) continue;
       if (operationType !== TARGET_OPERATION_TYPE) continue;
       rows.push({
@@ -358,13 +475,13 @@ async function loadOperations(headers) {
     if (typeof totalPages === "number" && pageNumber >= totalPages) break;
     if (items.length < 15) break;
   }
-  return { pages, rows };
+  return { pages, rows, debugRows };
 }
 
 async function downloadCsv(operationId, headers, fileBase) {
   const url = buildUrl(CSV_ENDPOINT.replace("{operationId}", encodeURIComponent(operationId)));
   console.log(`CSV URL: ${url}`);
-  const response = await fetchWithTimeout(url, { method: "GET", headers });
+  const response = await fetchWithRetry(url, { method: "GET", headers });
   const contentType = response.headers.get("content-type") || "";
   const contentDisposition = response.headers.get("content-disposition") || "";
   const buffer = Buffer.from(await response.arrayBuffer());
@@ -385,7 +502,7 @@ async function downloadCsv(operationId, headers, fileBase) {
 async function main() {
   await ensureDir(OUTPUT_DIR);
   const authState = await readAuthHeaders();
-  const { rows } = await loadOperations(authState.headers);
+  const { rows, debugRows } = await loadOperations(authState.headers);
   const accepted = rows
     .filter((row) => normalizeStatus(row.status) === "ACCEPTED" || normalizeStatus(row.operationType) === TARGET_OPERATION_TYPE)
     .sort((a, b) => {
@@ -405,6 +522,28 @@ async function main() {
   console.log(`total operations found: ${accepted.length}`);
   console.log(`output folder: ${OUTPUT_DIR}`);
   console.log(`token exp: ${new Date(authState.tokenExpiresAtMs).toISOString()}`);
+  console.log(`debug operations: ${DEBUG_OPERATIONS ? "on" : "off"}`);
+
+  if (DEBUG_OPERATIONS) {
+    const firstDebugRows = debugRows.slice(0, 30);
+    console.log(`debug rows total: ${debugRows.length}`);
+    console.log(`debug rows shown: ${firstDebugRows.length}`);
+    for (const row of firstDebugRows) {
+      console.log("--- DEBUG_OPERATION ---");
+      console.log(JSON.stringify({
+        operationId: row.operationId,
+        createdAt: row.createdAt,
+        status: row.status,
+        operationType: row.operationType,
+        name: row.name,
+        productGroup: row.productGroup,
+        fields: row.fields,
+        reasons: row.reasons,
+      }, null, 2));
+    }
+    console.log("DEBUG_OPERATIONS_ONLY");
+    return;
+  }
 
   for (const operation of accepted) {
     try {

@@ -21,6 +21,7 @@
     "debug-date-filter": "node debug-date-filter-16may.js",
     "download-all-15may": "node download-all-2026-05-15.js",
     "download-16may-km-csv-api": "node download-16may-km-csv-api.js",
+    "download-17may-km-csv-api": "node download-16may-km-csv-api.js",
     "download-16may-km-pdf": "node download-16may-km-pdf-api-or-ui.js",
     "create-km-excel": "node create-km-from-excel.js",
     "discover-ops": "node discover-operations-endpoint.js",
