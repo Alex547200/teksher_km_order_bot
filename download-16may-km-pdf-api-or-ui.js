@@ -13,12 +13,16 @@ const AUTH_TOKENS_PATH = path.join(PROJECT_DIR, "auth_tokens.json");
 const NETWORK_DISCOVERY_PATH = path.join(PROJECT_DIR, "operations_network_discovery.json");
 const SESSION_PROFILE_DIR = path.join(PROJECT_DIR, "teksher-session-profile");
 const TMP_DIR = path.join(PROJECT_DIR, "tmp");
-const LIST_ENDPOINT = "/facade/api/v1/operations/filter?size=15&page={page}&startDate=2026-05-16&endDate=2026-05-17";
-const TARGET_DATE = "2026-05-16";
+const DEFAULT_DATE_FROM = todayLocalDate();
+const DEFAULT_DATE_TO = nextDateIso(DEFAULT_DATE_FROM);
+const DATE_FROM = getEnvDate("DATE_FROM", DEFAULT_DATE_FROM);
+const DATE_TO = getEnvDate("DATE_TO", DEFAULT_DATE_TO);
+const LIST_ENDPOINT = `/facade/api/v1/operations/filter?size=15&page={page}&startDate=${DATE_FROM}&endDate=${DATE_TO}`;
 const TARGET_OPERATION_TYPE = "MARK_CODE_ORDER";
-const API_OUTPUT_DIR = path.join(os.homedir(), "Desktop", "Текшер PDF", "16.05.2026_API");
-const UI_OUTPUT_DIR = path.join(os.homedir(), "Desktop", "Текшер PDF", "16.05.2026");
-const LOG_PATH = path.join(PROJECT_DIR, "download_16may_km_pdf_log.json");
+const OUTPUT_DIR = path.join(os.homedir(), "Desktop", "Текшер PDF", formatDateDot(DATE_FROM));
+const API_OUTPUT_DIR = OUTPUT_DIR;
+const UI_OUTPUT_DIR = OUTPUT_DIR;
+const LOG_PATH = path.join(PROJECT_DIR, `download_${DATE_FROM.replace(/-/g, "")}_km_pdf_log.json`);
 const REQUEST_TIMEOUT = 45_000;
 const DOWNLOAD_TIMEOUT = 60_000;
 const PRINT_TEMPLATE_VARIANTS = [
@@ -43,6 +47,28 @@ const PDF_ENDPOINT_CANDIDATES = [
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function getEnvDate(name, fallback) {
+  const value = String(process.env[name] || "").trim();
+  return value || fallback;
+}
+
+function todayLocalDate() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const map = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${map.year}-${map.month}-${map.day}`;
+}
+
+function nextDateIso(dateIso) {
+  const date = new Date(`${dateIso}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + 1);
+  return date.toISOString().slice(0, 10);
 }
 
 function normalizeText(value) {
@@ -80,6 +106,13 @@ function normalizeDateOnly(value) {
   const date = new Date(text);
   if (!Number.isNaN(date.getTime())) return date.toISOString().slice(0, 10);
   return text.slice(0, 10);
+}
+
+function formatDateDot(dateIso) {
+  const text = String(dateIso || "").trim();
+  const match = text.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return text.replace(/-/g, ".");
+  return `${match[3]}.${match[2]}.${match[1]}`;
 }
 
 function buildUrl(endpointPath, useIp = false) {
@@ -230,7 +263,9 @@ function extractCreatedAt(record) {
 
 function isTargetDate(record) {
   const value = String(extractCreatedAt(record) || "").trim();
-  return value.startsWith(TARGET_DATE) || normalizeDateOnly(value) === TARGET_DATE;
+  const dateOnly = normalizeDateOnly(value);
+  if (!dateOnly) return false;
+  return dateOnly >= DATE_FROM && dateOnly < DATE_TO;
 }
 
 function extractProductCode(value) {
@@ -405,7 +440,24 @@ async function loadOperations(headers, refreshToken) {
   let refreshedOnce = false;
 
   async function fetchPageWithRefresh(pageNum) {
-    const firstAttempt = await fetchOperationListPage(pageNum, requestHeaders);
+    const retryStatuses = new Set([502, 503, 504]);
+    const maxAttempts = 5;
+
+    async function fetchWithRetry(currentHeaders) {
+      let lastPage = null;
+      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        const page = await fetchOperationListPage(pageNum, currentHeaders);
+        lastPage = page;
+        if (!retryStatuses.has(page.status)) return page;
+        console.log(`LIST_RETRY attempt ${attempt}/${maxAttempts} HTTP ${page.status} page=${pageNum}`);
+        if (attempt < maxAttempts) {
+          await sleep(3000);
+        }
+      }
+      return lastPage;
+    }
+
+    const firstAttempt = await fetchWithRetry(requestHeaders);
     if (firstAttempt.status !== 401) return firstAttempt;
     if (refreshedOnce) return firstAttempt;
     refreshedOnce = true;
@@ -420,7 +472,7 @@ async function loadOperations(headers, refreshToken) {
       requestHeaders.Authorization = `Bearer ${refreshed.accessToken}`;
       console.log("ACCESS_TOKEN_REFRESHED");
       console.log(`NEW_EXP ${refreshed.tokenExpiresAt || "n/a"}`);
-      return await fetchOperationListPage(pageNum, requestHeaders);
+      return await fetchWithRetry(requestHeaders);
     } catch (refreshError) {
       if (looksLikeRefreshEndpointFailure(refreshError)) {
         console.error("TOKEN_REFRESH_FAILED_RUN_MANUAL_TOKEN");
@@ -692,6 +744,12 @@ async function clickText(page, text) {
     if (await clickVisible(locator)) return true;
   }
   throw new Error(`Could not click "${text}"`);
+}
+
+function templateComboboxLocator(modal) {
+  return modal.locator(
+    '#react-select-printForm-template-input, [id*="printForm-template-input"], [id*="printForm-template"] input[role="combobox"]',
+  ).first();
 }
 
 async function findAndOpenOperation(page, operationId, productCode) {
@@ -1026,12 +1084,6 @@ async function selectPdfFileFormatInModal(page, modal) {
   await sleep(400);
 }
 
-function templateComboboxLocator(modal) {
-  return modal.locator(
-    '#react-select-printForm-template-input, [id*="printForm-template-input"], [id*="printForm-template"] input[role="combobox"]',
-  ).first();
-}
-
 async function waitForTemplateFieldReady(page) {
   await page.waitForFunction(
     () => {
@@ -1106,6 +1158,104 @@ async function dumpAfterPdfSelectedTemplate(page, modal) {
   await sleep(300);
 }
 
+async function dumpFullAfterPdfDebug(page) {
+  const debugDir = path.join(PROJECT_DIR, "debug", "download-16may-km-pdf-ui");
+  await ensureDir(debugDir);
+  const htmlPath = path.join(debugDir, "full_after_pdf.html");
+  const pngPath = path.join(debugDir, "full_after_pdf.png");
+  const jsonPath = path.join(debugDir, "full_after_pdf_elements.json");
+
+  await page.screenshot({ path: pngPath, fullPage: true }).catch(() => {});
+  await fs.writeFile(htmlPath, await page.content(), "utf8");
+
+  const elements = await page.evaluate(() => {
+    const norm = (value) => String(value || "").replace(/\s+/g, " ").trim();
+    const attrsToObject = (el) => {
+      const attrs = {};
+      for (const attr of Array.from(el.attributes || [])) {
+        attrs[attr.name] = attr.value;
+      }
+      return attrs;
+    };
+    return Array.from(document.querySelectorAll("input, button, div, label, select"))
+      .slice(0, 1200)
+      .map((el, index) => ({
+        index,
+        tagName: el.tagName,
+        id: el.id || "",
+        className: String(el.className || ""),
+        textContent: norm(el.textContent || ""),
+        value: "value" in el ? String(el.value || "") : "",
+        role: el.getAttribute("role") || "",
+        "aria-label": el.getAttribute("aria-label") || "",
+        "aria-expanded": el.getAttribute("aria-expanded") || "",
+        "aria-haspopup": el.getAttribute("aria-haspopup") || "",
+        disabled: Boolean(el.disabled),
+        hidden: Boolean(el.hidden),
+        dataAttributes: Object.fromEntries(
+          Array.from(el.attributes || [])
+            .filter((attr) => attr.name.startsWith("data-"))
+            .map((attr) => [attr.name, attr.value]),
+        ),
+        attrs: attrsToObject(el),
+      }));
+  }).catch(() => []);
+  await fs.writeFile(jsonPath, `${JSON.stringify(elements, null, 2)}\n`, "utf8");
+  console.log(`TEMPLATE_MANUAL_DEBUG html: ${htmlPath}`);
+  console.log(`TEMPLATE_MANUAL_DEBUG png: ${pngPath}`);
+  console.log(`TEMPLATE_MANUAL_DEBUG elements: ${jsonPath}`);
+  return { htmlPath, pngPath, jsonPath, elements };
+}
+
+async function dumpTemplateManualDebug(page) {
+  const debugDir = path.join(PROJECT_DIR, "debug", "download-16may-km-pdf-ui");
+  await ensureDir(debugDir);
+  const htmlPath = path.join(debugDir, "full_after_pdf.html");
+  const pngPath = path.join(debugDir, "full_after_pdf.png");
+  const jsonPath = path.join(debugDir, "full_after_pdf_state.json");
+
+  await page.screenshot({ path: pngPath, fullPage: true }).catch(() => {});
+  await fs.writeFile(htmlPath, await page.content(), "utf8");
+
+  const state = await page.evaluate(() => {
+    const norm = (value) => String(value || "").replace(/\s+/g, " ").trim();
+    return Array.from(document.querySelectorAll("input, button, div, select"))
+      .slice(0, 400)
+      .map((el, index) => ({
+        index,
+        tag: el.tagName,
+        id: el.id || "",
+        role: el.getAttribute("role") || "",
+        text: norm(el.innerText || el.textContent || "").slice(0, 200),
+        value: "value" in el ? norm(el.value) : "",
+        placeholder: el.getAttribute("placeholder") || "",
+        ariaLabel: el.getAttribute("aria-label") || "",
+        className: String(el.className || "").slice(0, 120),
+      }));
+  }).catch(() => []);
+  await fs.writeFile(jsonPath, `${JSON.stringify(state, null, 2)}\n`, "utf8");
+  console.log(`TEMPLATE_MANUAL_DEBUG html: ${htmlPath}`);
+  console.log(`TEMPLATE_MANUAL_DEBUG png: ${pngPath}`);
+  console.log(`TEMPLATE_MANUAL_DEBUG state: ${jsonPath}`);
+  return { htmlPath, pngPath, jsonPath, state };
+}
+
+async function getTemplateControlLocator(page) {
+  const label = page.locator("span._label_1s02k_4").filter({ hasText: /^Шаблон$/ }).first();
+  const labelContainer = label.locator("xpath=following::div[contains(@class,'app_select')][1]").first();
+  const explicitInput = page.locator("#react-select-printForm-template-input").first();
+  const inputControl = explicitInput.locator("xpath=ancestor::div[contains(@class,'react-select__control')][1]").first();
+  const ariaInput = page.locator('input[role="combobox"]').filter({ has: page.getByText("Шаблон", { exact: true }) }).first();
+  const fallbackInput = page.locator('input[role="combobox"]').nth(1);
+
+  const locators = [labelContainer, inputControl, explicitInput, ariaInput, fallbackInput].filter(Boolean);
+  for (const locator of locators) {
+    const count = await locator.count().catch(() => 0);
+    if (count) return locator;
+  }
+  return null;
+}
+
 async function clickReactSelectOption(page, optionTexts, idFragment = "") {
   const partial = /горизонтальн/i;
   const locators = [];
@@ -1142,11 +1292,41 @@ async function clickReactSelectOption(page, optionTexts, idFragment = "") {
   return "";
 }
 
+async function waitForManualTemplateSelection(page, reason = "") {
+  console.log("MANUAL_TEMPLATE_SELECT_REQUIRED");
+  if (reason) console.log(`reason: ${reason}`);
+  await page.waitForTimeout(60000).catch(() => {});
+}
+
 async function selectTemplateInModal(page, modal) {
   await waitForTemplateFieldReady(page);
   const combobox = templateComboboxLocator(modal);
   if (!(await combobox.count().catch(() => 0))) {
-    throw new Error("TEMPLATE_COMBOBOX_NOT_FOUND");
+    console.log("ACTIVE_TEMPLATE_FAIL_BRANCH:", "selectTemplateInModal: combobox_not_found");
+    const allComboboxes = page.locator('input[role="combobox"]');
+    const allCount = await allComboboxes.count().catch(() => 0);
+    const visible = [];
+    for (let index = 0; index < allCount; index += 1) {
+      const item = allComboboxes.nth(index);
+      if (await item.isVisible().catch(() => false)) visible.push(item);
+    }
+    console.log(`ACTIVE_TEMPLATE_FAIL_BRANCH visible_combobox_count=${visible.length}`);
+    const debugPath = await dumpUiDebug(page, "template_combobox_not_found", `visible_combobox_count=${visible.length}`);
+    console.log(`ACTIVE_TEMPLATE_FAIL_BRANCH debug_png=${debugPath.pngPath}`);
+    if (visible.length >= 2) {
+      const templateInput = visible[1];
+      await templateInput.scrollIntoViewIfNeeded().catch(() => {});
+      await templateInput.click({ timeout: REQUEST_TIMEOUT, force: true }).catch(() => {});
+      await sleep(600);
+      const chosen = await clickReactSelectOption(page, PRINT_TEMPLATE_VARIANTS, "printForm-template");
+      if (chosen) return chosen;
+      await page.keyboard.type("горизонтальный", { delay: 25 }).catch(() => {});
+      await sleep(400);
+      const retry = await clickReactSelectOption(page, PRINT_TEMPLATE_VARIANTS, "printForm-template");
+      if (retry) return retry;
+    }
+    await waitForManualTemplateSelection(page, "template combobox not found");
+    return "MANUAL_TEMPLATE_SELECTION";
   }
 
   await combobox.scrollIntoViewIfNeeded().catch(() => {});
@@ -1159,7 +1339,8 @@ async function selectTemplateInModal(page, modal) {
     await sleep(400);
     const retry = await clickReactSelectOption(page, PRINT_TEMPLATE_VARIANTS, "printForm-template");
     if (!retry) {
-      throw new Error("TEMPLATE_OPTION_NOT_FOUND");
+      await waitForManualTemplateSelection(page, "template option not found");
+      return "MANUAL_TEMPLATE_SELECTION";
     }
     return retry;
   }
@@ -1186,6 +1367,15 @@ async function printPdfViaUi(page, outputDir, fileBase, operationId, productCode
   }
 
   await selectPdfFileFormatInModal(page, modal);
+  await page.waitForTimeout(3000).catch(() => {});
+  const templateLabel = page.getByText("Шаблон", { exact: false }).first();
+  const templateLabelVisible = await templateLabel.isVisible().catch(() => false);
+  if (!templateLabelVisible) {
+    await dumpUiDebug(page, "template_label_not_found", "Шаблон did not appear after selecting PDF file");
+    console.log("ACTIVE_TEMPLATE_FAIL_BRANCH printPdfViaUi: template_label_not_found");
+    await waitForManualTemplateSelection(page, "template label not visible after PDF selection");
+  }
+  await dumpUiDebug(page, "after_pdf_template_label_visible", "Шаблон visible after PDF selection");
   await waitForTemplateFieldReady(page);
   if (isPdfDebugOne()) {
     await dumpAfterPdfSelectedTemplate(page, modal);
@@ -1201,14 +1391,25 @@ async function printPdfViaUi(page, outputDir, fileBase, operationId, productCode
   const fallbackPrint = modal.getByRole("button", { name: "Печать", exact: true }).last();
   const printButton = (await modalPrint.count().catch(() => 0)) ? modalPrint : fallbackPrint;
 
-  const downloadPromise = page.waitForEvent("download", { timeout: DOWNLOAD_TIMEOUT });
+  const downloadPromise = page.waitForEvent("download", { timeout: 60_000 });
   if (await printButton.isVisible().catch(() => false)) {
     await printButton.click({ timeout: REQUEST_TIMEOUT, force: true });
   } else if (!(await clickVisible(modal.getByRole("button", { name: "Печать", exact: false })))) {
     throw new Error("MODAL_PRINT_BUTTON_NOT_FOUND");
   }
 
-  const download = await downloadPromise;
+  let download;
+  try {
+    download = await downloadPromise;
+  } catch (error) {
+    const pageClosed = page.isClosed?.() || false;
+    const contextClosed = page.context?.().isClosed?.() || false;
+    if (pageClosed || contextClosed) {
+      console.error("DOWNLOAD_PAGE_CLOSED_BEFORE_EVENT");
+      throw new Error("DOWNLOAD_PAGE_CLOSED_BEFORE_EVENT");
+    }
+    throw error;
+  }
   await download.saveAs(targetPath);
   await waitForNoTmpDownloads(outputDir);
 
@@ -1398,6 +1599,10 @@ async function main() {
     }
     throw error;
   }
+
+  console.log(`DATE_FROM: ${DATE_FROM}`);
+  console.log(`DATE_TO: ${DATE_TO}`);
+  console.log(`output folder: ${OUTPUT_DIR}`);
 
   let rows;
   try {

@@ -1,4 +1,5 @@
 const fs = require("node:fs/promises");
+const fsSync = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const { chromium } = require("playwright");
@@ -62,6 +63,8 @@ const DATE_FROM = getEnvDate("DATE_FROM", DEFAULT_DATE_FROM);
 const DATE_TO = getEnvDate("DATE_TO", DEFAULT_DATE_TO);
 const OUTPUT_DIR = path.join(os.homedir(), "Desktop", "Текшер PDF", formatDateDot(DATE_FROM));
 const LIST_ENDPOINT = `/facade/api/v1/operations/filter?size=${PAGE_SIZE}&page={page}&startDate=${DATE_FROM}&endDate=${DATE_TO}`;
+const RETRY_FAILED_ONLY = String(process.env.RETRY_FAILED_ONLY || "").trim() === "1";
+const FAILED_OPERATIONS_PATH = path.join(PROJECT_DIR, "tmp", `failed_pdf_operations_${String(DATE_FROM).slice(8)}may.json`);
 
 function normalizeText(value) {
   return String(value || "")
@@ -253,6 +256,37 @@ function extractProductCode(value) {
   return "";
 }
 
+function normalizeFailedOperationRecord(record) {
+  if (!record || typeof record !== "object") return null;
+  const operationId = extractOperationId(record) || normalizeText(record.operationId || "");
+  if (!operationId) return null;
+  return {
+    operationId,
+    createdAt: normalizeText(record.createdAt || record.created_at || ""),
+    status: normalizeStatus(record.status || record.state || ""),
+    productCode: normalizeText(record.productCode || record.product_code || extractProductCode(record.raw || record)),
+    error: normalizeText(record.error || record.errorMessage || record.message || ""),
+    result: normalizeText(record.result || ""),
+    filePath: normalizeText(record.filePath || ""),
+  };
+}
+
+async function loadFailedOperations() {
+  const payload = await readJsonIfExists(FAILED_OPERATIONS_PATH);
+  if (!payload) return [];
+  const source = Array.isArray(payload) ? payload : Array.isArray(payload.failedOperations) ? payload.failedOperations : Array.isArray(payload.items) ? payload.items : [];
+  const seen = new Set();
+  const items = [];
+  for (const entry of source) {
+    const normalized = normalizeFailedOperationRecord(entry);
+    if (!normalized) continue;
+    if (seen.has(normalized.operationId)) continue;
+    seen.add(normalized.operationId);
+    items.push(normalized);
+  }
+  return items;
+}
+
 async function ensureDir(dir) {
   try {
     await fs.mkdir(dir, { recursive: true });
@@ -268,6 +302,24 @@ async function ensureDir(dir) {
 
 async function writeJson(filePath, value) {
   await fs.writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+}
+
+async function readJsonIfExists(filePath) {
+  try {
+    const content = await fs.readFile(filePath, "utf8");
+    return JSON.parse(content);
+  } catch {
+    return null;
+  }
+}
+
+async function safeWriteDebug(dir, fileName, value, encoding = "utf8") {
+  try {
+    fsSync.mkdirSync(dir, { recursive: true });
+    await fs.writeFile(path.join(dir, fileName), value, encoding);
+  } catch (error) {
+    console.warn(`[DEBUG_WRITE_FAILED] ${path.join(dir, fileName)} ${error?.message || error}`);
+  }
 }
 
 async function fileExists(filePath) {
@@ -460,34 +512,91 @@ async function clickText(page, text) {
 }
 
 async function openOperationFromList(page, operationId) {
-  const rows = page.locator("table tbody tr, [role='row'], .operation, .operations-row, li");
-  const rowCount = await rows.count().catch(() => 0);
-  for (let index = 0; index < rowCount; index += 1) {
-    const row = rows.nth(index);
-    if (!(await row.isVisible().catch(() => false))) continue;
-    const text = await row.innerText().catch(() => "");
-    if (!text.includes(operationId)) continue;
-    const clickable = row.locator("a,button,[role='button']").first();
-    if (await clickable.isVisible().catch(() => false)) {
-      await clickable.click({ timeout: REQUEST_TIMEOUT, force: true });
-    } else {
-      await row.click({ timeout: REQUEST_TIMEOUT, force: true });
-    }
-    return true;
-  }
+  const directUrls = [
+    `${OPERATIONS_URL}/${operationId}`,
+    `${OPERATIONS_URL}/${operationId}/details`,
+    `${OPERATIONS_URL}?operationId=${operationId}`,
+    `${OPERATIONS_URL}?id=${operationId}`,
+  ];
 
-  const byText = page.getByText(operationId, { exact: false });
-  const textCount = await byText.count().catch(() => 0);
-  for (let index = 0; index < textCount; index += 1) {
-    const item = byText.nth(index);
-    if (!(await item.isVisible().catch(() => false))) continue;
-    await item.click({ timeout: REQUEST_TIMEOUT, force: true }).catch(async () => {
-      const row = item.locator("xpath=ancestor::tr[1]");
-      if (await row.isVisible().catch(() => false)) {
+  const findOperationOnCurrentPage = async () => {
+    const rows = page.locator("table tbody tr, [role='row'], .operation, .operations-row, li");
+    const rowCount = await rows.count().catch(() => 0);
+    for (let index = 0; index < rowCount; index += 1) {
+      const row = rows.nth(index);
+      if (!(await row.isVisible().catch(() => false))) continue;
+      const text = normalizeText(await row.innerText().catch(() => ""));
+      if (!text.includes(operationId)) continue;
+      const clickable = row.locator("a,button,[role='button']").first();
+      if (await clickable.isVisible().catch(() => false)) {
+        await clickable.click({ timeout: REQUEST_TIMEOUT, force: true });
+      } else {
         await row.click({ timeout: REQUEST_TIMEOUT, force: true });
       }
-    });
-    return true;
+      return true;
+    }
+
+    const byText = page.getByText(operationId, { exact: false });
+    const textCount = await byText.count().catch(() => 0);
+    for (let index = 0; index < textCount; index += 1) {
+      const item = byText.nth(index);
+      if (!(await item.isVisible().catch(() => false))) continue;
+      await item.click({ timeout: REQUEST_TIMEOUT, force: true }).catch(async () => {
+        const row = item.locator("xpath=ancestor::tr[1]");
+        if (await row.isVisible().catch(() => false)) {
+          await row.click({ timeout: REQUEST_TIMEOUT, force: true });
+        }
+      });
+      return true;
+    }
+
+    return false;
+  };
+
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    for (const url of directUrls) {
+      try {
+        await page.goto(url, { waitUntil: "domcontentloaded", timeout: REQUEST_TIMEOUT });
+        await page.waitForLoadState("networkidle", { timeout: REQUEST_TIMEOUT }).catch(() => {});
+        const bodyText = normalizeText(await page.locator("body").innerText().catch(() => ""));
+        if (bodyText.includes(operationId)) {
+          return { opened: true, via: `direct:${url}`, attempt };
+        }
+      } catch (error) {
+        console.warn(`DIRECT_OPERATION_URL_FAILED ${url} ${error?.message || error}`);
+      }
+    }
+
+    await page.goto(OPERATIONS_URL, { waitUntil: "domcontentloaded", timeout: REQUEST_TIMEOUT }).catch(() => {});
+    await page.waitForLoadState("networkidle", { timeout: REQUEST_TIMEOUT }).catch(() => {});
+
+    for (let pageNumber = 1; pageNumber <= 10; pageNumber += 1) {
+      if (await findOperationOnCurrentPage()) {
+        return { opened: true, via: `list-page-${pageNumber}`, attempt };
+      }
+
+      const nextCandidates = [
+        page.getByRole("button", { name: /next|следующая|вперёд|вперед/i }),
+        page.getByText(/next|следующая|вперёд|вперед/i),
+        page.locator('button, a').filter({ hasText: /next|следующая|вперёд|вперед/i }),
+      ];
+      let clickedNext = false;
+      for (const candidate of nextCandidates) {
+        const count = await candidate.count().catch(() => 0);
+        for (let index = 0; index < count; index += 1) {
+          const item = candidate.nth(index);
+          if (!(await item.isVisible().catch(() => false))) continue;
+          const disabled = await item.isDisabled?.().catch(() => false);
+          if (disabled) continue;
+          await item.click({ timeout: REQUEST_TIMEOUT, force: true }).catch(() => {});
+          clickedNext = true;
+          break;
+        }
+        if (clickedNext) break;
+      }
+      if (!clickedNext) break;
+      await page.waitForLoadState("networkidle", { timeout: REQUEST_TIMEOUT }).catch(() => {});
+    }
   }
 
   throw new Error(`Could not locate operation ${operationId}`);
@@ -497,6 +606,10 @@ async function waitForPrintModal(page) {
   const modalCandidates = [
     page.locator('[role="dialog"]'),
     page.locator('[aria-modal="true"]'),
+    page.getByText(/Печать кодов маркировки/i),
+    page.getByText(/Формат файла/i),
+    page.getByText(/Шаблон/i),
+    page.getByText(/Количество/i),
     page.locator('div:has-text("Печать и нанесение")'),
   ];
   for (const locator of modalCandidates) {
@@ -518,6 +631,47 @@ async function getVisibleComboboxes(page) {
     if (await item.isVisible().catch(() => false)) visible.push(item);
   }
   return visible;
+}
+
+async function findVisibleControlNearLabel(page, modal, labelText) {
+  const locators = [
+    modal.getByText(labelText, { exact: false }),
+    page.getByText(labelText, { exact: false }),
+  ];
+
+  for (const labelLocator of locators) {
+    const count = await labelLocator.count().catch(() => 0);
+    for (let index = 0; index < count; index += 1) {
+      const item = labelLocator.nth(index);
+      if (!(await item.isVisible().catch(() => false))) continue;
+
+      const candidates = [
+        item.locator('xpath=ancestor::*[self::div or self::label or self::td or self::section][1]//*[self::div[@role="combobox"] or self::button or self::input[not(@type="hidden")] or contains(@class,"control") or contains(@class,"select")]'),
+        item.locator('xpath=ancestor::*[self::div or self::label or self::td or self::section][2]//*[self::div[@role="combobox"] or self::button or self::input[not(@type="hidden")] or contains(@class,"control") or contains(@class,"select")]'),
+        item.locator('xpath=following::*[self::div[@role="combobox"] or self::button or self::input[not(@type="hidden")] or contains(@class,"control") or contains(@class,"select")][1]'),
+        item.locator('xpath=preceding::*[self::div[@role="combobox"] or self::button or self::input[not(@type="hidden")] or contains(@class,"control") or contains(@class,"select")][1]'),
+      ];
+
+      for (const candidate of candidates) {
+        const candidateCount = await candidate.count().catch(() => 0);
+        for (let candidateIndex = 0; candidateIndex < candidateCount; candidateIndex += 1) {
+          const control = candidate.nth(candidateIndex);
+          if (!(await control.isVisible().catch(() => false))) continue;
+          const tagName = await control.evaluate((node) => node.tagName).catch(() => "");
+          const id = await control.getAttribute("id").catch(() => "");
+          const role = await control.getAttribute("role").catch(() => "");
+          const type = await control.getAttribute("type").catch(() => "");
+          if (tagName === "INPUT" && type === "hidden") continue;
+          if (id && /-input$/i.test(id) && tagName === "INPUT") continue;
+          if (role === "button" || role === "combobox" || tagName === "BUTTON" || tagName === "DIV" || tagName === "INPUT") {
+            return control;
+          }
+        }
+      }
+    }
+  }
+
+  return null;
 }
 
 async function collectVisibleOptions(page) {
@@ -556,11 +710,16 @@ async function savePdfDownload(download, targetPath) {
   }
 }
 
+function isDownloadTimeoutError(error) {
+  const message = String(error?.message || error || "");
+  return /Timeout .* waiting for event "download"/i.test(message) || /DOWNLOAD_TIMEOUT/i.test(message);
+}
+
 async function captureUiDebug(page, operationId, reason) {
   const safeOperationId = sanitizeFilePart(operationId || "unknown");
   const dir = path.join(PROJECT_DIR, "debug", "km-pdf-clean", safeOperationId);
-  await ensureDir(dir);
-  await fs.writeFile(path.join(dir, "page.html"), await page.content(), "utf8");
+  fsSync.mkdirSync(dir, { recursive: true });
+  await safeWriteDebug(dir, "page.html", await page.content().catch(() => ""));
   await page.screenshot({ path: path.join(dir, "page.png"), fullPage: true }).catch(() => {});
 
   const controls = await page.evaluate(() => {
@@ -622,57 +781,110 @@ async function captureUiDebug(page, operationId, reason) {
       });
   }).catch(() => []);
 
-  await writeJson(path.join(dir, "controls.json"), { reason, controls });
-  await writeJson(path.join(dir, "options.json"), { reason, options });
+  await safeWriteDebug(dir, "controls.json", `${JSON.stringify({ reason, controls }, null, 2)}\n`);
+  await safeWriteDebug(dir, "options.json", `${JSON.stringify({ reason, options }, null, 2)}\n`);
 }
 
-async function selectPdfFormat(page, modal) {
-  const comboboxes = await getVisibleComboboxes(page);
-  const target = comboboxes[0] || modal.locator('input[role="combobox"]').first();
-  if (!(await target.count().catch(() => 0))) {
+async function dumpOperationPageUi(page, operationId) {
+  const safeOperationId = sanitizeFilePart(operationId || "unknown");
+  const dir = path.join(PROJECT_DIR, "debug", "km-pdf-clean", safeOperationId);
+  fsSync.mkdirSync(dir, { recursive: true });
+
+  const buttons = await page.evaluate(() => Array.from(document.querySelectorAll("button"))
+    .filter((el) => el && el.getClientRects && el.getClientRects().length > 0)
+    .map((el, index) => ({
+      index,
+      text: String(el.innerText || el.textContent || "").replace(/\s+/g, " ").trim(),
+      ariaLabel: el.getAttribute("aria-label") || "",
+      title: el.getAttribute("title") || "",
+      role: el.getAttribute("role") || "",
+      id: el.id || "",
+      className: el.className || "",
+    }))
+  ).catch(() => []);
+
+  const bodyText = normalizeText(await page.locator("body").innerText().catch(() => ""));
+
+  await safeWriteDebug(dir, "operation-page-buttons.json", `${JSON.stringify({ operationId, buttons }, null, 2)}\n`);
+  await safeWriteDebug(dir, "operation-page-texts.txt", `${bodyText}\n`);
+}
+
+async function selectPdfFormat(page, modal, operationId) {
+  const safeDir = path.join(PROJECT_DIR, "debug", "km-pdf-clean", sanitizeFilePart(operationId || "unknown"));
+  const target = await findVisibleControlNearLabel(page, modal, "Формат файла");
+  if (!target) {
     throw new Error("KM_PDF_FORMAT_COMBOBOX_NOT_FOUND");
   }
 
+  await target.scrollIntoViewIfNeeded().catch(() => {});
   await target.click({ force: true });
-  await page.keyboard.type("PDF файл", { delay: 20 }).catch(() => {});
-  await sleep(700);
+  await sleep(400);
 
-  const options = page.locator('[role="option"], [id*="option"]');
-  const count = await options.count().catch(() => 0);
-  const preferred = [/^PDF файл$/i, /^PDF$/i, /PDF файл/i, /\bPDF\b/i];
-  for (let index = 0; index < count; index += 1) {
-    const item = options.nth(index);
+  const dropdownTexts = [];
+  const visibleOptions = [];
+  const optionLocator = page.locator('[role="option"], [id*="option"], div[class*="option"], [class*="option"], [role="menuitem"]');
+  const optionCount = await optionLocator.count().catch(() => 0);
+  for (let index = 0; index < optionCount; index += 1) {
+    const item = optionLocator.nth(index);
+    if (!(await item.isVisible().catch(() => false))) continue;
+    const text = normalizeText(await item.innerText().catch(() => ""));
+    if (!text) continue;
+    visibleOptions.push(text);
+    dropdownTexts.push(text);
+  }
+
+  console.log(`[PDF_FORMAT_OPTIONS] ${visibleOptions.join(" | ")}`);
+  fsSync.mkdirSync(safeDir, { recursive: true });
+  await safeWriteDebug(safeDir, "pdf-format-dropdown.html", await page.content().catch(() => ""));
+  await page.screenshot({ path: path.join(safeDir, "pdf-format-dropdown.png"), fullPage: true }).catch(() => {});
+  await safeWriteDebug(safeDir, "pdf-format-options.txt", `${visibleOptions.join("\n")}\n`);
+
+  const preferred = [
+    /PDF файл/i,
+    /\bPDF\b/i,
+    /pdf/i,
+    /format.*pdf/i,
+  ];
+
+  for (let index = 0; index < optionCount; index += 1) {
+    const item = optionLocator.nth(index);
     if (!(await item.isVisible().catch(() => false))) continue;
     const text = normalizeText(await item.innerText().catch(() => ""));
     if (!text) continue;
     if (preferred.some((regex) => regex.test(text))) {
       await item.click({ force: true });
       await sleep(500);
-      return text;
+      const bodyText = normalizeText(await page.locator("body").innerText().catch(() => ""));
+      if (/PDF/i.test(bodyText)) {
+        return text;
+      }
     }
   }
 
+  await page.keyboard.type("PDF файл", { delay: 20 }).catch(() => {});
+  await sleep(400);
   await page.keyboard.press("ArrowDown").catch(() => {});
   await page.keyboard.press("Enter").catch(() => {});
   await sleep(500);
 
   const bodyText = normalizeText(await page.locator("body").innerText().catch(() => ""));
-  if (/PDF файл/i.test(bodyText) || /\bPDF\b/i.test(bodyText)) {
+  if (/PDF/i.test(bodyText)) {
     return "PDF файл";
   }
-  throw new Error("KM_PDF_FORMAT_SELECTION_FAILED");
+
+  throw new Error(`KM_PDF_FORMAT_SELECTION_FAILED: ${visibleOptions.join(" | ")}`);
 }
 
 async function selectTemplate(page) {
   await sleep(3000);
   await page.getByText("Шаблон", { exact: false }).first().waitFor({ state: "visible", timeout: 10_000 });
 
-  const visibleComboboxes = await getVisibleComboboxes(page);
-  const templateCombobox = visibleComboboxes[1] || visibleComboboxes[visibleComboboxes.length - 1] || null;
+  const templateCombobox = await findVisibleControlNearLabel(page, page, "Шаблон");
   if (!templateCombobox) {
     throw new Error("KM_PDF_TEMPLATE_CONTROL_MISSING");
   }
 
+  await templateCombobox.scrollIntoViewIfNeeded().catch(() => {});
   await templateCombobox.click({ force: true });
   await templateCombobox.fill("Data matrix").catch(() => {});
   await sleep(700);
@@ -711,6 +923,85 @@ async function selectTemplate(page) {
   throw new Error("KM_PDF_TEMPLATE_SELECTION_FAILED");
 }
 
+async function clickPrintEntry(page) {
+  const deadlineMs = 10_000;
+  const startedAt = Date.now();
+
+  const collectVisibleButtons = async () => page.evaluate(() => Array.from(document.querySelectorAll("button"))
+    .filter((el) => el && el.getClientRects && el.getClientRects().length > 0)
+    .map((el, index) => ({
+      index,
+      text: String(el.innerText || el.textContent || "").replace(/\s+/g, " ").trim(),
+      ariaLabel: el.getAttribute("aria-label") || "",
+      title: el.getAttribute("title") || "",
+    }))
+  ).catch(() => []);
+
+  const modalCancelVisible = async () => {
+    const cancelButtons = page.getByRole("button", { name: /отменить/i });
+    const count = await cancelButtons.count().catch(() => 0);
+    for (let index = 0; index < count; index += 1) {
+      if (await cancelButtons.nth(index).isVisible().catch(() => false)) return true;
+    }
+    return false;
+  };
+
+  while (Date.now() - startedAt < deadlineMs) {
+    const visibleButtons = await collectVisibleButtons();
+    console.log(`[STEP] visible buttons: ${visibleButtons.map((item) => item.text).join(" | ")}`);
+
+    const cancelVisible = await modalCancelVisible();
+    const candidateTexts = visibleButtons
+      .map((item) => item.text)
+      .filter((text) => /печать и нанесение/i.test(text) || (!cancelVisible && /^печать$/i.test(text)));
+
+    for (const text of candidateTexts) {
+      const exact = page.getByRole("button", { name: new RegExp(`^${text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") });
+      const byRole = page.getByRole("button", { name: new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i") });
+      const byText = page.getByText(new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"));
+      for (const candidate of [exact, byRole, byText]) {
+        const count = await candidate.count().catch(() => 0);
+        for (let index = 0; index < count; index += 1) {
+          const item = candidate.nth(index);
+          if (!(await item.isVisible().catch(() => false))) continue;
+          console.log(`[STEP] click print entry: ${text}`);
+          await item.scrollIntoViewIfNeeded().catch(() => {});
+          await item.click({ force: true }).catch(() => {});
+          return true;
+        }
+      }
+    }
+
+    const fallback = [
+      page.getByRole("button", { name: /печать и нанесение/i }),
+      page.getByText(/печать и нанесение/i),
+      page.locator('button').filter({ hasText: /печать и нанесение/i }),
+      ...(!cancelVisible ? [
+        page.getByRole("button", { name: /^печать$/i }),
+        page.getByText(/^печать$/i),
+        page.locator('button').filter({ hasText: /^печать$/i }),
+      ] : []),
+    ];
+
+    for (const candidate of fallback) {
+      const count = await candidate.count().catch(() => 0);
+      for (let index = 0; index < count; index += 1) {
+        const item = candidate.nth(index);
+        if (!(await item.isVisible().catch(() => false))) continue;
+        const text = normalizeText(await item.innerText().catch(() => ""));
+        console.log(`[STEP] click print entry: ${text || "Печать"}`);
+        await item.scrollIntoViewIfNeeded().catch(() => {});
+        await item.click({ force: true }).catch(() => {});
+        return true;
+      }
+    }
+
+    await sleep(500);
+  }
+
+  throw new Error("PRINT_ENTRY_NOT_FOUND");
+}
+
 async function clickPrintAndSave(page, targetPath) {
   const downloadPromise = page.waitForEvent("download", { timeout: DOWNLOAD_TIMEOUT });
   const printButton = page.getByRole("button", { name: "Печать", exact: true }).last();
@@ -724,6 +1015,9 @@ async function clickPrintAndSave(page, targetPath) {
     if (/Target page, context or browser has been closed/i.test(String(error?.message || error))) {
       throw new Error("DOWNLOAD_PAGE_CLOSED_BEFORE_EVENT");
     }
+    if (/Timeout .* waiting for event "download"/i.test(String(error?.message || error))) {
+      throw new Error("PRINT_DOWNLOAD_TIMEOUT");
+    }
     throw error;
   }
 
@@ -736,40 +1030,65 @@ async function printPdfViaUi(page, operation, outputDir) {
 
   await openOperationFromList(page, operation.operationId);
   await page.waitForLoadState("networkidle", { timeout: REQUEST_TIMEOUT }).catch(() => {});
+  await dumpOperationPageUi(page, operation.operationId).catch(() => {});
 
-  const printButton = page.getByRole("button", { name: "Печать и нанесение", exact: true }).last();
-  await printButton.waitFor({ state: "visible", timeout: REQUEST_TIMEOUT });
-  await printButton.click({ force: true });
+  await clickPrintEntry(page);
 
-  const modal = await waitForPrintModal(page);
-  if (!modal) {
-    throw new Error("KM_PDF_PRINT_MODAL_NOT_FOUND");
-  }
-
-  await selectPdfFormat(page, modal);
-  await sleep(3000);
-  await page.getByText("Шаблон", { exact: false }).first().waitFor({ state: "visible", timeout: 10_000 });
-  await selectTemplate(page);
-  await sleep(500);
-
-  const targetBase = sanitizeFilePart(operation.productCode || operation.operationId || "operation");
+  const operationId = sanitizeFilePart(operation.operationId || "");
+  const originalName = sanitizeFilePart(operation.productCode || operation.operationId || "operation");
+  const targetBase = operationId || `unknown__${originalName}` || originalName || "operation";
   const targetPath = path.join(outputDir, `${targetBase}.pdf`);
   if (await fileExists(targetPath)) {
     return { filePath: targetPath, skipped: true };
   }
 
-  await clickPrintAndSave(page, targetPath);
-  return { filePath: targetPath, skipped: false };
+  let modal = null;
+  const modalDeadline = Date.now() + 3_000;
+  while (Date.now() < modalDeadline) {
+    modal = await waitForPrintModal(page);
+    if (modal) break;
+    await sleep(250);
+  }
+
+  if (modal) {
+    await selectPdfFormat(page, modal, operation.operationId);
+    await sleep(3000);
+    await page.getByText("Шаблон", { exact: false }).first().waitFor({ state: "visible", timeout: 10_000 });
+    await selectTemplate(page);
+    await sleep(500);
+  } else {
+    await captureUiDebug(page, operation.operationId, "KM_PDF_PRINT_MODAL_NOT_FOUND").catch(() => {});
+    throw new Error("KM_PDF_PRINT_MODAL_NOT_FOUND");
+  }
+
+  let lastError = null;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      await clickPrintAndSave(page, targetPath);
+      return { filePath: targetPath, skipped: false };
+    } catch (error) {
+      lastError = error;
+      if (!isDownloadTimeoutError(error) && !/PRINT_DOWNLOAD_TIMEOUT/i.test(String(error?.message || ""))) {
+        throw error;
+      }
+      console.warn(`[DOWNLOAD_RETRY] attempt ${attempt}/3 ${error?.message || error}`);
+      await sleep(1_000);
+    }
+  }
+
+  throw lastError || new Error("PRINT_DOWNLOAD_TIMEOUT");
 }
 
 async function main() {
   await ensureDir(OUTPUT_DIR);
+  await ensureDir(path.dirname(FAILED_OPERATIONS_PATH));
   console.log(`DATE_FROM: ${DATE_FROM}`);
   console.log(`DATE_TO: ${DATE_TO}`);
   console.log(`output folder: ${OUTPUT_DIR}`);
+  console.log(`retry failed only: ${RETRY_FAILED_ONLY ? "yes" : "no"}`);
 
   const authState = await readAuthHeaders();
-  const operations = await loadOperations(authState.headers);
+  const operations = RETRY_FAILED_ONLY ? await loadFailedOperations() : await loadOperations(authState.headers);
   const targets = PDF_DEBUG_ONE ? operations.slice(0, 1) : operations;
 
   console.log(`total operations found: ${operations.length}`);
@@ -787,6 +1106,7 @@ async function main() {
   });
 
   const results = [];
+  const failedRecords = [];
   let downloaded = 0;
   let skipped = 0;
   let failed = 0;
@@ -818,6 +1138,14 @@ async function main() {
         });
       } catch (error) {
         failed += 1;
+        failedRecords.push({
+          operationId: operation.operationId,
+          createdAt: operation.createdAt,
+          status: operation.status,
+          productCode: operation.productCode || extractProductCode(operation.raw || operation),
+          error: error?.message || String(error),
+          result: "failed",
+        });
         await captureUiDebug(page, operation.operationId, error?.message || String(error)).catch(() => {});
         results.push({
           operationId: operation.operationId,
@@ -835,6 +1163,13 @@ async function main() {
       if (PDF_DEBUG_ONE) break;
     }
 
+    await writeJson(FAILED_OPERATIONS_PATH, {
+      failedOperations: failedRecords,
+      updatedAt: new Date().toISOString(),
+      dateFrom: DATE_FROM,
+      dateTo: DATE_TO,
+    }).catch(() => {});
+
     console.table(results.map((row) => ({
       operationId: row.operationId,
       createdAt: row.createdAt,
@@ -848,6 +1183,7 @@ async function main() {
     console.log(`skipped: ${skipped}`);
     console.log(`failed: ${failed}`);
     console.log(`output folder: ${OUTPUT_DIR}`);
+    console.log(`failed operations file: ${FAILED_OPERATIONS_PATH}`);
   } finally {
     await browserContext.close().catch(() => {});
   }

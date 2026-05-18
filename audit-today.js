@@ -1,24 +1,42 @@
 const fs = require("node:fs/promises");
 const os = require("node:os");
 const path = require("node:path");
-const { chromium } = require("playwright");
+const authHelper = require("./teksher-auth.js");
 
 const BASE_URL = "https://label.teksher.kg";
-const OPERATIONS_URL = `${BASE_URL}/operations`;
-const PROFILE_DIR = path.join(__dirname, "teksher-session-profile");
-const TARGET_DATE = "2026-05-15";
-const TARGET_DATE_DOT = "15.05.2026";
 const TARGET_OPERATION_TYPE_CODE = "MARK_CODE_ORDER";
 const TARGET_OPERATION_TYPE_TEXT = "Заказ на эмиссию КМ";
+const AUTH_TOKENS_PATH = path.join(__dirname, "auth_tokens.json");
 const ALL_PATH = path.join(__dirname, "audit_today_all.json");
 const DUPLICATES_PATH = path.join(__dirname, "audit_today_duplicates.json");
 const SELECTED_PATH = path.join(__dirname, "audit_today_selected.json");
 const LOCAL_OUTPUT_DIR = path.join(os.homedir(), "Desktop", "заказ км");
 const PAGE_SIZE = 100;
+const LOOSEN_FILTERS = true;
+let TARGET_DATE = todayLocalDate();
+let TARGET_DATE_END = nextDate(TARGET_DATE);
+let TARGET_DATE_DOT = `${TARGET_DATE.slice(8, 10)}.${TARGET_DATE.slice(5, 7)}.${TARGET_DATE.slice(0, 4)}`;
 
 const SUCCESS_STATUSES = new Set(["DONE", "READY", "CREATED", "ACCEPTED"]);
 const PROGRESS_STATUSES = new Set(["PROGRESS", "IN_PROGRESS", "PROCESSING", "PENDING"]);
 const BAD_STATUSES = new Set(["ERROR", "500", "502"]);
+
+function todayLocalDate() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const map = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${map.year}-${map.month}-${map.day}`;
+}
+
+function nextDate(dateText) {
+  const date = new Date(`${dateText}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + 1);
+  return date.toISOString().slice(0, 10);
+}
 
 function uniq(values) {
   return Array.from(new Set(values.filter(Boolean)));
@@ -140,6 +158,11 @@ function normalizeOperation(raw, sourceUrl = "") {
   };
 }
 
+function hasAnyTargetDate(value) {
+  const createdAt = findFirstField(value, [/^createdAt$/i, /^created_at$/i, /^created$/i, /^date$/i]);
+  return datePart(createdAt) === TARGET_DATE;
+}
+
 function collectOperationObjects(value, out = [], seen = new Set()) {
   if (value == null || typeof value !== "object") return out;
   if (seen.has(value)) return out;
@@ -215,67 +238,108 @@ async function ensureDir(dir) {
   await fs.mkdir(dir, { recursive: true });
 }
 
+function normalizeToken(token) {
+  return String(token || "").trim().replace(/^Bearer\s+/i, "").trim();
+}
+
+async function resolveAuthFromFiles() {
+  const candidates = await authHelper.readAuthCandidatesFromFiles([
+    { path: AUTH_TOKENS_PATH, source: "auth_tokens.json" },
+  ]);
+  const accessCandidate = authHelper.chooseAccessToken(candidates);
+  const refreshCandidate = authHelper.chooseRefreshToken(candidates);
+  let accessToken = normalizeToken(accessCandidate?.token || "");
+  let refreshToken = normalizeToken(refreshCandidate?.token || "");
+  const accessExpMs = accessToken ? authHelper.decodeJwtExpMs(accessToken) : 0;
+  const isExpired = !accessToken || !accessExpMs || accessExpMs <= Date.now() + 60_000;
+
+  if (isExpired && refreshToken) {
+    try {
+      const refreshed = await authHelper.refreshAuthToken(refreshToken, {
+        authTokensPath: AUTH_TOKENS_PATH,
+        source: "audit-today",
+      });
+      accessToken = normalizeToken(refreshed.accessToken || "");
+      refreshToken = normalizeToken(refreshed.refreshToken || refreshToken);
+    } catch (error) {
+      throw new Error(`TOKEN_EXPIRED: run npm run manual-token (${error.message || error})`);
+    }
+  }
+
+  const finalExpMs = accessToken ? authHelper.decodeJwtExpMs(accessToken) : 0;
+  if (!accessToken) {
+    throw new Error("TOKEN_MISSING: run npm run manual-token");
+  }
+  if (!finalExpMs || finalExpMs <= Date.now() + 60_000) {
+    throw new Error("TOKEN_EXPIRED: run npm run manual-token");
+  }
+
+  return {
+    accessToken,
+    refreshToken,
+    authHeaders: {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: "application/json",
+    },
+    tokenExpiresAt: new Date(finalExpMs).toISOString(),
+    hasAccessToken: true,
+    isExpired: false,
+  };
+}
+
 function buildListUrls() {
   const bases = [
+    "/facade/api/v1/operations/filter",
     "/facade/api/v1/operations",
     "/facade/order/api/v1/operations",
   ];
-  const datePairs = [
-    { createdAtFrom: `${TARGET_DATE}T00:00:00`, createdAtTo: `${TARGET_DATE}T23:59:59` },
-    { createdFrom: `${TARGET_DATE}T00:00:00`, createdTo: `${TARGET_DATE}T23:59:59` },
-    { dateFrom: TARGET_DATE, dateTo: TARGET_DATE },
-    { from: TARGET_DATE_DOT, to: TARGET_DATE_DOT },
-  ];
-  const typePairs = [
-    { operationType: TARGET_OPERATION_TYPE_CODE },
-    { type: TARGET_OPERATION_TYPE_CODE },
-    { operationType: TARGET_OPERATION_TYPE_TEXT },
-  ];
-  const pagingPairs = [
-    { page: "0", size: String(PAGE_SIZE) },
-    { pageNumber: "0", pageSize: String(PAGE_SIZE) },
-    { page: "1", limit: String(PAGE_SIZE) },
-  ];
+  const pagingPairs = LOOSEN_FILTERS
+    ? [
+        { page: "0", size: String(PAGE_SIZE) },
+        { page: "1", size: String(PAGE_SIZE) },
+      ]
+    : [
+        { page: "0", size: String(PAGE_SIZE) },
+        { pageNumber: "0", pageSize: String(PAGE_SIZE) },
+        { page: "1", limit: String(PAGE_SIZE) },
+      ];
   const urls = [];
 
   for (const base of bases) {
-    for (const dates of datePairs) {
-      for (const type of typePairs) {
-        for (const paging of pagingPairs) {
-          const params = new URLSearchParams({ ...dates, ...type, ...paging });
-          urls.push(`${BASE_URL}${base}?${params.toString()}`);
-        }
+    for (const paging of pagingPairs) {
+      const params = new URLSearchParams({ ...paging });
+      if (base.endsWith("/filter")) {
+        params.set("startDate", TARGET_DATE);
+        params.set("endDate", TARGET_DATE_END);
       }
+      urls.push(`${BASE_URL}${base}?${params.toString()}`);
     }
   }
 
   return uniq(urls);
 }
 
-async function fetchJsonGet(page, url) {
-  return page.evaluate(async ({ requestUrl }) => {
-    const response = await fetch(requestUrl, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-      credentials: "include",
-    });
+async function fetchJsonGet(url, authHeaders) {
+  const response = await fetch(url, {
+    method: "GET",
+    headers: authHeaders,
+  });
 
-    const text = await response.text();
-    let body = text;
-    try {
-      body = JSON.parse(text);
-    } catch {}
+  const text = await response.text();
+  let body = text;
+  try {
+    body = JSON.parse(text);
+  } catch {}
 
-    return {
-      url: requestUrl,
-      httpStatus: response.status,
-      ok: response.ok,
-      statusText: response.statusText,
-      body,
-    };
-  }, { requestUrl: url });
+  return {
+    url,
+    finalUrl: response.url || url,
+    httpStatus: response.status,
+    ok: response.ok,
+    statusText: response.statusText,
+    body,
+    rawText: text,
+  };
 }
 
 function responseLooksUnauthorized(response) {
@@ -285,29 +349,50 @@ function responseLooksUnauthorized(response) {
   return /unauthoriz|forbidden|token expired|invalid token/i.test(bodyText);
 }
 
-async function collectListResponses(page) {
+async function collectListResponses(authHeaders) {
   const responses = [];
+  const errors = [];
   for (const url of buildListUrls()) {
     try {
-      const response = await fetchJsonGet(page, url);
+      const response = await fetchJsonGet(url, authHeaders);
       responses.push(response);
       const found = collectOperationObjects(response.body);
+      console.log(`REQUEST_URL ${url}`);
+      console.log(`FINAL_URL ${response.finalUrl}`);
+      console.log(`HTTP_STATUS ${response.httpStatus}`);
+      console.log(`RESPONSE_COUNT ${found.length}`);
+      console.log(`RAW_RESPONSE ${String(response.rawText || "").slice(0, 500).replace(/\s+/g, " ").trim()}`);
+      if (typeof response.body === "string") {
+        console.log(`RESPONSE_TEXT ${response.body.slice(0, 500).replace(/\s+/g, " ").trim()}`);
+      } else {
+        console.log(`RESPONSE_KEYS ${Array.isArray(response.body) ? `array(${response.body.length})` : Object.keys(response.body || {}).join(",")}`);
+      }
       if (response.ok && found.length) {
         console.log(`GET list candidate returned operation-like data: ${url}`);
       }
     } catch (error) {
+      const cause = error && error.cause ? `${error.cause.code || ""} ${error.cause.hostname || ""}`.trim() : "";
+      console.log(`FETCH_ERROR ${url}`);
+      console.log(`FETCH_ERROR_NAME ${error.name || "Error"}`);
+      console.log(`FETCH_ERROR_MESSAGE ${error.message || error}`);
+      if (cause) console.log(`FETCH_ERROR_CAUSE ${cause}`);
       responses.push({ url, httpStatus: 0, ok: false, statusText: error.message, body: null });
+      errors.push({ url, error: error.message || String(error), cause });
     }
+  }
+  if (responses.length > 0 && responses.every((item) => item.httpStatus === 0)) {
+    console.log("NETWORK_ERROR_RETRY_WITH_VPN");
+    console.log(JSON.stringify(errors.slice(0, 3), null, 2));
   }
   return responses;
 }
 
-async function fetchDetailsForIds(page, ids) {
+async function fetchDetailsForIds(ids, authHeaders) {
   const details = [];
   for (const operationId of ids) {
     const url = `${BASE_URL}/facade/api/v1/operations/${encodeURIComponent(operationId)}`;
     try {
-      const response = await fetchJsonGet(page, url);
+      const response = await fetchJsonGet(url, authHeaders);
       details.push(response);
     } catch (error) {
       details.push({ url, httpStatus: 0, ok: false, statusText: error.message, body: null });
@@ -322,10 +407,12 @@ function extractTargetOperations(responses) {
 
   for (const response of responses) {
     const objects = collectOperationObjects(response.body);
+    console.log(`RAW_RESPONSE_COUNT ${response.url} ${objects.length}`);
     ids.push(...collectOperationIds(response.body));
 
     for (const object of objects) {
-      if (!hasTargetOperationType(object) || !isTargetDate(object)) continue;
+      if (!hasAnyTargetDate(object)) continue;
+      if (!LOOSEN_FILTERS && !hasTargetOperationType(object)) continue;
       const row = normalizeOperation(object, response.url);
       if (!row) continue;
       const existing = rowsById.get(row.operationId);
@@ -391,73 +478,59 @@ function selectBestByGtin(rows) {
 }
 
 async function main() {
-  await ensureDir(PROFILE_DIR);
+  await ensureDir(LOCAL_OUTPUT_DIR);
 
-  const context = await chromium.launchPersistentContext(PROFILE_DIR, {
-    headless: false,
-    acceptDownloads: false,
-    viewport: { width: 1440, height: 1200 },
+  TARGET_DATE = todayLocalDate();
+  TARGET_DATE_END = nextDate(TARGET_DATE);
+  TARGET_DATE_DOT = `${TARGET_DATE.slice(8, 10)}.${TARGET_DATE.slice(5, 7)}.${TARGET_DATE.slice(0, 4)}`;
+
+  const auth = await resolveAuthFromFiles();
+  console.log(`AUTH_TOKEN_EXPIRES_AT ${auth.tokenExpiresAt}`);
+
+  const listResponses = await collectListResponses(auth.authHeaders);
+  let { rows, ids } = extractTargetOperations(listResponses);
+
+  if (ids.length) {
+    const detailResponses = await fetchDetailsForIds(ids, auth.authHeaders);
+    rows = extractTargetOperations(listResponses.concat(detailResponses)).rows;
+  }
+
+  const duplicates = buildDuplicates(rows);
+  const { selected, rejected } = selectBestByGtin(rows);
+
+  await writeJson(ALL_PATH, {
+    targetDate: TARGET_DATE_DOT,
+    targetOperationType: TARGET_OPERATION_TYPE_TEXT,
+    checkedAt: new Date().toISOString(),
+    onlyGetRequests: true,
+    authSource: "auth_tokens.json",
+    transport: "fetch",
+    operations: rows,
+  });
+  await writeJson(DUPLICATES_PATH, {
+    targetDate: TARGET_DATE_DOT,
+    duplicateGtins: Object.keys(duplicates),
+    duplicates,
+  });
+  await writeJson(SELECTED_PATH, {
+    targetDate: TARGET_DATE_DOT,
+    selected,
+    rejected,
   });
 
-  try {
-    const page = context.pages()[0] || await context.newPage();
-    await page.goto(OPERATIONS_URL, { waitUntil: "domcontentloaded", timeout: 30000 });
-    await page.waitForLoadState("networkidle", { timeout: 10000 }).catch(() => {});
+  console.log("\nAudit files saved:");
+  console.log(ALL_PATH);
+  console.log(DUPLICATES_PATH);
+  console.log(SELECTED_PATH);
 
-    const currentUrl = page.url();
-    const isLogin = currentUrl.includes("/login")
-      || await page.locator("input[type='password']").first().isVisible().catch(() => false);
-
-    if (isLogin) {
-      console.error("LOGIN_REQUIRED");
-      process.exitCode = 1;
-      return;
-    }
-
-    const listResponses = await collectListResponses(page);
-    let { rows, ids } = extractTargetOperations(listResponses);
-
-    if (ids.length) {
-      const detailResponses = await fetchDetailsForIds(page, ids);
-      rows = extractTargetOperations(listResponses.concat(detailResponses)).rows;
-    }
-
-    const duplicates = buildDuplicates(rows);
-    const { selected, rejected } = selectBestByGtin(rows);
-
-    await writeJson(ALL_PATH, {
-      targetDate: TARGET_DATE_DOT,
-      targetOperationType: TARGET_OPERATION_TYPE_TEXT,
-      checkedAt: new Date().toISOString(),
-      onlyGetRequests: true,
-      transport: "browser-cookie-mode",
-      operations: rows,
-    });
-    await writeJson(DUPLICATES_PATH, {
-      targetDate: TARGET_DATE_DOT,
-      duplicateGtins: Object.keys(duplicates),
-      duplicates,
-    });
-    await writeJson(SELECTED_PATH, {
-      targetDate: TARGET_DATE_DOT,
-      selected,
-      rejected,
-    });
-
-    console.log("\nAudit files saved:");
-    console.log(ALL_PATH);
-    console.log(DUPLICATES_PATH);
-    console.log(SELECTED_PATH);
-
-    console.log("\nSummary:");
-    console.log(`Всего операций: ${rows.length}`);
-    console.log(`Уникальных GTIN: ${new Set(rows.map((row) => row.gtin)).size}`);
-    console.log(`Задвоились GTIN: ${Object.keys(duplicates).length ? Object.keys(duplicates).join(", ") : "нет"}`);
-    console.log(`Можно использовать: ${selected.map((row) => `${row.gtin}:${row.operationId}:${row.status}`).join(", ") || "нет"}`);
-    console.log(`Нельзя использовать: ${rejected.map((row) => `${row.gtin}:${row.operationId}:${row.status}:${row.reason}`).join(", ") || "нет"}`);
-  } finally {
-    await context.close().catch(() => {});
-  }
+  console.log("\nSummary:");
+  console.log(`request payload: ${JSON.stringify({ startDate: TARGET_DATE, endDate: TARGET_DATE_END, size: PAGE_SIZE, page: 0 })}`);
+  console.log(`Всего операций: ${rows.length}`);
+  console.log(`Уникальных GTIN: ${new Set(rows.map((row) => row.gtin)).size}`);
+  console.log(`Задвоились GTIN: ${Object.keys(duplicates).length ? Object.keys(duplicates).join(", ") : "нет"}`);
+  console.log(`Можно использовать: ${selected.map((row) => `${row.gtin}:${row.operationId}:${row.status}`).join(", ") || "нет"}`);
+  console.log(`Нельзя использовать: ${rejected.map((row) => `${row.gtin}:${row.operationId}:${row.status}:${row.reason}`).join(", ") || "нет"}`);
+  console.log(`first operationIds: ${rows.slice(0, 10).map((row) => row.operationId).join(", ") || "нет"}`);
 }
 
 main().catch((error) => {

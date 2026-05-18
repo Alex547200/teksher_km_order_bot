@@ -1,0 +1,12 @@
+create_km_orders report
+source: /Users/admin/AI_PROJECTS/teksher_km_order_bot/batch.txt
+batch_size: 10
+total_rows: 8
+valid_items: 8
+total_km: 37
+batch_count: 1
+created_orders: 8
+created_operation_ids: 6b541b26-17bd-4beb-8bd3-ffdafb865e69, 59e71524-1e08-4230-af6a-ab3a0351f7cf, 49d8cc3f-4376-44c9-84ec-9ededa1c32d3, 47317e5b-8766-45a1-9387-14a0d805a417, 5f2d0888-4a7d-4cb2-bd0c-b4ca13ad5b1b, 6d6768e4-ac38-4390-a61c-57c9e1d55d85, cccb3e79-9289-4288-94aa-dc7d4d8bfb71, 555cc373-1c6e-4f9b-8713-aeb45d5d93ff
+output_dir: /Users/admin/AI_PROJECTS/teksher_km_order_bot/tmp/create-km-orders
+
+1	6b541b26-17bd-4beb-8bd3-ffdafb865e69	items=8	km=37	04707197100136, 04707197100143, 04707197100150, 04707197100167, 04707197100174, 04707197100181, 04707197100198, 04707197100204

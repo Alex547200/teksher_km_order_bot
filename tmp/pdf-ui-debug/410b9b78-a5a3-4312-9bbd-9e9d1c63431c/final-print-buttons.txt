@@ -1,0 +1,10 @@
+0	Профиль				false	false	true
+1	Выйти из системы				false	false	true
+2	More				false	false	false
+3					false	false	false
+4	Печать				false	false	true
+5	Назад к таблице				false	false	true
+6	Профиль				false	false	false
+7	Выйти из системы				false	false	false
+8	Отменить				false	false	true
+9	Печать				false	false	true

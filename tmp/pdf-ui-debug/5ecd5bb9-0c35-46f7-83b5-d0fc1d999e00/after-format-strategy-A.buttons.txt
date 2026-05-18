@@ -1,0 +1,4 @@
+0	Профиль				_button_hkao1_1 _button__text-blue_hkao1_54 _button__start_hkao1_13
+1	Выйти из системы				_button_hkao1_1 _button__text-orange_hkao1_48 _button__start_hkao1_13
+2	Печать и нанесение				_button_hkao1_1 _button__blue_hkao1_17 _button__center_hkao1_6
+3	Назад к таблице				_button_hkao1_1 _btn_vipsu_1 _button__outline-blue_hkao1_41 _button__center_hkao1_6

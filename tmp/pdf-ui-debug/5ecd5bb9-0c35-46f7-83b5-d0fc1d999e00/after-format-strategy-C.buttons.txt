@@ -1,0 +1,22 @@
+0	Профиль				_button_hkao1_1 _button__text-blue_hkao1_54 _button__start_hkao1_13
+1	Выйти из системы				_button_hkao1_1 _button__text-orange_hkao1_48 _button__start_hkao1_13
+2	Фильтры				_button_hkao1_1 _button__outline-blue_hkao1_41 _button__center_hkao1_6
+3	Очистить фильтр				_button_hkao1_1 _button__outline-blue_hkao1_41 _button__center_hkao1_6
+4	Дата от: 18.04.2026				_button_hkao1_1 _button_1mvb9_1 _button__blue_hkao1_17 _button__center_hkao1_6
+5	Дата до: 18.05.2026				_button_hkao1_1 _button_1mvb9_1 _button__blue_hkao1_17 _button__center_hkao1_6
+6	Добавить операцию				_button_hkao1_1 _button__blue_hkao1_17 _button__center_hkao1_6
+7					_action_gfvj0_12
+8					_action_gfvj0_12
+9					_action_gfvj0_12
+10					_action_gfvj0_12
+11					_action_gfvj0_12
+12					_action_gfvj0_12
+13					_action_gfvj0_12
+14					_action_gfvj0_12
+15					_action_gfvj0_12
+16					_action_gfvj0_12
+17					_action_gfvj0_12
+18					_action_gfvj0_12
+19					_action_gfvj0_12
+20					_action_gfvj0_12
+21					_action_gfvj0_12
