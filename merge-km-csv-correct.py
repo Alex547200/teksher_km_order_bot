@@ -8,6 +8,7 @@ import csv
 import io
 import os
 import sys
+import tempfile
 import zipfile
 from collections import Counter
 from datetime import datetime
@@ -15,8 +16,8 @@ from pathlib import Path
 
 
 DEFAULT_INPUT_DIR = Path("/Users/admin/Desktop/Текшер CSV/16.05.2026")
-DEFAULT_OUTPUT_CSV = Path("/Users/admin/Desktop/Текшер CSV/16_05_2026_KM_CORRECT.csv")
-DEFAULT_CHECK_TXT = Path("/Users/admin/Desktop/Текшер CSV/16_05_2026_KM_CHECK.txt")
+DEFAULT_OUTPUT_CSV = None
+DEFAULT_CHECK_TXT = None
 
 
 def normalize_text(value: str) -> str:
@@ -86,10 +87,7 @@ def load_input_rows(source: Path) -> tuple[list[tuple[str, list[list[str]]]], st
     if source.is_dir():
         csv_files = iter_csv_files_from_dir(
             source,
-            exclude_names={
-                DEFAULT_OUTPUT_CSV.name,
-                DEFAULT_CHECK_TXT.name,
-            },
+            exclude_names=set(),
         )
         sources: list[tuple[str, list[list[str]]]] = []
         for csv_path in csv_files:
@@ -101,6 +99,26 @@ def load_input_rows(source: Path) -> tuple[list[tuple[str, list[list[str]]]], st
         return sources, source.as_posix()
 
     raise FileNotFoundError(f"Input path is not a directory or zip archive: {source}")
+
+
+def derive_output_paths(source: Path, output_csv_arg: str | None, output_check_arg: str | None) -> tuple[Path, Path]:
+    def base_dir_for(source_path: Path) -> Path:
+        return source_path.parent if source_path.is_dir() else source_path.parent
+
+    def base_name_for(source_path: Path) -> str:
+        return source_path.name.replace(".", "_")
+
+    if output_csv_arg:
+        output_csv = Path(output_csv_arg).expanduser()
+    else:
+        output_csv = base_dir_for(source) / f"{base_name_for(source)}_KM_CORRECT.csv"
+
+    if output_check_arg:
+        output_check = Path(output_check_arg).expanduser()
+    else:
+        output_check = base_dir_for(source) / f"{base_name_for(source)}_KM_CHECK.txt"
+
+    return output_csv, output_check
 
 
 def merge_csv_rows(sources: list[tuple[str, list[list[str]]]]) -> tuple[list[list[str]], dict[str, object]]:
@@ -156,10 +174,13 @@ def merge_csv_rows(sources: list[tuple[str, list[list[str]]]]) -> tuple[list[lis
 def write_outputs(rows: list[list[str]], stats: dict[str, object], output_csv: Path, output_check: Path, source: Path) -> None:
     output_csv.parent.mkdir(parents=True, exist_ok=True)
 
-    with output_csv.open("w", encoding="utf-8", newline="") as handle:
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", newline="", delete=False, dir="/private/tmp") as handle:
         writer = csv.writer(handle)
         for row in rows:
             writer.writerow(row)
+        temp_csv_path = Path(handle.name)
+
+    os.replace(temp_csv_path, output_csv)
 
     lines = [
         f"generatedAt: {datetime.now().isoformat()}",
@@ -198,7 +219,11 @@ def write_outputs(rows: list[list[str]], stats: dict[str, object], output_csv: P
         lines.append("- pandas not used")
         lines.append("- GS separators preserved where present")
 
-    output_check.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", newline="\n", delete=False, dir="/private/tmp") as handle:
+        handle.write("\n".join(lines) + "\n")
+        temp_check_path = Path(handle.name)
+
+    os.replace(temp_check_path, output_check)
 
 
 def parse_args() -> argparse.Namespace:
@@ -211,13 +236,13 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--output-csv",
-        default=str(DEFAULT_OUTPUT_CSV),
-        help="Output CSV path. Default: ~/Desktop/Текшер CSV/16_05_2026_KM_CORRECT.csv",
+        default=None,
+        help="Output CSV path. Default: derived from source folder basename, e.g. 18_05_2026_KM_CORRECT.csv",
     )
     parser.add_argument(
         "--output-check",
-        default=str(DEFAULT_CHECK_TXT),
-        help="Output check txt path. Default: ~/Desktop/Текшер CSV/16_05_2026_KM_CHECK.txt",
+        default=None,
+        help="Output check txt path. Default: derived from source folder basename, e.g. 18_05_2026_KM_CHECK.txt",
     )
     return parser.parse_args()
 
@@ -225,8 +250,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     source = Path(args.source).expanduser()
-    output_csv = Path(args.output_csv).expanduser()
-    output_check = Path(args.output_check).expanduser()
+    output_csv, output_check = derive_output_paths(source, args.output_csv, args.output_check)
 
     sources, source_label = load_input_rows(source)
     rows, stats = merge_csv_rows(sources)
