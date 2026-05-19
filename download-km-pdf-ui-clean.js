@@ -16,10 +16,13 @@ const DOWNLOAD_TIMEOUT = 60_000;
 const LIST_RETRY_ATTEMPTS = 5;
 const LIST_RETRY_DELAY_MS = 3_000;
 const PAGE_SIZE = 15;
+const FORMAT_MODAL_RETRY_ATTEMPTS = 3;
+const FORMAT_MODAL_WAIT_MS = 15_000;
 const TARGET_OPERATION_TYPE_CODE = "MARK_CODE_ORDER";
 const TARGET_OPERATION_TYPE_TEXT = "Заказ на эмиссию КМ";
 const BAD_STATUSES = new Set(["ERROR", "500", "502"]);
 const PDF_DEBUG_ONE = String(process.env.PDF_DEBUG_ONE || "").trim() === "1";
+const DEBUG_LIMIT = Number.parseInt(String(process.env.DEBUG_LIMIT || "").trim(), 10);
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -692,6 +695,20 @@ async function collectVisibleOptions(page) {
   return items;
 }
 
+async function collectVisibleFormatOptions(page) {
+  const optionLocator = page.locator('[role="option"], [id*="option"], div[class*="option"], [class*="option"], [role="menuitem"]');
+  const optionCount = await optionLocator.count().catch(() => 0);
+  const visibleOptions = [];
+  for (let index = 0; index < optionCount; index += 1) {
+    const item = optionLocator.nth(index);
+    if (!(await item.isVisible().catch(() => false))) continue;
+    const text = normalizeText(await item.innerText().catch(() => ""));
+    if (!text) continue;
+    visibleOptions.push(text);
+  }
+  return visibleOptions;
+}
+
 async function savePdfDownload(download, targetPath) {
   await download.saveAs(targetPath);
   const stat = await fs.stat(targetPath);
@@ -786,6 +803,40 @@ async function captureUiDebug(page, operationId, reason) {
   await safeWriteDebug(dir, "options.json", `${JSON.stringify({ reason, options }, null, 2)}\n`);
 }
 
+async function captureFormatNotFoundDebug(page, operationId, attempt, reason) {
+  const safeOperationId = sanitizeFilePart(operationId || "unknown");
+  const dir = path.join(PROJECT_DIR, "tmp", "pdf-ui-debug", safeOperationId);
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const prefix = `format-not-found-attempt-${attempt}-${timestamp}`;
+  fsSync.mkdirSync(dir, { recursive: true });
+
+  const bodyText = normalizeText(await page.locator("body").innerText().catch(() => ""));
+  const visibleOptions = await collectVisibleFormatOptions(page).catch(() => []);
+  const buttons = await page.evaluate(() => Array.from(document.querySelectorAll("button"))
+    .filter((el) => el && el.getClientRects && el.getClientRects().length > 0)
+    .map((el, index) => ({
+      index,
+      text: String(el.innerText || el.textContent || "").replace(/\s+/g, " ").trim(),
+      ariaLabel: el.getAttribute("aria-label") || "",
+      title: el.getAttribute("title") || "",
+      disabled: Boolean(el.disabled),
+    }))
+  ).catch(() => []);
+
+  await page.screenshot({ path: path.join(dir, `${prefix}.png`), fullPage: true }).catch(() => {});
+  await safeWriteDebug(dir, `${prefix}.html`, await page.content().catch(() => ""));
+  await safeWriteDebug(dir, `${prefix}-texts.txt`, [
+    `operationId=${operationId || ""}`,
+    `attempt=${attempt}/${FORMAT_MODAL_RETRY_ATTEMPTS}`,
+    `reason=${reason || ""}`,
+    `url=${page.url()}`,
+    `visibleFormatOptions=${visibleOptions.join(" | ")}`,
+    "",
+    bodyText,
+  ].join("\n"));
+  await safeWriteDebug(dir, `${prefix}-buttons.json`, `${JSON.stringify({ operationId, attempt, reason, buttons }, null, 2)}\n`);
+}
+
 async function dumpOperationPageUi(page, operationId) {
   const safeOperationId = sanitizeFilePart(operationId || "unknown");
   const dir = path.join(PROJECT_DIR, "debug", "km-pdf-clean", safeOperationId);
@@ -817,21 +868,13 @@ async function selectPdfFormat(page, modal, operationId) {
     throw new Error("KM_PDF_FORMAT_COMBOBOX_NOT_FOUND");
   }
 
-  await target.scrollIntoViewIfNeeded().catch(() => {});
-  await target.click({ force: true });
-  await sleep(400);
-
-  const dropdownTexts = [];
-  const visibleOptions = [];
   const optionLocator = page.locator('[role="option"], [id*="option"], div[class*="option"], [class*="option"], [role="menuitem"]');
-  const optionCount = await optionLocator.count().catch(() => 0);
-  for (let index = 0; index < optionCount; index += 1) {
-    const item = optionLocator.nth(index);
-    if (!(await item.isVisible().catch(() => false))) continue;
-    const text = normalizeText(await item.innerText().catch(() => ""));
-    if (!text) continue;
-    visibleOptions.push(text);
-    dropdownTexts.push(text);
+  let visibleOptions = await collectVisibleFormatOptions(page);
+  if (!visibleOptions.length) {
+    await target.scrollIntoViewIfNeeded().catch(() => {});
+    await target.click({ force: true });
+    await sleep(400);
+    visibleOptions = await collectVisibleFormatOptions(page);
   }
 
   console.log(`[PDF_FORMAT_OPTIONS] ${visibleOptions.join(" | ")}`);
@@ -847,6 +890,7 @@ async function selectPdfFormat(page, modal, operationId) {
     /format.*pdf/i,
   ];
 
+  const optionCount = await optionLocator.count().catch(() => 0);
   for (let index = 0; index < optionCount; index += 1) {
     const item = optionLocator.nth(index);
     if (!(await item.isVisible().catch(() => false))) continue;
@@ -1003,6 +1047,109 @@ async function clickPrintEntry(page) {
   throw new Error("PRINT_ENTRY_NOT_FOUND");
 }
 
+async function waitForPdfFormatOptions(page, operationId) {
+  const deadline = Date.now() + FORMAT_MODAL_WAIT_MS;
+  let lastReason = "format options were not visible";
+  let modal = null;
+
+  while (Date.now() < deadline) {
+    modal = await waitForPrintModal(page);
+    if (!modal) {
+      lastReason = "print modal not visible";
+      await sleep(500);
+      continue;
+    }
+
+    const target = await findVisibleControlNearLabel(page, modal, "Формат файла");
+    if (!target) {
+      lastReason = "format control not visible";
+      await sleep(500);
+      continue;
+    }
+
+    const formatText = page.getByText(/CSV файл|PDF файл/i);
+    const formatTextCount = await formatText.count().catch(() => 0);
+    for (let index = 0; index < formatTextCount; index += 1) {
+      if (await formatText.nth(index).isVisible().catch(() => false)) {
+        return { modal, reason: "format text visible" };
+      }
+    }
+
+    await target.scrollIntoViewIfNeeded().catch(() => {});
+    await target.click({ force: true }).catch(() => {});
+    await sleep(400);
+
+    const visibleOptions = await collectVisibleFormatOptions(page);
+    if (visibleOptions.some((text) => /CSV файл|PDF файл/i.test(text))) {
+      return { modal, reason: `format options visible: ${visibleOptions.join(" | ")}` };
+    }
+
+    lastReason = `format options missing: ${visibleOptions.join(" | ") || "no visible options"}`;
+    await sleep(500);
+  }
+
+  return { modal: null, reason: lastReason };
+}
+
+async function closePrintModalAndReturnToTable(page) {
+  const closeCandidates = [
+    page.getByRole("button", { name: /отменить|закрыть|cancel|close/i }),
+    page.locator('button[aria-label*="Закрыть"], button[aria-label*="Close"], button[title*="Закрыть"], button[title*="Close"]'),
+  ];
+  for (const candidate of closeCandidates) {
+    if (await clickVisible(candidate).catch(() => false)) {
+      await sleep(500);
+      break;
+    }
+  }
+
+  await page.keyboard.press("Escape").catch(() => {});
+  await sleep(300);
+
+  const backCandidates = [
+    page.getByRole("button", { name: /назад к таблице/i }),
+    page.getByRole("link", { name: /назад к таблице/i }),
+    page.getByText(/назад к таблице/i),
+  ];
+  for (const candidate of backCandidates) {
+    if (await clickVisible(candidate).catch(() => false)) {
+      await page.waitForLoadState("networkidle", { timeout: REQUEST_TIMEOUT }).catch(() => {});
+      return;
+    }
+  }
+
+  await page.goto(OPERATIONS_URL, { waitUntil: "domcontentloaded", timeout: REQUEST_TIMEOUT }).catch(() => {});
+  await page.waitForLoadState("networkidle", { timeout: REQUEST_TIMEOUT }).catch(() => {});
+}
+
+async function openPrintModalWithFormatRetry(page, operation) {
+  const operationId = operation.operationId;
+  let lastReason = "format options were not visible";
+
+  for (let attempt = 1; attempt <= FORMAT_MODAL_RETRY_ATTEMPTS; attempt += 1) {
+    if (attempt > 1) {
+      await closePrintModalAndReturnToTable(page).catch(() => {});
+    }
+
+    await page.goto(OPERATIONS_URL, { waitUntil: "domcontentloaded", timeout: REQUEST_TIMEOUT });
+    await page.waitForLoadState("networkidle", { timeout: REQUEST_TIMEOUT }).catch(() => {});
+    await openOperationFromList(page, operationId);
+    await page.waitForLoadState("networkidle", { timeout: REQUEST_TIMEOUT }).catch(() => {});
+    await dumpOperationPageUi(page, operationId).catch(() => {});
+
+    await clickPrintEntry(page);
+    const ready = await waitForPdfFormatOptions(page, operationId);
+    if (ready.modal) return ready.modal;
+
+    lastReason = ready.reason || lastReason;
+    console.warn(`[FORMAT_RETRY] operationId=${operationId} attempt=${attempt}/${FORMAT_MODAL_RETRY_ATTEMPTS} reason=${lastReason}`);
+    await captureFormatNotFoundDebug(page, operationId, attempt, lastReason).catch(() => {});
+  }
+
+  await closePrintModalAndReturnToTable(page).catch(() => {});
+  throw new Error("KM_PDF_FORMAT_COMBOBOX_NOT_FOUND");
+}
+
 async function clickPrintAndSave(page, targetPath) {
   const downloadPromise = page.waitForEvent("download", { timeout: DOWNLOAD_TIMEOUT });
   const printButton = page.getByRole("button", { name: "Печать", exact: true }).last();
@@ -1026,15 +1173,6 @@ async function clickPrintAndSave(page, targetPath) {
 }
 
 async function printPdfViaUi(page, operation, outputDir) {
-  await page.goto(OPERATIONS_URL, { waitUntil: "domcontentloaded", timeout: REQUEST_TIMEOUT });
-  await page.waitForLoadState("networkidle", { timeout: REQUEST_TIMEOUT }).catch(() => {});
-
-  await openOperationFromList(page, operation.operationId);
-  await page.waitForLoadState("networkidle", { timeout: REQUEST_TIMEOUT }).catch(() => {});
-  await dumpOperationPageUi(page, operation.operationId).catch(() => {});
-
-  await clickPrintEntry(page);
-
   const operationId = sanitizeFilePart(operation.operationId || "");
   const originalName = sanitizeFilePart(operation.productCode || operation.operationId || "operation");
   const targetBase = operationId || `unknown__${originalName}` || originalName || "operation";
@@ -1043,24 +1181,12 @@ async function printPdfViaUi(page, operation, outputDir) {
     return { filePath: targetPath, skipped: true };
   }
 
-  let modal = null;
-  const modalDeadline = Date.now() + 3_000;
-  while (Date.now() < modalDeadline) {
-    modal = await waitForPrintModal(page);
-    if (modal) break;
-    await sleep(250);
-  }
-
-  if (modal) {
-    await selectPdfFormat(page, modal, operation.operationId);
-    await sleep(3000);
-    await page.getByText("Шаблон", { exact: false }).first().waitFor({ state: "visible", timeout: 10_000 });
-    await selectTemplate(page);
-    await sleep(500);
-  } else {
-    await captureUiDebug(page, operation.operationId, "KM_PDF_PRINT_MODAL_NOT_FOUND").catch(() => {});
-    throw new Error("KM_PDF_PRINT_MODAL_NOT_FOUND");
-  }
+  const modal = await openPrintModalWithFormatRetry(page, operation);
+  await selectPdfFormat(page, modal, operation.operationId);
+  await sleep(3000);
+  await page.getByText("Шаблон", { exact: false }).first().waitFor({ state: "visible", timeout: 10_000 });
+  await selectTemplate(page);
+  await sleep(500);
 
   let lastError = null;
   for (let attempt = 1; attempt <= 3; attempt += 1) {
@@ -1132,7 +1258,8 @@ async function main() {
 
   const authState = await readAuthHeaders();
   const operations = RETRY_FAILED_ONLY ? await loadFailedOperations() : await loadOperations(authState.headers);
-  const targets = PDF_DEBUG_ONE ? operations.slice(0, 1) : operations;
+  const limit = PDF_DEBUG_ONE ? 1 : Number.isFinite(DEBUG_LIMIT) && DEBUG_LIMIT > 0 ? DEBUG_LIMIT : operations.length;
+  const targets = operations.slice(0, limit);
 
   console.log(`total operations found: ${operations.length}`);
   console.log(`target operations: ${targets.length}`);
