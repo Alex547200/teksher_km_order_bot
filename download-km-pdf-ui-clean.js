@@ -2,6 +2,7 @@ const fs = require("node:fs/promises");
 const fsSync = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+const readline = require("node:readline");
 const { chromium } = require("playwright");
 const authHelper = require("./teksher-auth.js");
 
@@ -1100,6 +1101,27 @@ async function inspectAuthState(page) {
   };
 }
 
+async function waitForManualLogin(page) {
+  console.log("Войдите вручную и откройте операции, затем нажмите Enter");
+  await new Promise((resolve) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    rl.on("line", () => {
+      rl.close();
+      resolve();
+    });
+    process.stdin.resume();
+  });
+
+  const currentUrl = page.url();
+  if (currentUrl.includes("/sign-in") || currentUrl.includes("/login")) {
+    console.error("LOGIN_REQUIRED");
+    throw new Error("LOGIN_REQUIRED");
+  }
+}
+
 async function main() {
   await ensureDir(OUTPUT_DIR);
   await ensureDir(path.dirname(FAILED_OPERATIONS_PATH));
@@ -1142,7 +1164,11 @@ async function main() {
 
     const authStateView = await inspectAuthState(page);
     if ((authStateView.currentUrl.includes("/login") || authStateView.currentUrl.includes("/sign-in")) && !authStateView.operationsVisible) {
-      throw new Error("LOGIN_REQUIRED");
+      await waitForManualLogin(page);
+      const refreshedAuthState = await inspectAuthState(page);
+      if ((refreshedAuthState.currentUrl.includes("/login") || refreshedAuthState.currentUrl.includes("/sign-in")) && !refreshedAuthState.operationsVisible) {
+        throw new Error("LOGIN_REQUIRED");
+      }
     }
 
     for (const operation of targets) {
