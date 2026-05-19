@@ -3,7 +3,7 @@ const { chromium } = require("playwright");
 
 const BASE_URL = "https://label.teksher.kg";
 const OPERATIONS_URL = `${BASE_URL}/operations`;
-const PROFILE_DIR = path.join(__dirname, "teksher-session-profile");
+const PROFILE_DIR = path.resolve(__dirname, "teksher-session-profile");
 const PLAYWRIGHT_HOME = path.join(__dirname, ".playwright-home");
 const LOGIN_TIMEOUT_MS = 10 * 60 * 1000;
 const POLL_INTERVAL_MS = 2000;

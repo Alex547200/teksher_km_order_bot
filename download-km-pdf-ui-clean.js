@@ -9,7 +9,7 @@ const PROJECT_DIR = __dirname;
 const BASE_URL = "https://label.teksher.kg";
 const OPERATIONS_URL = `${BASE_URL}/operations`;
 const AUTH_TOKENS_PATH = path.join(PROJECT_DIR, "auth_tokens.json");
-const SESSION_PROFILE_DIR = path.join(PROJECT_DIR, "teksher-session-profile");
+const SESSION_PROFILE_DIR = path.resolve(PROJECT_DIR, "teksher-session-profile");
 const REQUEST_TIMEOUT = 45_000;
 const DOWNLOAD_TIMEOUT = 60_000;
 const LIST_RETRY_ATTEMPTS = 5;
@@ -1079,6 +1079,27 @@ async function printPdfViaUi(page, operation, outputDir) {
   throw lastError || new Error("PRINT_DOWNLOAD_TIMEOUT");
 }
 
+async function inspectAuthState(page) {
+  const currentUrl = page.url();
+  const currentTitle = await page.title().catch(() => "");
+  const bodyText = normalizeText(await page.locator("body").innerText().catch(() => ""));
+  const loginVisible = /(\b(login|sign[- ]?in|вход|авториз)\b)/i.test(`${currentTitle} ${bodyText}`);
+  const operationsVisible = /(\b(operations|операции)\b)/i.test(`${currentTitle} ${bodyText}`);
+
+  console.log(`PROFILE_DIR: ${SESSION_PROFILE_DIR}`);
+  console.log(`CURRENT_URL: ${currentUrl}`);
+  console.log(`CURRENT_TITLE: ${currentTitle}`);
+  console.log(`LOGIN_VISIBLE: ${loginVisible ? "yes" : "no"}`);
+  console.log(`OPERATIONS_VISIBLE: ${operationsVisible ? "yes" : "no"}`);
+
+  return {
+    currentUrl,
+    currentTitle,
+    loginVisible,
+    operationsVisible,
+  };
+}
+
 async function main() {
   await ensureDir(OUTPUT_DIR);
   await ensureDir(path.dirname(FAILED_OPERATIONS_PATH));
@@ -1119,7 +1140,8 @@ async function main() {
     await page.goto(OPERATIONS_URL, { waitUntil: "domcontentloaded", timeout: REQUEST_TIMEOUT });
     await page.waitForLoadState("networkidle", { timeout: REQUEST_TIMEOUT }).catch(() => {});
 
-    if (page.url().includes("/login") || page.url().includes("/sign-in")) {
+    const authStateView = await inspectAuthState(page);
+    if ((authStateView.currentUrl.includes("/login") || authStateView.currentUrl.includes("/sign-in")) && !authStateView.operationsVisible) {
       throw new Error("LOGIN_REQUIRED");
     }
 
