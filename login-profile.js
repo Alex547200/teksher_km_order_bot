@@ -8,6 +8,7 @@ const PLAYWRIGHT_HOME = path.join(__dirname, ".playwright-home");
 const LOGIN_TIMEOUT_MS = 10 * 60 * 1000;
 const POLL_INTERVAL_MS = 2000;
 const DEFAULT_TIMEOUT = 30000;
+const KEEP_OPEN = String(process.env.KEEP_OPEN || "").trim() === "1";
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -50,6 +51,24 @@ async function main() {
     const page = context.pages()[0] || await context.newPage();
     await page.goto(OPERATIONS_URL, { waitUntil: "domcontentloaded", timeout: DEFAULT_TIMEOUT });
     await page.waitForLoadState("networkidle", { timeout: DEFAULT_TIMEOUT }).catch(() => {});
+
+    if (KEEP_OPEN) {
+      console.log("Войдите в Текшер вручную, откройте операции, затем нажмите Enter");
+      await new Promise((resolve) => {
+        process.stdin.resume();
+        process.stdin.once("data", resolve);
+      });
+
+      const url = page.url();
+      if (url.includes("/sign-in") || url.includes("/login")) {
+        console.error("LOGIN_STILL_REQUIRED");
+        process.exitCode = 1;
+        return;
+      }
+
+      console.log("PROFILE_LOGIN_SUCCESS");
+      return;
+    }
 
     await waitForProfileLogin(page);
     console.log("PROFILE_LOGIN_SUCCESS");
