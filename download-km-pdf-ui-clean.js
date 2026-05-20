@@ -25,9 +25,12 @@ const TARGET_OPERATION_TYPE_TEXT = "Заказ на эмиссию КМ";
 const BAD_STATUSES = new Set(["ERROR", "500", "502"]);
 const PDF_DEBUG_ONE = String(process.env.PDF_DEBUG_ONE || "").trim() === "1";
 const DEBUG_LIMIT = Number.parseInt(String(process.env.DEBUG_LIMIT || "").trim(), 10);
+const LATEST_EMISSION_MODE = String(process.env.LATEST_EMISSION_MODE || "").trim() === "1";
+const LIMIT = Number.parseInt(String(process.env.LIMIT || "100").trim(), 10);
 const ONLY_DATE = String(process.env.ONLY_DATE || "").trim();
 const ONLY_TIME_FROM = String(process.env.ONLY_TIME_FROM || "").trim();
 const ONLY_TIME_TO = String(process.env.ONLY_TIME_TO || "").trim();
+const FAILED_OPERATIONS_FILE = String(process.env.FAILED_OPERATIONS_FILE || "").trim();
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -66,6 +69,15 @@ function formatDateDot(dateIso) {
   return `${match[3]}.${match[2]}.${match[1]}`;
 }
 
+function formatRunTimestamp(date = new Date()) {
+  const pad = (value) => String(value).padStart(2, "0");
+  return [
+    date.getFullYear(),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+  ].join("-") + `_${pad(date.getHours())}-${pad(date.getMinutes())}-${pad(date.getSeconds())}`;
+}
+
 const DEFAULT_DATE_FROM = formatIsoDateFromLocalDate();
 const DEFAULT_DATE_TO = addDaysIso(DEFAULT_DATE_FROM, 1);
 const DATE_FROM = getEnvDate("DATE_FROM", DEFAULT_DATE_FROM);
@@ -73,13 +85,22 @@ const DATE_TO = getEnvDate("DATE_TO", DEFAULT_DATE_TO);
 const HAS_TIME_FILTER = Boolean(ONLY_TIME_FROM && ONLY_TIME_TO);
 const SELECTED_DATE = ONLY_DATE || DATE_FROM;
 const TIME_RANGE_DIR_SUFFIX = HAS_TIME_FILTER ? `_${ONLY_TIME_FROM.replace(":", "-")}_${ONLY_TIME_TO.replace(":", "-")}` : "";
-const OUTPUT_DIR = path.join(os.homedir(), "Desktop", "Текшер PDF", `${formatDateDot(SELECTED_DATE)}${TIME_RANGE_DIR_SUFFIX}`);
+const RUN_TIMESTAMP = formatRunTimestamp();
+const LATEST_EMISSION_RETRY = /(?:^|[/\\])failed_latest_emission_pdf_operations\.json$/i.test(FAILED_OPERATIONS_FILE);
+const USE_LATEST_EMISSION_OUTPUT = LATEST_EMISSION_MODE || LATEST_EMISSION_RETRY;
+const OUTPUT_DIR = USE_LATEST_EMISSION_OUTPUT
+  ? path.join(os.homedir(), "Desktop", "Текшер PDF", `LATEST_EMISSION_${Number.isFinite(LIMIT) && LIMIT > 0 ? LIMIT : "INVALID"}_${RUN_TIMESTAMP}`)
+  : path.join(os.homedir(), "Desktop", "Текшер PDF", `${formatDateDot(SELECTED_DATE)}${TIME_RANGE_DIR_SUFFIX}`);
 const LIST_ENDPOINT = `/facade/api/v1/operations/filter?size=${PAGE_SIZE}&page={page}&startDate=${DATE_FROM}&endDate=${DATE_TO}`;
 const ONLY_TIME_FROM_MINUTES = HAS_TIME_FILTER ? parseTimeMinutes(ONLY_TIME_FROM, "ONLY_TIME_FROM") : null;
 const ONLY_TIME_TO_MINUTES = HAS_TIME_FILTER ? parseTimeMinutes(ONLY_TIME_TO, "ONLY_TIME_TO") : null;
 const TIME_RANGE_LABEL = HAS_TIME_FILTER ? `${ONLY_TIME_FROM}..${ONLY_TIME_TO}` : "disabled";
-const RETRY_FAILED_ONLY = String(process.env.RETRY_FAILED_ONLY || "").trim() === "1";
-const FAILED_OPERATIONS_PATH = path.join(PROJECT_DIR, "tmp", `failed_pdf_operations_${String(DATE_FROM).slice(8)}may.json`);
+const RETRY_FAILED_ONLY = String(process.env.RETRY_FAILED_ONLY || "").trim() === "1" || Boolean(FAILED_OPERATIONS_FILE);
+const FAILED_OPERATIONS_PATH = FAILED_OPERATIONS_FILE
+  ? path.resolve(PROJECT_DIR, FAILED_OPERATIONS_FILE)
+  : LATEST_EMISSION_MODE
+    ? path.join(PROJECT_DIR, "tmp", "failed_latest_emission_pdf_operations.json")
+    : path.join(PROJECT_DIR, "tmp", `failed_pdf_operations_${String(DATE_FROM).slice(8)}may.json`);
 
 function parseTimeMinutes(value, name) {
   if (!value) return null;
@@ -202,6 +223,36 @@ function extractOperationName(record) {
   return normalizeText(pickText(record, ["operationTypeName", "name", "title", "description"]));
 }
 
+function extractOperationTypeInfo(record) {
+  const code = normalizeText(pickText(record, [
+    "operationType",
+    "operationTypeCode",
+    "operationCode",
+    "operation.type",
+    "operation.code",
+    "operation.operationType",
+    "operation.operationTypeCode",
+    "type",
+    "code",
+  ]));
+  const name = normalizeText(pickText(record, [
+    "operationName",
+    "operationTypeName",
+    "name",
+    "title",
+    "description",
+    "operation.name",
+    "operation.title",
+    "operation.operationName",
+    "operation.operationTypeName",
+  ]));
+  return {
+    code,
+    name,
+    label: [code, name].filter(Boolean).join(" | ") || "UNKNOWN",
+  };
+}
+
 function extractCreatedAt(record) {
   return pickText(record, [
     "createdAt",
@@ -252,6 +303,28 @@ function isTargetTime(record) {
 function matchesTargetOperationType(record) {
   const joined = `${extractOperationType(record)} ${extractOperationName(record)}`.toUpperCase();
   return joined.includes(TARGET_OPERATION_TYPE_CODE) || joined.includes(TARGET_OPERATION_TYPE_TEXT.toUpperCase());
+}
+
+function isLatestEmissionOperation(record) {
+  const typeInfo = extractOperationTypeInfo(record);
+  const code = normalizeStatus(typeInfo.code);
+  const joined = `${typeInfo.code} ${typeInfo.name}`.toUpperCase();
+  if (/MARKING|НАНЕС|ПЕЧАТ/i.test(joined)) return false;
+  return code === TARGET_OPERATION_TYPE_CODE || joined.includes(TARGET_OPERATION_TYPE_TEXT.toUpperCase());
+}
+
+function buildOperationTypeHistogram(rows) {
+  const histogram = new Map();
+  for (const row of rows) {
+    const label = row.operationTypeLabel || extractOperationTypeInfo(row.raw || row).label;
+    histogram.set(label, (histogram.get(label) || 0) + 1);
+  }
+  return [...histogram.entries()]
+    .map(([operationType, count]) => ({ operationType, count }))
+    .sort((left, right) => {
+      if (right.count !== left.count) return right.count - left.count;
+      return left.operationType.localeCompare(right.operationType);
+    });
 }
 
 function extractGtinLike(value) {
@@ -527,6 +600,7 @@ async function loadOperations(headers) {
   let totalPages = null;
   let totalOperationsBeforeLocalFilters = 0;
   let totalOperationsAfterDateTimeFilters = 0;
+  let totalOperationsAfterStatusFilter = 0;
   while (true) {
     const page = await fetchPageWithRetry(pageNumber, headers);
     if (!page.ok) {
@@ -540,17 +614,22 @@ async function loadOperations(headers) {
       const createdAt = extractCreatedAt(item);
       const status = normalizeStatus(pickText(item, ["status", "state", "operationStatus", "currentStatus", "documentStatus"]));
       const operationType = extractOperationType(item);
+      const operationTypeInfo = extractOperationTypeInfo(item);
       if (!operationId) continue;
       if (!isTargetDate(item)) continue;
       if (!isTargetTime(item)) continue;
       totalOperationsAfterDateTimeFilters += 1;
-      if (!matchesTargetOperationType(item)) continue;
+      if (LATEST_EMISSION_MODE && status !== "ACCEPTED") continue;
+      if (!LATEST_EMISSION_MODE && !matchesTargetOperationType(item)) continue;
       if (BAD_STATUSES.has(status)) continue;
+      totalOperationsAfterStatusFilter += 1;
       rows.push({
         operationId,
         createdAt,
         status,
         operationType,
+        operationName: operationTypeInfo.name,
+        operationTypeLabel: operationTypeInfo.label,
         raw: item,
       });
     }
@@ -568,6 +647,7 @@ async function loadOperations(headers) {
     rows,
     totalOperationsBeforeLocalFilters,
     totalOperationsAfterDateTimeFilters,
+    totalOperationsAfterStatusFilter,
   };
 }
 
@@ -1332,12 +1412,18 @@ async function waitForManualLogin(page) {
 }
 
 async function main() {
+  if (LATEST_EMISSION_MODE && (!Number.isFinite(LIMIT) || LIMIT <= 0)) {
+    throw new Error(`LIMIT_INVALID: ${process.env.LIMIT || "100"}`);
+  }
   await ensureDir(OUTPUT_DIR);
   await ensureDir(path.dirname(FAILED_OPERATIONS_PATH));
   console.log(`DATE_FROM: ${DATE_FROM}`);
   console.log(`DATE_TO: ${DATE_TO}`);
   console.log(`ONLY_DATE: ${ONLY_DATE || "disabled"}`);
   console.log(`time range: ${TIME_RANGE_LABEL}`);
+  console.log(`latest emission mode: ${LATEST_EMISSION_MODE ? "yes" : "no"}`);
+  console.log(`latest emission retry: ${LATEST_EMISSION_RETRY ? "yes" : "no"}`);
+  if (LATEST_EMISSION_MODE) console.log(`LIMIT: ${LIMIT}`);
   console.log(`output folder: ${OUTPUT_DIR}`);
   console.log(`retry failed only: ${RETRY_FAILED_ONLY ? "yes" : "no"}`);
 
@@ -1347,14 +1433,37 @@ async function main() {
         rows: await loadFailedOperations(),
         totalOperationsBeforeLocalFilters: 0,
         totalOperationsAfterDateTimeFilters: 0,
+        totalOperationsAfterStatusFilter: 0,
       }
     : await loadOperations(authState.headers);
   const operations = loadedOperations.rows;
-  const limit = PDF_DEBUG_ONE ? 1 : Number.isFinite(DEBUG_LIMIT) && DEBUG_LIMIT > 0 ? DEBUG_LIMIT : operations.length;
-  const targets = operations.slice(0, limit);
+  const limit = PDF_DEBUG_ONE
+    ? 1
+    : LATEST_EMISSION_MODE
+      ? LIMIT
+      : Number.isFinite(DEBUG_LIMIT) && DEBUG_LIMIT > 0
+        ? DEBUG_LIMIT
+        : operations.length;
+  const targets = LATEST_EMISSION_MODE && !RETRY_FAILED_ONLY
+    ? operations
+        .filter((operation) => isLatestEmissionOperation(operation.raw || operation))
+        .sort((left, right) => {
+          const leftTime = Date.parse(left.createdAt || "") || 0;
+          const rightTime = Date.parse(right.createdAt || "") || 0;
+          if (leftTime !== rightTime) return rightTime - leftTime;
+          return String(left.operationId || "").localeCompare(String(right.operationId || ""));
+        })
+        .slice(0, limit)
+    : operations.slice(0, limit);
 
   console.log(`total operations before local filters: ${loadedOperations.totalOperationsBeforeLocalFilters}`);
   console.log(`total operations after date/time filters: ${loadedOperations.totalOperationsAfterDateTimeFilters}`);
+  if (LATEST_EMISSION_MODE && !RETRY_FAILED_ONLY) {
+    console.log(`operations after status filter: ${loadedOperations.totalOperationsAfterStatusFilter}`);
+    console.log("operation type histogram:");
+    console.table(buildOperationTypeHistogram(operations));
+    console.log(`selected emission pdf operations: ${targets.length}`);
+  }
   console.log(`total operations found: ${operations.length}`);
   console.log(`target operations: ${targets.length}`);
 
