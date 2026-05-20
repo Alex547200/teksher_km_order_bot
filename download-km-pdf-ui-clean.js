@@ -307,10 +307,8 @@ function matchesTargetOperationType(record) {
 
 function isLatestEmissionOperation(record) {
   const typeInfo = extractOperationTypeInfo(record);
-  const code = normalizeStatus(typeInfo.code);
-  const joined = `${typeInfo.code} ${typeInfo.name}`.toUpperCase();
-  if (/MARKING|НАНЕС|ПЕЧАТ/i.test(joined)) return false;
-  return code === TARGET_OPERATION_TYPE_CODE || joined.includes(TARGET_OPERATION_TYPE_TEXT.toUpperCase());
+  const operationType = normalizeStatus(typeInfo.code);
+  return operationType === TARGET_OPERATION_TYPE_CODE && operationType !== "MARKING";
 }
 
 function buildOperationTypeHistogram(rows) {
@@ -325,6 +323,28 @@ function buildOperationTypeHistogram(rows) {
       if (right.count !== left.count) return right.count - left.count;
       return left.operationType.localeCompare(right.operationType);
     });
+}
+
+async function writeSelectedPdfOperationsDebug(selectedOperations) {
+  const jsonRows = selectedOperations.map((operation, index) => ({
+    index: index + 1,
+    operationId: operation.operationId,
+    createdAt: operation.createdAt || "",
+    status: operation.status || "",
+    operationType: operation.operationType || "",
+  }));
+  await fs.writeFile(path.join(OUTPUT_DIR, "selected_pdf_operations.json"), `${JSON.stringify(jsonRows, null, 2)}\n`, "utf8");
+  await fs.writeFile(path.join(OUTPUT_DIR, "selected_pdf_operations.txt"), [
+    "index\toperationId\tcreatedAt\tstatus\toperationType",
+    ...jsonRows.map((row) => [
+      row.index,
+      row.operationId,
+      row.createdAt,
+      row.status,
+      row.operationType,
+    ].join("\t")),
+    "",
+  ].join("\n"), "utf8");
 }
 
 function extractGtinLike(value) {
@@ -617,7 +637,7 @@ async function loadOperations(headers) {
       const operationTypeInfo = extractOperationTypeInfo(item);
       if (!operationId) continue;
       if (!isTargetDate(item)) continue;
-      if (!isTargetTime(item)) continue;
+      if (!LATEST_EMISSION_MODE && !isTargetTime(item)) continue;
       totalOperationsAfterDateTimeFilters += 1;
       if (LATEST_EMISSION_MODE && status !== "ACCEPTED") continue;
       if (!LATEST_EMISSION_MODE && !matchesTargetOperationType(item)) continue;
@@ -627,7 +647,7 @@ async function loadOperations(headers) {
         operationId,
         createdAt,
         status,
-        operationType,
+        operationType: operationTypeInfo.code || operationType,
         operationName: operationTypeInfo.name,
         operationTypeLabel: operationTypeInfo.label,
         raw: item,
@@ -1436,7 +1456,8 @@ async function main() {
         totalOperationsAfterStatusFilter: 0,
       }
     : await loadOperations(authState.headers);
-  const operations = loadedOperations.rows;
+  let operations = loadedOperations.rows;
+  const operationTypeHistogramRows = operations;
   const limit = PDF_DEBUG_ONE
     ? 1
     : LATEST_EMISSION_MODE
@@ -1444,25 +1465,36 @@ async function main() {
       : Number.isFinite(DEBUG_LIMIT) && DEBUG_LIMIT > 0
         ? DEBUG_LIMIT
         : operations.length;
-  const targets = LATEST_EMISSION_MODE && !RETRY_FAILED_ONLY
-    ? operations
-        .filter((operation) => isLatestEmissionOperation(operation.raw || operation))
-        .sort((left, right) => {
-          const leftTime = Date.parse(left.createdAt || "") || 0;
-          const rightTime = Date.parse(right.createdAt || "") || 0;
-          if (leftTime !== rightTime) return rightTime - leftTime;
-          return String(left.operationId || "").localeCompare(String(right.operationId || ""));
-        })
-        .slice(0, limit)
-    : operations.slice(0, limit);
+  if (LATEST_EMISSION_MODE && !RETRY_FAILED_ONLY) {
+    operations = operations
+      .filter((operation) => isLatestEmissionOperation(operation.raw || operation))
+      .sort((left, right) => {
+        const leftTime = Date.parse(left.createdAt || "") || 0;
+        const rightTime = Date.parse(right.createdAt || "") || 0;
+        if (leftTime !== rightTime) return rightTime - leftTime;
+        return String(left.operationId || "").localeCompare(String(right.operationId || ""));
+      });
+  }
+  const selectedOperations = operations.slice(0, limit);
+  const targets = selectedOperations;
 
   console.log(`total operations before local filters: ${loadedOperations.totalOperationsBeforeLocalFilters}`);
   console.log(`total operations after date/time filters: ${loadedOperations.totalOperationsAfterDateTimeFilters}`);
   if (LATEST_EMISSION_MODE && !RETRY_FAILED_ONLY) {
     console.log(`operations after status filter: ${loadedOperations.totalOperationsAfterStatusFilter}`);
     console.log("operation type histogram:");
-    console.table(buildOperationTypeHistogram(operations));
-    console.log(`selected emission pdf operations: ${targets.length}`);
+    console.table(buildOperationTypeHistogram(operationTypeHistogramRows));
+    console.log(`selected emission pdf operations: ${selectedOperations.length}`);
+    console.log(`first selected operationId: ${selectedOperations[0]?.operationId || ""}`);
+    console.log(`last selected operationId: ${selectedOperations[selectedOperations.length - 1]?.operationId || ""}`);
+    console.table(selectedOperations.map((operation, index) => ({
+      index: index + 1,
+      operationId: operation.operationId,
+      createdAt: operation.createdAt,
+      status: operation.status,
+      operationType: operation.operationType,
+    })));
+    await writeSelectedPdfOperationsDebug(selectedOperations);
   }
   console.log(`total operations found: ${operations.length}`);
   console.log(`target operations: ${targets.length}`);
