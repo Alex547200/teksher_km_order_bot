@@ -25,7 +25,6 @@ const OUTPUT_DIR = path.join(os.homedir(), "Desktop", "NEW 100 LATEST CSV");
 const REPORT_PATH = path.join(OUTPUT_DIR, "latest_csv_report.txt");
 const LIST_ENDPOINT = `/facade/api/v1/operations/filter?size=${PAGE_SIZE}&page={page}&startDate=${DATE_FROM}&endDate=${DATE_TO}`;
 const TARGET_STATUS = "ACCEPTED";
-const TARGET_PRODUCT_CODE = "LP_RF";
 const RETRYABLE_HTTP_STATUSES = new Set([502, 503, 504]);
 
 function sleep(ms) {
@@ -49,10 +48,6 @@ function looksLikeJwt(value) {
 
 function normalizeStatus(value) {
   return normalizeText(value).toUpperCase();
-}
-
-function normalizeProductCode(value) {
-  return normalizeText(value).toUpperCase().replace(/[\s-]+/g, "_");
 }
 
 function buildUrl(endpointPath) {
@@ -189,68 +184,6 @@ function normalizeDateOnly(value) {
 
 function isTargetDate(record) {
   return normalizeDateOnly(extractCreatedAt(record)) === ONLY_DATE;
-}
-
-function collectProductCodeCandidates(source) {
-  const candidates = [];
-  const directPaths = [
-    "productCode",
-    "product_code",
-    "product.code",
-    "product.productCode",
-    "product.product_code",
-    "productInfo.productCode",
-    "productInfo.code",
-    "productDto.productCode",
-    "productDto.code",
-    "request.productCode",
-    "request.product_code",
-    "data.productCode",
-    "data.product_code",
-    "result.productCode",
-    "result.product_code",
-    "items.0.productCode",
-    "items.0.product_code",
-    "products.0.productCode",
-    "products.0.product_code",
-  ];
-
-  for (const pathSpec of directPaths) {
-    const value = pickPathValue(source, pathSpec);
-    if (typeof value === "string" && value.trim()) candidates.push(value.trim());
-  }
-
-  const seen = new Set();
-  const queue = [source];
-  while (queue.length) {
-    const current = queue.shift();
-    if (!current || typeof current !== "object") continue;
-    if (seen.has(current)) continue;
-    seen.add(current);
-    for (const [key, value] of Object.entries(current)) {
-      const lower = key.toLowerCase();
-      if (typeof value === "string" && value.trim()) {
-        if (
-          lower === "productcode"
-          || lower === "product_code"
-          || lower === "product"
-          || lower === "article"
-          || lower === "sku"
-        ) {
-          candidates.push(value.trim());
-        }
-      } else if (value && typeof value === "object") {
-        queue.push(value);
-      }
-    }
-  }
-
-  return candidates;
-}
-
-function extractTargetProductCode(source) {
-  const candidates = collectProductCodeCandidates(source);
-  return candidates.find((value) => normalizeProductCode(value) === TARGET_PRODUCT_CODE) || "";
 }
 
 async function ensureDir(dir) {
@@ -508,16 +441,6 @@ async function fetchOperationListPage(pageNumber, headers) {
   return { url, json };
 }
 
-async function fetchOperationDetail(operationId, headers) {
-  const url = buildUrl(`/facade/api/v1/operations/${encodeURIComponent(operationId)}`);
-  try {
-    return await fetchJson(url, headers, `DETAIL operationId=${operationId}`);
-  } catch (error) {
-    console.warn(`DETAIL_FAILED operationId=${operationId} ${error?.message || error}`);
-    return null;
-  }
-}
-
 async function loadOperations(headers) {
   const seenIds = new Set();
   const rows = [];
@@ -562,31 +485,6 @@ async function loadOperations(headers) {
     operationsAfterDateFilter,
     operationsAfterStatusFilter,
   };
-}
-
-async function filterProductCodeRows(rows, headers) {
-  const selected = [];
-  let detailsFetched = 0;
-
-  for (const row of rows) {
-    let productCode = extractTargetProductCode(row.raw);
-    let detail = null;
-
-    if (!productCode) {
-      detail = await fetchOperationDetail(row.operationId, headers);
-      detailsFetched += 1;
-      productCode = extractTargetProductCode(detail);
-    }
-
-    if (normalizeProductCode(productCode) !== TARGET_PRODUCT_CODE) continue;
-    selected.push({
-      ...row,
-      productCode,
-      detail,
-    });
-  }
-
-  return { selected, detailsFetched };
 }
 
 function compareCreatedAtDesc(left, right) {
@@ -661,7 +559,6 @@ async function main() {
   console.log(`DATE_TO: ${DATE_TO}`);
   console.log(`LIMIT: ${LIMIT}`);
   console.log(`target status: ${TARGET_STATUS}`);
-  console.log(`target productCode: ${TARGET_PRODUCT_CODE}`);
   console.log(`output folder: ${OUTPUT_DIR}`);
   console.log(`report: ${REPORT_PATH}`);
   console.log(`final LIST URL: ${buildUrl(LIST_ENDPOINT.replace("{page}", "0"))}`);
@@ -672,21 +569,17 @@ async function main() {
   console.log(`operations after date filter: ${loaded.operationsAfterDateFilter}`);
   console.log(`operations after status filter: ${loaded.operationsAfterStatusFilter}`);
 
-  const productFiltered = await filterProductCodeRows(loaded.rows, authState.headers);
-  const sorted = productFiltered.selected.sort(compareCreatedAtDesc);
-  const targets = sorted.slice(0, LIMIT);
-
-  console.log(`details fetched for productCode: ${productFiltered.detailsFetched}`);
-  console.log(`operations after productCode filter: ${productFiltered.selected.length}`);
-  console.log(`target operations: ${targets.length}`);
+  const operations = loaded.rows.sort(compareCreatedAtDesc);
+  const selectedOperations = operations.slice(0, LIMIT);
+  console.log("selected latest operations:", selectedOperations.length);
 
   const results = [];
   let downloaded = 0;
   let skipped = 0;
   let failed = 0;
 
-  for (let index = 0; index < targets.length; index += 1) {
-    const operation = targets[index];
+  for (let index = 0; index < selectedOperations.length; index += 1) {
+    const operation = selectedOperations[index];
     const oneBasedIndex = index + 1;
     const fileName = buildCsvFileName(oneBasedIndex, operation.operationId);
     const targetPath = path.join(OUTPUT_DIR, fileName);
@@ -701,7 +594,6 @@ async function main() {
         operationId: operation.operationId,
         createdAt: operation.createdAt,
         status: operation.status,
-        productCode: operation.productCode,
         fileName,
         filePath: csvResult.filePath || "",
         csvStatus: csvResult.status,
@@ -713,7 +605,6 @@ async function main() {
         operationId: operation.operationId,
         createdAt: operation.createdAt,
         status: operation.status,
-        productCode: operation.productCode,
         fileName,
         filePath: "",
         csvStatus: "failed",
