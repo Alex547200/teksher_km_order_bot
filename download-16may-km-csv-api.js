@@ -11,9 +11,12 @@ const REQUEST_TIMEOUT = 45000;
 const TARGET_OPERATION_TYPE = "MARK_CODE_ORDER";
 const RETRY_ATTEMPTS = 3;
 const RETRY_DELAY_MS = 3000;
+const LIST_RETRY_DELAYS_MS = [2000, 4000, 8000, 12000, 20000];
+const MAX_PAGE_SCAN = 500;
 const DEFAULT_DATE_FROM = "2026-05-17";
 const DEFAULT_DATE_TO = "2026-05-18";
 const DEBUG_OPERATIONS = String(process.env.DEBUG_OPERATIONS || "").trim() === "1";
+const BROWSER_FILTER_MODE = String(process.env.BROWSER_FILTER_MODE || "").trim() === "1";
 
 function getEnvDate(name, fallback) {
   const value = String(process.env[name] || "").trim();
@@ -29,10 +32,35 @@ function formatDateDot(dateIso) {
 
 const DATE_FROM = getEnvDate("DATE_FROM", DEFAULT_DATE_FROM);
 const DATE_TO = getEnvDate("DATE_TO", DEFAULT_DATE_TO);
-const TARGET_DATE = DATE_FROM;
-const OUTPUT_DIR = path.join(os.homedir(), "Desktop", "Текшер CSV", formatDateDot(DATE_FROM));
-const LOG_PATH = path.join(PROJECT_DIR, `download_${DATE_FROM.replace(/-/g, "")}_km_csv_api_log.json`);
-const LIST_ENDPOINT = `/facade/api/v1/operations/filter?size=15&page={page}&startDate=${DATE_FROM}&endDate=${DATE_TO}`;
+const ONLY_DATE = String(process.env.ONLY_DATE || "").trim();
+const ONLY_TIME_FROM = String(process.env.ONLY_TIME_FROM || "").trim();
+const ONLY_TIME_TO = String(process.env.ONLY_TIME_TO || "").trim();
+const FILTER_DATE = ONLY_DATE || DATE_TO;
+const HAS_DATE_TO = String(process.env.DATE_TO || "").trim() !== "";
+const USE_BROWSER_FILTER_MODE = BROWSER_FILTER_MODE && HAS_DATE_TO;
+const HAS_TIME_FILTER = Boolean(ONLY_TIME_FROM && ONLY_TIME_TO);
+const SELECTED_DATE = ONLY_DATE || DATE_FROM;
+const TIME_RANGE_DIR_SUFFIX = HAS_TIME_FILTER ? `_${ONLY_TIME_FROM.replace(":", "-")}_${ONLY_TIME_TO.replace(":", "-")}` : "";
+const OUTPUT_DIR = path.join(os.homedir(), "Desktop", "Текшер CSV", `${formatDateDot(SELECTED_DATE)}${TIME_RANGE_DIR_SUFFIX}`);
+const LOG_PATH = path.join(PROJECT_DIR, `download_${SELECTED_DATE.replace(/-/g, "")}_km_csv_api_log.json`);
+const LIST_ENDPOINT = buildListEndpoint();
+const ONLY_TIME_FROM_MINUTES = HAS_TIME_FILTER ? parseTimeMinutes(ONLY_TIME_FROM, "ONLY_TIME_FROM") : null;
+const ONLY_TIME_TO_MINUTES = HAS_TIME_FILTER ? parseTimeMinutes(ONLY_TIME_TO, "ONLY_TIME_TO") : null;
+const TIME_RANGE_LABEL = HAS_TIME_FILTER ? `${ONLY_TIME_FROM}..${ONLY_TIME_TO}` : "disabled";
+
+function buildListEndpoint() {
+  if (USE_BROWSER_FILTER_MODE) {
+    return `/facade/api/v1/operations/filter?size=15&page={page}&endDate=${DATE_TO}`;
+  }
+  return `/facade/api/v1/operations/filter?size=15&page={page}&startDate=${DATE_FROM}&endDate=${DATE_TO}`;
+}
+
+function parseTimeMinutes(value, name) {
+  if (!value) return null;
+  const match = value.match(/^([01]\d|2[0-3]):([0-5]\d)$/);
+  if (!match) throw new Error(`${name}_INVALID: expected HH:MM, got ${value}`);
+  return Number(match[1]) * 60 + Number(match[2]);
+}
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -215,8 +243,13 @@ function filterReasons(record) {
 
   if (!createdAt) reasons.push("missing createdAt");
   else if (!dateOnly) reasons.push(`date parse failed (${createdAt})`);
-  else if (dateOnly < DATE_FROM) reasons.push(`date before range (${dateOnly} < ${DATE_FROM})`);
-  else if (dateOnly >= DATE_TO) reasons.push(`date after range (${dateOnly} >= ${DATE_TO})`);
+  else if (USE_BROWSER_FILTER_MODE && dateOnly !== FILTER_DATE) reasons.push(`date mismatch (${dateOnly} != ${FILTER_DATE})`);
+  else if (!USE_BROWSER_FILTER_MODE && dateOnly < DATE_FROM) reasons.push(`date before range (${dateOnly} < ${DATE_FROM})`);
+  else if (!USE_BROWSER_FILTER_MODE && dateOnly >= DATE_TO) reasons.push(`date after range (${dateOnly} >= ${DATE_TO})`);
+  else if (!isTargetTime(record)) {
+    const timeText = String(createdAt || "").match(/(?:T|\s)((?:[01]\d|2[0-3]):[0-5]\d)/)?.[1] || "missing";
+    reasons.push(`time mismatch (${timeText} not in ${ONLY_TIME_FROM || "00:00"}..${ONLY_TIME_TO || "23:59"})`);
+  }
 
   if (operationType !== TARGET_OPERATION_TYPE) {
     reasons.push(`operationType mismatch (${operationType || "EMPTY"} != ${TARGET_OPERATION_TYPE})`);
@@ -256,11 +289,30 @@ function parseDateOnly(value) {
   return normalized && /^\d{4}-\d{2}-\d{2}$/.test(normalized) ? normalized : "";
 }
 
+function parseCreatedAtTimeMinutes(value) {
+  const text = String(value || "").trim();
+  if (!text) return null;
+  const timeMatch = text.match(/(?:T|\s)([01]\d|2[0-3]):([0-5]\d)(?::[0-5]\d)?/);
+  if (!timeMatch) return null;
+  return Number(timeMatch[1]) * 60 + Number(timeMatch[2]);
+}
+
 function isTargetDate(record) {
   const value = String(extractCreatedAt(record) || "").trim();
   const dateOnly = parseDateOnly(value);
   if (!dateOnly) return false;
+  if (USE_BROWSER_FILTER_MODE) return dateOnly === FILTER_DATE;
   return dateOnly >= DATE_FROM && dateOnly < DATE_TO;
+}
+
+function isTargetTime(record) {
+  if (!HAS_TIME_FILTER) return true;
+  const value = String(extractCreatedAt(record) || "").trim();
+  const timeMinutes = parseCreatedAtTimeMinutes(value);
+  if (timeMinutes === null) return false;
+  if (ONLY_TIME_FROM_MINUTES !== null && timeMinutes < ONLY_TIME_FROM_MINUTES) return false;
+  if (ONLY_TIME_TO_MINUTES !== null && timeMinutes > ONLY_TIME_TO_MINUTES) return false;
+  return true;
 }
 
 function extractGtinLike(value) {
@@ -422,15 +474,50 @@ async function fetchOperationDetail(operationId, headers) {
 async function fetchOperationListPage(pageNumber, headers) {
   const url = buildUrl(LIST_ENDPOINT.replace("{page}", String(pageNumber)));
   console.log(`LIST URL: ${url}`);
-  const response = await fetchWithRetry(url, { method: "GET", headers });
-  const text = await response.text();
-  let json = null;
-  try {
-    json = JSON.parse(text);
-  } catch {
-    json = null;
+  let lastError = null;
+  for (let attempt = 1; attempt <= LIST_RETRY_DELAYS_MS.length; attempt += 1) {
+    try {
+      const response = await fetchWithRetry(url, { method: "GET", headers });
+      if ([502, 503, 504].includes(response.status)) {
+        if (attempt < LIST_RETRY_DELAYS_MS.length) {
+          const delay = LIST_RETRY_DELAYS_MS[attempt - 1];
+          console.warn(`LIST_RETRY attempt=${attempt}/${LIST_RETRY_DELAYS_MS.length} http=${response.status} page=${pageNumber} delay=${delay}ms`);
+          await sleep(delay);
+          continue;
+        }
+
+        const text = await response.text().catch(() => "");
+        return {
+          url,
+          status: response.status,
+          ok: false,
+          json: null,
+          text,
+          retryableFailedPage: true,
+        };
+      }
+
+      const text = await response.text();
+      let json = null;
+      try {
+        json = JSON.parse(text);
+      } catch {
+        json = null;
+      }
+      return { url, status: response.status, ok: response.ok, json, text };
+    } catch (error) {
+      lastError = error;
+      if (attempt < LIST_RETRY_DELAYS_MS.length && isRetryableFetchError(error)) {
+        const delay = LIST_RETRY_DELAYS_MS[attempt - 1];
+        console.warn(`LIST_RETRY attempt=${attempt}/${LIST_RETRY_DELAYS_MS.length} network_error page=${pageNumber} delay=${delay}ms`);
+        console.warn(`LIST_RETRY reason=${error?.cause?.code || error?.message || error}`);
+        await sleep(delay);
+        continue;
+      }
+      throw error;
+    }
   }
-  return { url, status: response.status, ok: response.ok, json, text };
+  throw lastError || new Error(`List endpoint failed for page ${pageNumber}`);
 }
 
 async function loadOperations(headers) {
@@ -440,13 +527,30 @@ async function loadOperations(headers) {
   const seenIds = new Set();
   const rows = [];
   const debugRows = [];
-  while (true) {
+  const failedPages = [];
+  let apiOperationCount = 0;
+  let pagesScanned = 0;
+  let operationsAfterDateFilter = 0;
+  let operationsAfterTimeFilter = 0;
+  while (pageNumber < MAX_PAGE_SCAN) {
     const page = await fetchOperationListPage(pageNumber, headers);
+    pagesScanned += 1;
     if (!page.ok) {
-      throw new Error(`List endpoint failed with HTTP ${page.status}`);
+      failedPages.push({
+        page: pageNumber,
+        status: page.status,
+        url: page.url,
+        reason: page.retryableFailedPage ? `HTTP ${page.status}` : `HTTP ${page.status}`,
+      });
+      pages.push(page);
+      pageNumber += 1;
+      if (typeof totalPages === "number" && pageNumber >= totalPages) break;
+      continue;
     }
+
     pages.push(page);
     const items = extractCollection(page.json);
+    apiOperationCount += items.length;
     totalPages = extractTotalPages(page.json) ?? totalPages;
     for (const item of items) {
       const operationId = extractOperationId(item);
@@ -462,6 +566,9 @@ async function loadOperations(headers) {
         reasons,
       });
       if (!isTargetDate(item)) continue;
+      operationsAfterDateFilter += 1;
+      if (!isTargetTime(item)) continue;
+      operationsAfterTimeFilter += 1;
       if (operationType !== TARGET_OPERATION_TYPE) continue;
       rows.push({
         operationId,
@@ -475,7 +582,16 @@ async function loadOperations(headers) {
     if (typeof totalPages === "number" && pageNumber >= totalPages) break;
     if (items.length < 15) break;
   }
-  return { pages, rows, debugRows };
+  return {
+    pages,
+    rows,
+    debugRows,
+    failedPages,
+    pagesScanned,
+    apiOperationCount,
+    operationsAfterDateFilter,
+    operationsAfterTimeFilter,
+  };
 }
 
 async function downloadCsv(operationId, headers, fileBase) {
@@ -502,7 +618,16 @@ async function downloadCsv(operationId, headers, fileBase) {
 async function main() {
   await ensureDir(OUTPUT_DIR);
   const authState = await readAuthHeaders();
-  const { rows, debugRows } = await loadOperations(authState.headers);
+  console.log(`final LIST URL: ${buildUrl(LIST_ENDPOINT.replace("{page}", "0"))}`);
+  const {
+    rows,
+    debugRows,
+    failedPages,
+    pagesScanned,
+    apiOperationCount,
+    operationsAfterDateFilter,
+    operationsAfterTimeFilter,
+  } = await loadOperations(authState.headers);
   const accepted = rows
     .filter((row) => normalizeStatus(row.status) === "ACCEPTED" || normalizeStatus(row.operationType) === TARGET_OPERATION_TYPE)
     .sort((a, b) => {
@@ -519,6 +644,10 @@ async function main() {
   let skipped = 0;
   let failed = 0;
 
+  console.log(`selected date: ${SELECTED_DATE}`);
+  console.log(`time range: ${TIME_RANGE_LABEL}`);
+  console.log(`operations after date filter: ${operationsAfterDateFilter}`);
+  console.log(`operations after time filter: ${operationsAfterTimeFilter}`);
   console.log(`total operations found: ${accepted.length}`);
   console.log(`output folder: ${OUTPUT_DIR}`);
   console.log(`token exp: ${new Date(authState.tokenExpiresAtMs).toISOString()}`);
@@ -526,21 +655,35 @@ async function main() {
 
   if (DEBUG_OPERATIONS) {
     const firstDebugRows = debugRows.slice(0, 30);
+    const uniqueDates = [...new Set(debugRows
+      .map((row) => String(row.createdAt || "").slice(0, 10))
+      .filter(Boolean))]
+      .sort();
+
     console.log(`debug rows total: ${debugRows.length}`);
     console.log(`debug rows shown: ${firstDebugRows.length}`);
+    console.log(`unique createdAt dates: ${uniqueDates.join(" | ")}`);
+
     for (const row of firstDebugRows) {
       console.log("--- DEBUG_OPERATION ---");
       console.log(JSON.stringify({
-        operationId: row.operationId,
-        createdAt: row.createdAt,
-        status: row.status,
-        operationType: row.operationType,
-        name: row.name,
-        productGroup: row.productGroup,
-        fields: row.fields,
-        reasons: row.reasons,
+        operationId: row.operationId || "",
+        createdAt: row.createdAt || "",
+        date: String(row.createdAt || "").slice(0, 10),
+        status: row.status || "",
+        type: row.operationType || "",
+        name: row.name || "",
+        productGroup: row.productGroup || "",
+        fields: row.fields || [],
+        reasons: row.reasons || [],
       }, null, 2));
     }
+
+    if (debugRows.length > 0) {
+      const firstOperation = debugRows[0];
+      console.log(`first operation keys: ${Object.keys(firstOperation).join(" | ")}`);
+    }
+
     console.log("DEBUG_OPERATIONS_ONLY");
     return;
   }
@@ -604,8 +747,22 @@ async function main() {
 
   await writeJson(LOG_PATH, {
     generatedAt: new Date().toISOString(),
+    selectedDate: SELECTED_DATE,
+    timeRange: {
+      enabled: HAS_TIME_FILTER,
+      from: ONLY_TIME_FROM || "",
+      to: ONLY_TIME_TO || "",
+    },
     outputDir: OUTPUT_DIR,
     rows: results,
+    totalPagesScanned: pagesScanned,
+    failedPages,
+    totalOperationsFromApi: apiOperationCount,
+    operationsAfterDateFilter,
+    operationsAfterTimeFilter,
+    filteredOperations: accepted.length,
+    downloadedCsv: downloaded,
+    failed,
   });
 
   console.table(
@@ -620,6 +777,14 @@ async function main() {
     })),
   );
   console.log(`total operations: ${accepted.length}`);
+  console.log(`total pages scanned: ${pagesScanned}`);
+  console.log(`failed pages: ${failedPages.length}`);
+  console.log(`total operations from API: ${apiOperationCount}`);
+  console.log(`selected date: ${SELECTED_DATE}`);
+  console.log(`time range: ${TIME_RANGE_LABEL}`);
+  console.log(`operations after date filter: ${operationsAfterDateFilter}`);
+  console.log(`operations after time filter: ${operationsAfterTimeFilter}`);
+  console.log(`filtered operations: ${accepted.length}`);
   console.log(`downloaded CSV: ${downloaded}`);
   console.log(`skipped: ${skipped}`);
   console.log(`failed: ${failed}`);
