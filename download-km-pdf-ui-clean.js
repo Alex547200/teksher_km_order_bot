@@ -12,6 +12,7 @@ const OPERATIONS_URL = `${BASE_URL}/operations`;
 const AUTH_REFRESH_TOKEN_URL = `${BASE_URL}/realms/mzkm_prod_realm/protocol/openid-connect/token`;
 const AUTH_TOKENS_PATH = path.join(PROJECT_DIR, "auth_tokens.json");
 const SESSION_PROFILE_DIR = path.resolve(PROJECT_DIR, "teksher-session-profile");
+const PLAYWRIGHT_HOME = path.join(PROJECT_DIR, ".playwright-home");
 const REQUEST_TIMEOUT = 45_000;
 const DOWNLOAD_TIMEOUT = 60_000;
 const RETRY_ATTEMPTS = 3;
@@ -130,6 +131,10 @@ function sanitizeFilePart(value) {
 
 function normalizeToken(value) {
   return String(value || "").trim().replace(/^Bearer\s+/i, "").trim();
+}
+
+function looksLikeJwt(value) {
+  return typeof value === "string" && /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(value.trim());
 }
 
 function pickPathValue(source, pathSpec) {
@@ -568,6 +573,103 @@ async function fetchPageWithRetry(pageNumber, headers) {
   throw lastError || new Error(`List endpoint failed for page ${pageNumber}`);
 }
 
+function collectTokenCandidates(value, source, out = []) {
+  if (value == null) return out;
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    const bearer = trimmed.match(/Bearer\s+([A-Za-z0-9_.-]+)/i);
+    if (bearer) out.push({ token: bearer[1], source });
+    if (looksLikeJwt(trimmed)) out.push({ token: trimmed, source });
+    if (/(access|auth|authorization|jwt|token)/i.test(source) && !/refresh/i.test(source) && trimmed.length > 20 && !/\s/.test(trimmed)) {
+      out.push({ token: trimmed.replace(/^Bearer\s+/i, ""), source });
+    }
+    try {
+      collectTokenCandidates(JSON.parse(trimmed), source, out);
+    } catch {}
+    return out;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) collectTokenCandidates(item, source, out);
+    return out;
+  }
+  if (typeof value === "object") {
+    for (const [key, nested] of Object.entries(value)) {
+      collectTokenCandidates(nested, `${source}.${key}`, out);
+    }
+  }
+  return out;
+}
+
+function chooseValidAccessToken(candidates) {
+  const unique = candidates
+    .map((item) => ({
+      source: item.source,
+      token: normalizeToken(item.token),
+      expMs: authHelper.decodeJwtExpMs(item.token),
+    }))
+    .filter((item, index, arr) => (
+      item.token
+      && item.expMs > Date.now() + 60_000
+      && !/refresh/i.test(item.source)
+      && arr.findIndex((candidate) => candidate.token === item.token) === index
+    ));
+
+  unique.sort((left, right) => {
+    if (right.expMs !== left.expMs) return right.expMs - left.expMs;
+    return String(left.source || "").localeCompare(String(right.source || ""));
+  });
+  return unique[0] || null;
+}
+
+async function extractSessionAccessToken() {
+  await ensureDir(PLAYWRIGHT_HOME);
+  const context = await chromium.launchPersistentContext(SESSION_PROFILE_DIR, {
+    headless: false,
+    acceptDownloads: false,
+    viewport: { width: 1440, height: 1200 },
+    args: ["--disable-crash-reporter", "--disable-crashpad"],
+    env: {
+      ...process.env,
+      HOME: PLAYWRIGHT_HOME,
+    },
+  });
+
+  try {
+    const page = context.pages()[0] || await context.newPage();
+    page.setDefaultTimeout(REQUEST_TIMEOUT);
+    page.setDefaultNavigationTimeout(REQUEST_TIMEOUT);
+    await page.goto(OPERATIONS_URL, { waitUntil: "domcontentloaded", timeout: REQUEST_TIMEOUT });
+    await page.waitForLoadState("networkidle", { timeout: REQUEST_TIMEOUT }).catch(() => {});
+
+    const storage = await page.evaluate(() => {
+      const readStorage = (store) => {
+        const values = {};
+        for (let index = 0; index < store.length; index += 1) {
+          const key = store.key(index);
+          values[key] = store.getItem(key);
+        }
+        return values;
+      };
+      return {
+        localStorage: readStorage(window.localStorage),
+        sessionStorage: readStorage(window.sessionStorage),
+      };
+    });
+
+    const cookies = await context.cookies(BASE_URL).catch(() => []);
+    const candidates = [];
+    collectTokenCandidates(storage.localStorage, "profile.localStorage", candidates);
+    collectTokenCandidates(storage.sessionStorage, "profile.sessionStorage", candidates);
+    for (const cookie of cookies) {
+      collectTokenCandidates(cookie.value, `profile.cookie.${cookie.name}`, candidates);
+    }
+
+    return chooseValidAccessToken(candidates);
+  } finally {
+    await context.close().catch(() => {});
+  }
+}
+
 async function readAuthHeaders() {
   const candidates = await authHelper.readAuthCandidatesFromFiles([
     { path: AUTH_TOKENS_PATH, source: "auth_tokens.json" },
@@ -579,8 +681,31 @@ async function readAuthHeaders() {
   let refreshToken = normalizeToken(refreshCandidate?.token || "");
   let tokenExpiresAtMs = authHelper.decodeJwtExpMs(accessToken);
   const isExpired = !accessToken || !tokenExpiresAtMs || tokenExpiresAtMs <= Date.now() + 60_000;
+  let authSource = accessCandidate?.source || "auth_tokens.json";
 
-  if (isExpired && refreshToken) {
+  console.log(`ACCESS_TOKEN_SOURCE: ${authSource || "missing"}`);
+  console.log(`ACCESS_TOKEN_EXP: ${tokenExpiresAtMs ? new Date(tokenExpiresAtMs).toISOString() : "n/a"}`);
+  console.log(`ACCESS_TOKEN_EXPIRED: ${isExpired ? "yes" : "no"}`);
+
+  if (LATEST_EMISSION_MODE && isExpired) {
+    console.log(`SESSION_PROFILE_DIR: ${SESSION_PROFILE_DIR}`);
+    console.log("ACCESS_TOKEN_PROFILE_LOOKUP: start");
+    const sessionCandidate = await extractSessionAccessToken();
+    if (sessionCandidate) {
+      accessToken = normalizeToken(sessionCandidate.token);
+      tokenExpiresAtMs = sessionCandidate.expMs;
+      authSource = sessionCandidate.source;
+      const existingAuthRecord = await readJsonIfExists(AUTH_TOKENS_PATH) || {};
+      await writeJson(AUTH_TOKENS_PATH, {
+        ...existingAuthRecord,
+        access_token: accessToken,
+        savedAt: new Date().toISOString(),
+        source: "login-profile-session",
+      });
+      console.log(`ACCESS_TOKEN_PROFILE_SOURCE: ${sessionCandidate.source}`);
+      console.log(`ACCESS_TOKEN_PROFILE_EXP: ${new Date(tokenExpiresAtMs).toISOString()}`);
+    }
+  } else if (isExpired && refreshToken) {
     console.log("[EARLY_HTTP_DEBUG]", "POST", AUTH_REFRESH_TOKEN_URL);
     const refreshed = await authHelper.refreshAuthToken(refreshToken, {
       tokenUrl: AUTH_REFRESH_TOKEN_URL,
@@ -595,11 +720,12 @@ async function readAuthHeaders() {
   }
 
   if (!accessToken) {
-    throw new Error("TOKEN_MISSING: auth_tokens.json access_token not found");
+    throw new Error(LATEST_EMISSION_MODE ? "TOKEN_MISSING: Run npm run manual-token or npm run login-profile" : "TOKEN_MISSING: auth_tokens.json access_token not found");
   }
   if (!tokenExpiresAtMs || tokenExpiresAtMs <= Date.now()) {
-    throw new Error("TOKEN_EXPIRED: run npm run manual-token");
+    throw new Error(LATEST_EMISSION_MODE ? "TOKEN_EXPIRED: Run npm run manual-token or npm run login-profile" : "TOKEN_EXPIRED: run npm run manual-token");
   }
+  console.log(`AUTH_SOURCE: ${authSource}`);
 
   return {
     accessToken,
