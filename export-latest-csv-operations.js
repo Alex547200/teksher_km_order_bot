@@ -21,14 +21,26 @@ const ONLY_DATE = String(process.env.ONLY_DATE || "2026-05-20").trim();
 const DATE_FROM = String(process.env.DATE_FROM || ONLY_DATE).trim();
 const DATE_TO = String(process.env.DATE_TO || "2026-05-21").trim();
 const LIMIT = Number.parseInt(String(process.env.LIMIT || "100").trim(), 10);
-const OUTPUT_DIR = path.join(os.homedir(), "Desktop", "NEW 100 LATEST CSV");
+const RUN_TIMESTAMP = formatRunTimestamp(new Date());
+const OUTPUT_DIR = path.join(os.homedir(), "Desktop", `NEW_${Number.isFinite(LIMIT) && LIMIT > 0 ? LIMIT : "INVALID"}_LATEST_CSV_${RUN_TIMESTAMP}`);
 const REPORT_PATH = path.join(OUTPUT_DIR, "latest_csv_report.txt");
 const LIST_ENDPOINT = `/facade/api/v1/operations/filter?size=${PAGE_SIZE}&page={page}&startDate=${DATE_FROM}&endDate=${DATE_TO}`;
 const TARGET_STATUS = "ACCEPTED";
+const TARGET_OPERATION_TYPE_CODE = "MARK_CODE_ORDER";
+const TARGET_OPERATION_TYPE_TEXT = "Заказ на эмиссию КМ";
 const RETRYABLE_HTTP_STATUSES = new Set([502, 503, 504]);
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function formatRunTimestamp(date) {
+  const pad = (value) => String(value).padStart(2, "0");
+  return [
+    date.getFullYear(),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+  ].join("-") + `_${pad(date.getHours())}-${pad(date.getMinutes())}-${pad(date.getSeconds())}`;
 }
 
 function normalizeText(value) {
@@ -168,6 +180,57 @@ function extractCreatedAt(record) {
 
 function extractStatus(record) {
   return normalizeStatus(pickText(record, ["status", "state", "operationStatus", "currentStatus", "documentStatus"]));
+}
+
+function extractOperationTypeInfo(record) {
+  const code = normalizeText(pickText(record, [
+    "operationType",
+    "operationTypeCode",
+    "type",
+    "code",
+    "operation.type",
+    "operation.code",
+    "operation.operationType",
+    "operation.operationTypeCode",
+    "operationCode",
+  ]));
+  const name = normalizeText(pickText(record, [
+    "operationName",
+    "operationTypeName",
+    "name",
+    "title",
+    "description",
+    "operation.name",
+    "operation.title",
+    "operation.operationName",
+    "operation.operationTypeName",
+  ]));
+  const label = [code, name].filter(Boolean).join(" | ") || "UNKNOWN";
+  return { code, name, label };
+}
+
+function isEmissionOperation(record) {
+  const typeInfo = extractOperationTypeInfo(record);
+  const joined = `${typeInfo.code} ${typeInfo.name}`.toUpperCase();
+  return (
+    joined.includes(TARGET_OPERATION_TYPE_CODE)
+    || joined.includes(TARGET_OPERATION_TYPE_TEXT.toUpperCase())
+    || (/EMISS/i.test(joined) && /MARK|CODE|KM|КМ/i.test(joined))
+  );
+}
+
+function buildOperationTypeHistogram(rows) {
+  const histogram = new Map();
+  for (const row of rows) {
+    const label = row.operationTypeLabel || extractOperationTypeInfo(row.raw).label;
+    histogram.set(label, (histogram.get(label) || 0) + 1);
+  }
+  return [...histogram.entries()]
+    .map(([operationType, count]) => ({ operationType, count }))
+    .sort((left, right) => {
+      if (right.count !== left.count) return right.count - left.count;
+      return left.operationType.localeCompare(right.operationType);
+    });
 }
 
 function normalizeDateOnly(value) {
@@ -465,10 +528,14 @@ async function loadOperations(headers) {
       const status = extractStatus(item);
       if (status !== TARGET_STATUS) continue;
       operationsAfterStatusFilter += 1;
+      const operationTypeInfo = extractOperationTypeInfo(item);
       rows.push({
         operationId,
         createdAt: extractCreatedAt(item),
         status,
+        operationType: operationTypeInfo.code,
+        operationName: operationTypeInfo.name,
+        operationTypeLabel: operationTypeInfo.label,
         raw: item,
       });
     }
@@ -568,10 +635,13 @@ async function main() {
   console.log(`total operations from API: ${loaded.totalOperationsFromApi}`);
   console.log(`operations after date filter: ${loaded.operationsAfterDateFilter}`);
   console.log(`operations after status filter: ${loaded.operationsAfterStatusFilter}`);
+  console.log("operation type histogram:");
+  console.table(buildOperationTypeHistogram(loaded.rows));
 
-  const operations = loaded.rows.sort(compareCreatedAtDesc);
+  const emissionOperations = loaded.rows.filter((operation) => isEmissionOperation(operation.raw));
+  const operations = emissionOperations.sort(compareCreatedAtDesc);
   const selectedOperations = operations.slice(0, LIMIT);
-  console.log("selected latest operations:", selectedOperations.length);
+  console.log("selected emission operations:", selectedOperations.length);
 
   const results = [];
   let downloaded = 0;
@@ -632,6 +702,7 @@ async function main() {
   console.log(`downloaded CSV: ${downloaded}`);
   console.log(`skipped: ${skipped}`);
   console.log(`failed: ${failed}`);
+  console.log(`output folder: ${OUTPUT_DIR}`);
   console.log(`report: ${REPORT_PATH}`);
 }
 
