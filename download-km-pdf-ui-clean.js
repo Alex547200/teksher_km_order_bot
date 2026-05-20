@@ -9,12 +9,14 @@ const authHelper = require("./teksher-auth.js");
 const PROJECT_DIR = __dirname;
 const BASE_URL = "https://label.teksher.kg";
 const OPERATIONS_URL = `${BASE_URL}/operations`;
+const AUTH_REFRESH_TOKEN_URL = `${BASE_URL}/realms/mzkm_prod_realm/protocol/openid-connect/token`;
 const AUTH_TOKENS_PATH = path.join(PROJECT_DIR, "auth_tokens.json");
 const SESSION_PROFILE_DIR = path.resolve(PROJECT_DIR, "teksher-session-profile");
 const REQUEST_TIMEOUT = 45_000;
 const DOWNLOAD_TIMEOUT = 60_000;
-const LIST_RETRY_ATTEMPTS = 5;
-const LIST_RETRY_DELAY_MS = 3_000;
+const RETRY_ATTEMPTS = 3;
+const RETRY_DELAY_MS = 3_000;
+const LIST_RETRY_DELAYS_MS = [2_000, 4_000, 8_000, 12_000, 20_000];
 const PAGE_SIZE = 15;
 const FORMAT_MODAL_RETRY_ATTEMPTS = 3;
 const FORMAT_MODAL_WAIT_MS = 15_000;
@@ -23,6 +25,9 @@ const TARGET_OPERATION_TYPE_TEXT = "Заказ на эмиссию КМ";
 const BAD_STATUSES = new Set(["ERROR", "500", "502"]);
 const PDF_DEBUG_ONE = String(process.env.PDF_DEBUG_ONE || "").trim() === "1";
 const DEBUG_LIMIT = Number.parseInt(String(process.env.DEBUG_LIMIT || "").trim(), 10);
+const ONLY_DATE = String(process.env.ONLY_DATE || "").trim();
+const ONLY_TIME_FROM = String(process.env.ONLY_TIME_FROM || "").trim();
+const ONLY_TIME_TO = String(process.env.ONLY_TIME_TO || "").trim();
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -65,10 +70,23 @@ const DEFAULT_DATE_FROM = formatIsoDateFromLocalDate();
 const DEFAULT_DATE_TO = addDaysIso(DEFAULT_DATE_FROM, 1);
 const DATE_FROM = getEnvDate("DATE_FROM", DEFAULT_DATE_FROM);
 const DATE_TO = getEnvDate("DATE_TO", DEFAULT_DATE_TO);
-const OUTPUT_DIR = path.join(os.homedir(), "Desktop", "Текшер PDF", formatDateDot(DATE_FROM));
+const HAS_TIME_FILTER = Boolean(ONLY_TIME_FROM && ONLY_TIME_TO);
+const SELECTED_DATE = ONLY_DATE || DATE_FROM;
+const TIME_RANGE_DIR_SUFFIX = HAS_TIME_FILTER ? `_${ONLY_TIME_FROM.replace(":", "-")}_${ONLY_TIME_TO.replace(":", "-")}` : "";
+const OUTPUT_DIR = path.join(os.homedir(), "Desktop", "Текшер PDF", `${formatDateDot(SELECTED_DATE)}${TIME_RANGE_DIR_SUFFIX}`);
 const LIST_ENDPOINT = `/facade/api/v1/operations/filter?size=${PAGE_SIZE}&page={page}&startDate=${DATE_FROM}&endDate=${DATE_TO}`;
+const ONLY_TIME_FROM_MINUTES = HAS_TIME_FILTER ? parseTimeMinutes(ONLY_TIME_FROM, "ONLY_TIME_FROM") : null;
+const ONLY_TIME_TO_MINUTES = HAS_TIME_FILTER ? parseTimeMinutes(ONLY_TIME_TO, "ONLY_TIME_TO") : null;
+const TIME_RANGE_LABEL = HAS_TIME_FILTER ? `${ONLY_TIME_FROM}..${ONLY_TIME_TO}` : "disabled";
 const RETRY_FAILED_ONLY = String(process.env.RETRY_FAILED_ONLY || "").trim() === "1";
 const FAILED_OPERATIONS_PATH = path.join(PROJECT_DIR, "tmp", `failed_pdf_operations_${String(DATE_FROM).slice(8)}may.json`);
+
+function parseTimeMinutes(value, name) {
+  if (!value) return null;
+  const match = value.match(/^([01]\d|2[0-3]):([0-5]\d)$/);
+  if (!match) throw new Error(`${name}_INVALID: expected HH:MM, got ${value}`);
+  return Number(match[1]) * 60 + Number(match[2]);
+}
 
 function normalizeText(value) {
   return String(value || "")
@@ -208,9 +226,27 @@ function parseDateOnly(value) {
   return "";
 }
 
+function parseCreatedAtTimeMinutes(value) {
+  const text = String(value || "").trim();
+  if (!text) return null;
+  const timeMatch = text.match(/(?:T|\s)([01]\d|2[0-3]):([0-5]\d)(?::[0-5]\d)?/);
+  if (!timeMatch) return null;
+  return Number(timeMatch[1]) * 60 + Number(timeMatch[2]);
+}
+
 function isTargetDate(record) {
   const dateOnly = parseDateOnly(extractCreatedAt(record));
+  if (ONLY_DATE) return dateOnly === ONLY_DATE;
   return Boolean(dateOnly && dateOnly >= DATE_FROM && dateOnly < DATE_TO);
+}
+
+function isTargetTime(record) {
+  if (!HAS_TIME_FILTER) return true;
+  const timeMinutes = parseCreatedAtTimeMinutes(extractCreatedAt(record));
+  if (timeMinutes === null) return false;
+  if (ONLY_TIME_FROM_MINUTES !== null && timeMinutes < ONLY_TIME_FROM_MINUTES) return false;
+  if (ONLY_TIME_TO_MINUTES !== null && timeMinutes > ONLY_TIME_TO_MINUTES) return false;
+  return true;
 }
 
 function matchesTargetOperationType(record) {
@@ -356,6 +392,7 @@ async function fetchWithTimeout(url, options = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(new Error("Request timeout")), REQUEST_TIMEOUT);
   try {
+    console.log("[HTTP_DEBUG]", options?.method || "GET", url);
     return await fetch(url, {
       ...options,
       signal: controller.signal,
@@ -366,21 +403,55 @@ async function fetchWithTimeout(url, options = {}) {
   }
 }
 
-async function fetchPageWithRetry(pageNumber, headers) {
-  const url = buildUrl(LIST_ENDPOINT.replace("{page}", String(pageNumber)));
-  console.log(`LIST URL: ${url}`);
+async function fetchWithRetry(url, options = {}) {
   let lastError = null;
-  for (let attempt = 1; attempt <= LIST_RETRY_ATTEMPTS; attempt += 1) {
+  for (let attempt = 1; attempt <= RETRY_ATTEMPTS; attempt += 1) {
     try {
-      const response = await fetchWithTimeout(url, {
-        method: "GET",
-        headers,
-      });
-      if ([502, 503, 504].includes(response.status) && attempt < LIST_RETRY_ATTEMPTS) {
-        console.warn(`LIST_RETRY attempt ${attempt}/${LIST_RETRY_ATTEMPTS} HTTP ${response.status} page=${pageNumber}`);
-        await sleep(LIST_RETRY_DELAY_MS);
+      console.log("[HTTP_DEBUG]", options?.method || "GET", url);
+      return await fetchWithTimeout(url, options);
+    } catch (error) {
+      lastError = error;
+      if (attempt < RETRY_ATTEMPTS && isRetryableFetchError(error)) {
+        console.warn(`FETCH_RETRY attempt=${attempt} url=${url}`);
+        console.warn(`FETCH_RETRY reason=${error?.cause?.code || error?.message || error}`);
+        await sleep(RETRY_DELAY_MS);
         continue;
       }
+      throw error;
+    }
+  }
+  throw lastError;
+}
+
+async function fetchPageWithRetry(pageNumber, headers) {
+  const url = buildUrl(LIST_ENDPOINT.replace("{page}", String(pageNumber)));
+  const method = "GET";
+  console.log("LIST_METHOD:", method);
+  console.log("LIST_URL:", url);
+  let lastError = null;
+  for (let attempt = 1; attempt <= LIST_RETRY_DELAYS_MS.length; attempt += 1) {
+    try {
+      console.log("[HTTP_DEBUG]", method, url);
+      const response = await fetchWithRetry(url, { method, headers });
+      if ([502, 503, 504].includes(response.status)) {
+        if (attempt < LIST_RETRY_DELAYS_MS.length) {
+          const delay = LIST_RETRY_DELAYS_MS[attempt - 1];
+          console.warn(`LIST_RETRY attempt=${attempt}/${LIST_RETRY_DELAYS_MS.length} http=${response.status} page=${pageNumber} delay=${delay}ms`);
+          await sleep(delay);
+          continue;
+        }
+
+        const text = await response.text().catch(() => "");
+        return {
+          url,
+          status: response.status,
+          ok: false,
+          json: null,
+          text,
+          retryableFailedPage: true,
+        };
+      }
+
       const text = await response.text();
       let json = null;
       try {
@@ -391,10 +462,11 @@ async function fetchPageWithRetry(pageNumber, headers) {
       return { url, status: response.status, ok: response.ok, json, text };
     } catch (error) {
       lastError = error;
-      if (attempt < LIST_RETRY_ATTEMPTS && isRetryableFetchError(error)) {
-        console.warn(`LIST_RETRY attempt ${attempt}/${LIST_RETRY_ATTEMPTS} NETWORK_ERROR page=${pageNumber}`);
+      if (attempt < LIST_RETRY_DELAYS_MS.length && isRetryableFetchError(error)) {
+        const delay = LIST_RETRY_DELAYS_MS[attempt - 1];
+        console.warn(`LIST_RETRY attempt=${attempt}/${LIST_RETRY_DELAYS_MS.length} network_error page=${pageNumber} delay=${delay}ms`);
         console.warn(`LIST_RETRY reason=${error?.cause?.code || error?.message || error}`);
-        await sleep(LIST_RETRY_DELAY_MS);
+        await sleep(delay);
         continue;
       }
       throw error;
@@ -416,7 +488,9 @@ async function readAuthHeaders() {
   const isExpired = !accessToken || !tokenExpiresAtMs || tokenExpiresAtMs <= Date.now() + 60_000;
 
   if (isExpired && refreshToken) {
+    console.log("[EARLY_HTTP_DEBUG]", "POST", AUTH_REFRESH_TOKEN_URL);
     const refreshed = await authHelper.refreshAuthToken(refreshToken, {
+      tokenUrl: AUTH_REFRESH_TOKEN_URL,
       authTokensPath: AUTH_TOKENS_PATH,
       source: "download-km-pdf-ui-clean",
     });
@@ -451,12 +525,15 @@ async function loadOperations(headers) {
   const rows = [];
   let pageNumber = 0;
   let totalPages = null;
+  let totalOperationsBeforeLocalFilters = 0;
+  let totalOperationsAfterDateTimeFilters = 0;
   while (true) {
     const page = await fetchPageWithRetry(pageNumber, headers);
     if (!page.ok) {
       throw new Error(`List endpoint failed with HTTP ${page.status}`);
     }
     const items = extractCollection(page.json);
+    totalOperationsBeforeLocalFilters += items.length;
     totalPages = extractTotalPages(page.json) ?? totalPages;
     for (const item of items) {
       const operationId = extractOperationId(item);
@@ -465,6 +542,8 @@ async function loadOperations(headers) {
       const operationType = extractOperationType(item);
       if (!operationId) continue;
       if (!isTargetDate(item)) continue;
+      if (!isTargetTime(item)) continue;
+      totalOperationsAfterDateTimeFilters += 1;
       if (!matchesTargetOperationType(item)) continue;
       if (BAD_STATUSES.has(status)) continue;
       rows.push({
@@ -485,7 +564,11 @@ async function loadOperations(headers) {
     if (leftTime !== rightTime) return leftTime - rightTime;
     return String(left.operationId || "").localeCompare(String(right.operationId || ""));
   });
-  return rows;
+  return {
+    rows,
+    totalOperationsBeforeLocalFilters,
+    totalOperationsAfterDateTimeFilters,
+  };
 }
 
 async function clickVisible(locator) {
@@ -1253,14 +1336,25 @@ async function main() {
   await ensureDir(path.dirname(FAILED_OPERATIONS_PATH));
   console.log(`DATE_FROM: ${DATE_FROM}`);
   console.log(`DATE_TO: ${DATE_TO}`);
+  console.log(`ONLY_DATE: ${ONLY_DATE || "disabled"}`);
+  console.log(`time range: ${TIME_RANGE_LABEL}`);
   console.log(`output folder: ${OUTPUT_DIR}`);
   console.log(`retry failed only: ${RETRY_FAILED_ONLY ? "yes" : "no"}`);
 
   const authState = await readAuthHeaders();
-  const operations = RETRY_FAILED_ONLY ? await loadFailedOperations() : await loadOperations(authState.headers);
+  const loadedOperations = RETRY_FAILED_ONLY
+    ? {
+        rows: await loadFailedOperations(),
+        totalOperationsBeforeLocalFilters: 0,
+        totalOperationsAfterDateTimeFilters: 0,
+      }
+    : await loadOperations(authState.headers);
+  const operations = loadedOperations.rows;
   const limit = PDF_DEBUG_ONE ? 1 : Number.isFinite(DEBUG_LIMIT) && DEBUG_LIMIT > 0 ? DEBUG_LIMIT : operations.length;
   const targets = operations.slice(0, limit);
 
+  console.log(`total operations before local filters: ${loadedOperations.totalOperationsBeforeLocalFilters}`);
+  console.log(`total operations after date/time filters: ${loadedOperations.totalOperationsAfterDateTimeFilters}`);
   console.log(`total operations found: ${operations.length}`);
   console.log(`target operations: ${targets.length}`);
 
