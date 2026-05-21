@@ -272,6 +272,24 @@ def load_mapping(
     return mapping, missing
 
 
+def load_fallback_mapping(km_gtins: set[str], fallback_product_name: str) -> tuple[list[dict[str, str]], list[str]]:
+    title = " ".join(str(fallback_product_name or "").split())
+    if not title:
+        raise ValueError("--fallback-product-name is required when workbook mapping is unavailable")
+
+    mapping = [
+        {
+            "gtin": gtin,
+            "title": title,
+            "article": gtin,
+            "color": "",
+            "size": "",
+        }
+        for gtin in sorted(km_gtins)
+    ]
+    return mapping, []
+
+
 def write_csv(path: Path, rows: list[dict[str, str]], fieldnames: list[str]) -> None:
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
@@ -531,6 +549,16 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--limit", type=int, default=0, help="Optional max number of KM rows to render.")
     parser.add_argument("--test-only", action="store_true", help="Only build mapping and stop.")
+    parser.add_argument(
+        "--allow-missing-workbook",
+        action="store_true",
+        help="Allow generating labels without XLSX mapping workbooks when --fallback-product-name is provided.",
+    )
+    parser.add_argument(
+        "--fallback-product-name",
+        default="",
+        help="Product name to use when generating labels without workbook mapping. Color and size remain empty.",
+    )
     return parser.parse_args()
 
 
@@ -552,17 +580,26 @@ def main() -> int:
     if not source_csv.exists():
         print(f"Missing source CSV: {source_csv}", file=sys.stderr)
         return 2
-    if not SOURCE_NAMES_XLSX.exists():
-        print(f"Missing source workbook: {SOURCE_NAMES_XLSX}", file=sys.stderr)
-        return 2
-    if not SOURCE_META_XLSX.exists():
-        print(f"Missing source workbook: {SOURCE_META_XLSX}", file=sys.stderr)
-        return 2
 
     km_gtins = set(load_km_gtins(source_csv))
-    gtin_to_name = load_gtin_names(SOURCE_NAMES_XLSX)
-    meta = load_product_meta(SOURCE_META_XLSX)
-    mapping, missing = load_mapping(gtin_to_name, meta, km_gtins)
+    missing_workbooks = [path for path in (SOURCE_NAMES_XLSX, SOURCE_META_XLSX) if not path.exists()]
+    if missing_workbooks:
+        if not args.allow_missing_workbook:
+            for path in missing_workbooks:
+                print(f"Missing source workbook: {path}", file=sys.stderr)
+            return 2
+        try:
+            mapping, missing = load_fallback_mapping(km_gtins, args.fallback_product_name)
+        except ValueError as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
+        print("workbook mapping unavailable; using fallback product name")
+        for path in missing_workbooks:
+            print(f"  missing workbook: {path}")
+    else:
+        gtin_to_name = load_gtin_names(SOURCE_NAMES_XLSX)
+        meta = load_product_meta(SOURCE_META_XLSX)
+        mapping, missing = load_mapping(gtin_to_name, meta, km_gtins)
 
     if output_dir.exists():
         shutil.rmtree(output_dir)
